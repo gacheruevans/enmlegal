@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "author": "Evans Gacheru munene",
+  "role": "Software Engineer",
+  "description": "A web application for managing legal cases and documents.",
+  "license": "MIT",
   "dependencies": {
     "@refinedev/cli": "^2.16.21",
     "@refinedev/core": "^4.47.1",
