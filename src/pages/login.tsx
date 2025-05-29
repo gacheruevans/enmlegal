@@ -52,15 +52,6 @@ export const Login: React.FC = () => {
       }}
     >
       <GoogleButton />
-      <p>
-        Powered by
-        <img
-          style={{ padding: "0 5px" }}
-          alt="Google"
-          src="https://refine.ams3.cdn.digitaloceanspaces.com/superplate-auth-icons%2Fgoogle.svg"
-        />
-        Google
-      </p>
     </div>
   );
 };
