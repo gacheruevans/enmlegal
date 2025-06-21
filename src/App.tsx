@@ -5,8 +5,6 @@ import "./App.css";
 
 import { Layout } from "./components/layout";
 
-import { NavBar } from "./components/navbar";
-
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");

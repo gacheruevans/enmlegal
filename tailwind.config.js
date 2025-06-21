@@ -12,6 +12,8 @@ export default {
         'primary': '#5D473A',
         'secondary': '#91705D',
         'accent': '#E3D2BF',
+        'royal': '#ffcf40',
+        'greenroyal': '#033f53',
         'dark': '#D9C5B2',
         'light': '#B38363',
         'error': '#FF6B6B',

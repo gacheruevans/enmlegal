@@ -21,6 +21,7 @@
     "@tailwindcss/cli": "^4.1.7",
     "@tanstack/react-table": "^8.2.6",
     "axios": "^1.6.2",
+    "framer-motion": "^12.16.0",
     "graphql-tag": "^2.12.6",
     "graphql-ws": "^5.9.1",
     "motion": "^12.12.1",
