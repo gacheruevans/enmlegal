@@ -139,7 +139,7 @@ const posts = [
                   <p className="mt-5 text-gray-600 line-clamp-3 text-sm/6">{post.description}</p>
                 </div>
                 <div className="relative flex items-center mt-8 gap-x-4">
-                  <img alt="" src={post.author.imageUrl} className="rounded-full size-10 bg-gray-50" />
+                  <img alt="" src={`./public/${post.author.imageUrl}`} className="rounded-full size-10 bg-gray-50" />
                   <div className="text-sm/6">
                     <p className="font-semibold text-light">
                       <a href={post.author.href}>
