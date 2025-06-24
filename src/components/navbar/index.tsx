@@ -59,9 +59,9 @@ export const NavBar = () => {
           <a href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">ENM Legal</span>
             <img
-              alt=""
-              src="/logo_white_text.png"
-              className="w-auto h-32 lg:h-40 md:h-32 sm:h-24"
+              alt="Company logo"
+              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/logo_white_text.png?raw=true"
+              className="w-auto h-10 lg:h-40 md:h-32 sm:h-20"
             />
           </a>
         </div>
@@ -97,7 +97,7 @@ export const NavBar = () => {
           {/* Scroll to Top Button */}
           <button
             onClick={handleScrollToTop}
-            className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-royal text-white shadow-lg hover:bg-greenroyal transition"
+            className="fixed z-50 p-3 text-white transition rounded-full shadow-lg bottom-8 right-8 bg-royal hover:bg-greenroyal"
             aria-label="Scroll to top"
             style={{ display: showScrollTop ? 'block' : 'none' }}
           >
