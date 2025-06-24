@@ -11,7 +11,7 @@ const Hero = () => {
     <div id="home" className="relative py-24 overflow-hidden border-b isolate sm:py-32 bg-slate-900 border-b-royal">
       <img
         alt=""
-        src="./public/office-lobby.jpg"
+        src={"./public/office-lobby.jpg"}
         className="absolute inset-0 object-cover object-right opacity-40 -z-10 size-full md:object-center saturation-200"
       />
       <NavBar />
