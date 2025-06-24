@@ -10,7 +10,7 @@ const ScrollToTopButton: React.FC<ScrollToTopButtonProps> = ({ show, onClick }) 
 
   return (
     <button
-      onClick={onClick}
+      onClick={ onClick}
       className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-royal text-white shadow-lg hover:bg-greenroyal transition"
       aria-label="Scroll to top"
     >

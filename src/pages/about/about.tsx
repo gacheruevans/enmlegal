@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion'
 
-import { AppWrap, MotionWrap } from '../../wrapper'
-
 // eslint-disable-next-line react-refresh/only-export-components
 const About = () => {
   const aspirations = [
@@ -53,7 +51,7 @@ const About = () => {
   ]
   return (
    
-    <div id="about" className="overflow-hidden border-b-4 border-secondary bg-white elative isolate sm:py-32">
+    <div id="about" className="overflow-hidden bg-white border-b-4 border-secondary elative isolate sm:py-32">
       <div className="px-6 mx-auto max-w-7xl lg:px-8">
         <div className="grid max-w-2xl grid-cols-3 mx-auto gap-x-6 gap-y-16 sm:gap-y-10 lg:mx-0 lg:max-w-none lg:grid-cols-3 ">
           <div className="lg:pt-4 lg:pr-8">
@@ -93,13 +91,13 @@ const About = () => {
           > */}
             <img
               alt="Founder Eva Nduta Munene"
-              src="/profile.png"
-              className="object-contain bg-secondary rounded-md w-3xl max-w-none sm:w-228 md:-mr-6 lg:-ml-0 saturate-200 mt-20"
+              src="./public/profile.png"
+              className="object-contain mt-20 rounded-md bg-secondary w-3xl max-w-none sm:w-228 md:-mr-6 lg:-ml-0 saturate-200"
             />
              <img
               alt="Founder Eva Nduta Munene"
-              src="/profile2.png"
-              className="object-contain bg-slate-900 rounded-md w-80 max-w-none sm:w-228 mt-56 lg:-ml-6 saturate-195"
+              src="./public/profile2.png"
+              className="object-contain mt-56 rounded-md bg-slate-900 w-80 max-w-none sm:w-228 lg:-ml-6 saturate-195"
             />
           {/* </motion.div> */}
         </div>
@@ -110,8 +108,8 @@ const About = () => {
           <div className="py-20 lg:py-24 lg:mt-16 sm:py-18">
             <img
                 alt="mission"
-                src="/services.jpg"
-                className="object-cover rounded-md h-96 w-auto sm:h-86 sm:w-86 w-3xl max-w-none sm:w-228 md:-ml-4 lg:-ml-0 saturate-200"
+                src="./public/services.jpg"
+                className="object-cover w-auto rounded-md h-96 sm:h-86 sm:w-86 w-3xl max-w-none sm:w-228 md:-ml-4 lg:-ml-0 saturate-200"
               />
           </div>
           <div className="max-w-2xl px-6 mx-auto lg:max-w-7xl lg:px-8 lg:pt-4 lg:mt-44">
@@ -135,8 +133,8 @@ const About = () => {
           <div className="py-20 lg:py-0 sm:py-18">
             <img
                 alt="mission"
-                src="/innovation.jpg"
-                className="object-cover rounded-md h-96 w-auto sm:h-86 sm:w-86 w-3xl max-w-none sm:w-228 md:-ml-4 lg:-ml-0 saturate-200"
+                src="./public/innovation.jpg"
+                className="object-cover w-auto rounded-md h-96 sm:h-86 sm:w-86 w-3xl max-w-none sm:w-228 md:-ml-4 lg:-ml-0 saturate-200"
               />
           </div>
         </div>
@@ -148,9 +146,3 @@ const About = () => {
 
 export default About;
 
-// eslint-disable-next-line react-refresh/only-export-components
-// export default AppWrap(
-//   MotionWrap(About, 'app__about'),
-//   'about',
-//   'app__whitebg',
-// );

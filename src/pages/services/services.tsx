@@ -63,7 +63,7 @@ const Services = () => {
     <div id="services" className="relative py-24 overflow-hidden bg-white border border-b-1 border-b-light sm:py-32 isolate">
       <img
         alt="services"
-        src="/gavel_background.jpg"
+        src="./public/gavel_background.jpg"
         className="absolute inset-0 object-cover object-right blur-90 -z-10 size-full md:object-center"
       />
       <div className="px-4 mx-auto max-w-7xl lg:px-8">
@@ -78,14 +78,14 @@ const Services = () => {
         <div className="max-w-3xl mx-auto mt-16 sm:mt-20 lg:mt-24 lg:max-w-4xl">
           <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-3 lg:gap-y-16">
             {features.map((feature) => (
-              <div key={feature.name} className="text-secondary relative p-2 pl-16 transition-colors duration-300 rounded-md bg-white/20 backdrop-blur-sm hover:bg-gray-700 hover:text-white">
-                <dt className="font-semibold  text-base/7">
+              <div key={feature.name} className="relative p-2 pl-16 transition-colors duration-300 rounded-md text-secondary bg-white/20 backdrop-blur-sm hover:bg-gray-700 hover:text-white">
+                <dt className="font-semibold text-base/7">
                   <div className="absolute top-0 left-0 flex items-center justify-center rounded-lg bg-royal hover:bg-neutral size-10">
                     <feature.icon aria-hidden="true" className="text-white size-6" />
                   </div>
                   <p className="text-white hover:text-secondary">{feature.name}</p>
                 </dt>
-                <dd className="mt-2  text-base/7">{feature.description}</dd>
+                <dd className="mt-2 text-base/7">{feature.description}</dd>
               </div>
             ))}
           </dl>
@@ -96,10 +96,3 @@ const Services = () => {
 }
 
 export default Services;
-
-// eslint-disable-next-line react-refresh/only-export-components
-// export default AppWrap(
-//   MotionWrap(Services, 'app__services'),
-//   'services',
-//   'app__whitebg',
-// );
