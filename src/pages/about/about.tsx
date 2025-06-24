@@ -91,12 +91,12 @@ const About = () => {
           > */}
             <img
               alt="Founder Eva Nduta Munene"
-              src="./public/profile.png"
+              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/profile.png?raw=true"
               className="object-contain mt-20 rounded-md bg-secondary w-3xl max-w-none sm:w-228 md:-mr-6 lg:-ml-0 saturate-200"
             />
              <img
               alt="Founder Eva Nduta Munene"
-              src="./public/profile2.png"
+              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/profile2.png?raw=true"
               className="object-contain mt-56 rounded-md bg-slate-900 w-80 max-w-none sm:w-228 lg:-ml-6 saturate-195"
             />
           {/* </motion.div> */}
@@ -108,7 +108,7 @@ const About = () => {
           <div className="py-20 lg:py-24 lg:mt-16 sm:py-18">
             <img
                 alt="mission"
-                src="./public/services.jpg"
+                src="https://github.com/gacheruevans/enmlegal/blob/main/dist/services.jpg?raw=true"
                 className="object-cover w-auto rounded-md h-96 sm:h-86 sm:w-86 w-3xl max-w-none sm:w-228 md:-ml-4 lg:-ml-0 saturate-200"
               />
           </div>
@@ -133,7 +133,7 @@ const About = () => {
           <div className="py-20 lg:py-0 sm:py-18">
             <img
                 alt="mission"
-                src="./public/innovation.jpg"
+                src="https://github.com/gacheruevans/enmlegal/blob/main/dist/innovation.jpg?raw=true"
                 className="object-cover w-auto rounded-md h-96 sm:h-86 sm:w-86 w-3xl max-w-none sm:w-228 md:-ml-4 lg:-ml-0 saturate-200"
               />
           </div>
