@@ -1,6 +1,5 @@
-import React from 'react'
+import React, {useRef} from 'react'
 
-import { AppWrap, MotionWrap } from '../../wrapper'
 
 const posts = [
     {
@@ -17,7 +16,7 @@ const posts = [
         role: 'Founding Partner',
         href: '#',
         imageUrl:
-          '/avatar.png',
+          '/profile.png',
       },
     },
     {
@@ -34,7 +33,7 @@ const posts = [
         role: 'Founding Partner',
         href: '#',
         imageUrl:
-          '/avatar.png',
+          '/profile.png',
       },
     },
     {
@@ -51,7 +50,7 @@ const posts = [
         role: 'Founding Partner',
         href: '#',
         imageUrl:
-          '/avatar.png',
+          '/profile.png',
       },
     },
     {
@@ -68,7 +67,7 @@ const posts = [
         role: 'Founding Partner',
         href: '#',
         imageUrl:
-          '/avatar.png',
+          '/profile.png',
       },
     },
     {
@@ -85,7 +84,7 @@ const posts = [
         role: 'Founding Partner',
         href: '#',
         imageUrl:
-          '/avatar.png',
+          '/profile.png',
       },
     },
     {
@@ -102,12 +101,14 @@ const posts = [
         role: 'Founding Partner',
         href: '#',
         imageUrl:
-          '/avatar.png',
+          '/profile.png',
       },
     },
   ]
   
   const Blog = () => {
+    const scrollRef = useRef<HTMLDivElement>(null)
+    
     return (
       <div id="blog" className="py-24 bg-white bg sm:py-32">
         <div className="px-6 mx-auto max-w-7xl lg:px-8">
@@ -115,7 +116,53 @@ const posts = [
             <h2 className="text-4xl font-semibold tracking-tight text-secondary text-pretty sm:text-5xl">From the blog</h2>
             <p className="mt-2 text-secondary text-lg/8">Trusted Legal Perspectives.</p>
           </div>
-          <div className="grid max-w-2xl grid-cols-1 pt-10 mx-auto mt-10 border-t border-gray-400 gap-x-8 gap-y-16 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+          {/* Mobile: horizontal scroll gallery */}
+        <div className="relative block pt-10 mt-10 border-t border-gray-400 lg:hidden">
+          <div
+            ref={scrollRef}
+            className="flex gap-6 px-8 py-2 overflow-x-auto snap-x snap-mandatory scroll-smooth"
+            style={{ scrollPaddingLeft: 16, scrollPaddingRight: 16 }}
+          >
+            {posts.map((post) => (
+              <article key={post.id} className="flex flex-col items-start justify-between max-w-xs min-w-[320px] flex-shrink-0 snap-center bg-white rounded-lg shadow p-4">
+                <div className="flex items-center text-xs gap-x-4">
+                  <time dateTime={post.datetime} className="text-gray-500">
+                    {post.date}
+                  </time>
+                  <a
+                    href={post.category.href}
+                    className="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-blue-600 hover:bg-gray-100"
+                  >
+                    {post.category.title}
+                  </a>
+                </div>
+                <div className="relative group">
+                  <h3 className="mt-3 font-semibold text-secondary text-lg/6 group-hover:text-greenroyal">
+                    <a href={post.href}>
+                      <span className="absolute inset-0" />
+                      {post.title}
+                    </a>
+                  </h3>
+                  <p className="mt-5 text-gray-600 line-clamp-3 text-sm/6">{post.description}</p>
+                </div>
+                <div className="relative flex items-center mt-8 gap-x-4">
+                  <img alt="" src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/${post.author.imageUrl}?raw=true`} className="rounded-full size-10 bg-gray-50" />
+                  <div className="text-sm/6">
+                    <p className="font-semibold text-light">
+                      <a href={post.author.href}>
+                        <span className="absolute inset-0" />
+                        {post.author.name}
+                      </a>
+                    </p>
+                    <p className="text-neutral">{post.author.role}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+        {/* Desktop: grid */}
+          <div className="hidden max-w-2xl grid-cols-1 pt-10 mx-auto mt-10 border-t border-gray-400 lg:grid gap-x-8 gap-y-16 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
             {posts.map((post) => (
               <article key={post.id} className="flex flex-col items-start justify-between max-w-xl">
                 <div className="flex items-center text-xs gap-x-4">

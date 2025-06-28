@@ -2,55 +2,7 @@ import { motion } from 'framer-motion'
 
 // eslint-disable-next-line react-refresh/only-export-components
 const About = () => {
-  const aspirations = [
-    {
-      name: 'Real Estate & Conveyancing Law',
-      description:
-        'Seamless transactions, from property acquisition to sale.',
-    },
-    {
-      name: 'Commercial & Corporate Law',
-      description:
-        'Structuring, compliance, and business advisory.',
-    },
-    {
-      name: 'Family Law – Divorce & Child Custody',
-      description:
-        'Compassionate, strategic representation for sensitive matters.',
-    },
-    {
-      name: 'Legal Audit & Compliance',
-      description:
-        'Ensuring regulatory alignment and risk mitigation.',
-    },
-    {
-      name: 'Probate Administration',
-      description:
-        'Expert guidance through estate administration and succession.',
-    },
-    {
-      name: 'Family-Owned Business & Estate Planning Advisory',
-      description:
-        'Safeguarding legacy and planning for generational transitions.',
-    },
-    {
-      name: 'Start-Ups & SMEs',
-      description:
-        'Supporting entrepreneurs from formation to scale.',
-    },
-    {
-      name: 'Dispute Resolution',
-      description:
-        'Effective advocacy through negotiation, mediation, and litigation.',
-    },
-    {
-      name: 'Banking Securities',
-      description:
-        'Structuring and securing financial transactions.',
-    },
-  ]
   return (
-   
     <div id="about" className="overflow-hidden bg-white border-b-4 border-secondary elative isolate sm:py-32">
       <div className="px-6 mx-auto max-w-7xl lg:px-8">
         <div className="relative w-full max-w-6xl px-4 py-8 mx-auto">
@@ -208,7 +160,6 @@ const About = () => {
         </div>
       </div>
     </div>
-    
   )
 }
 
