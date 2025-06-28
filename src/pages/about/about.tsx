@@ -173,7 +173,6 @@ const About = () => {
           </div>
         </div>
         <hr className="mb-8"/>
-
         {/* Aspirations Section */}
         {/* Vision Section */}
         <div className="grid items-center grid-cols-1 lg:grid-cols-2 gap-y-8 lg:gap-x-8">
