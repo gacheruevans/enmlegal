@@ -53,54 +53,94 @@ const About = () => {
    
     <div id="about" className="overflow-hidden bg-white border-b-4 border-secondary elative isolate sm:py-32">
       <div className="px-6 mx-auto max-w-7xl lg:px-8">
-        <div className="grid max-w-2xl grid-cols-3 mx-auto gap-x-6 gap-y-16 sm:gap-y-10 lg:mx-0 lg:max-w-none lg:grid-cols-3 ">
-          <div className="lg:pt-4 lg:pr-8">
-            {/* <motion.div
-              initial={{opacity: 0}}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.5, ease: 'easeIn' }}
-            > */}
-              <div className="lg:max-w-lg">
-                <p className="mt-2 text-4xl font-semibold tracking-tight text-secondary text-pretty sm:text-5xl">
-                  Who we are
-                </p>
-                <p className="mt-6 text-primary text-lg/8">
-                <span className="text-slate-800">E. Nduta Munene &amp; Company Advocates</span> is a boutique law firm specializing in delivering tailored
-                legal solutions with a personal touch. Our team of dedicated legal consultants brings extensive
-                experience and a deep understanding of various practice areas, ensuring our clients receive exert
-                guidance and representation.
-                </p>
-                <p className="mt-4 text-primary text-lg/8">
-                Led by <span className="text-slate-800"> Eva Nduta Munene</span>, an accomplished Advocate of the High Court of Kenya with over 14
-                years of dedicated legal practice, the firm is committed to providing personalized, reliable, and
-                strategic legal solutions to individuals, businesses, and institutions across Kenya and beyond.
-                </p>
-                <p className="mt-4 text-primary text-lg/8">
-                With a strong foundation in real estate and conveyancing, corporate and commercial law, and
-                banking securities and finance, the firm brings a practical, results-oriented approach to every
-                matter we handle. Our legal acumen is grounded in years of experience working with diverse
-                clients, from individual property buyers to multinational corporations.
-                </p>
-              </div>
-            {/* </motion.div> */}
-          </div>
-          {/* <motion.div
-            initial={{ opacity: 0}}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 1, ease: 'easeIn' }}
-          > */}
-            <img
-              alt="Founder Eva Nduta Munene"
-              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/profile.png?raw=true"
-              className="object-contain mt-20 rounded-md bg-secondary w-3xl max-w-none sm:w-228 md:-mr-6 lg:-ml-0 saturate-200"
-            />
-             <img
-              alt="Founder Eva Nduta Munene"
-              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/profile2.png?raw=true"
-              className="object-contain mt-56 rounded-md bg-slate-900 w-80 max-w-none sm:w-228 lg:-ml-6 saturate-195"
-            />
-          {/* </motion.div> */}
+      <div className="relative w-full max-w-6xl px-4 py-8 mx-auto">
+    {/* Mobile: text over background image */}
+    <div className="block lg:hidden relative h-[500px] rounded-md overflow-hidden">
+      <img
+        src="https://github.com/gacheruevans/enmlegal/blob/main/dist/profile.png?raw=true"
+        alt="Founder Eva Nduta Munene"
+        className="absolute inset-0 object-cover object-center w-full h-full brightness-75"
+      />
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeIn" }}
+        className="relative z-10 flex flex-col justify-center h-full px-4 py-8 text-white bg-black/40"
+      >
+        <div className="max-w-lg mx-auto text-center">
+          <p className="mb-4 text-3xl font-semibold tracking-tight drop-shadow-lg">
+            Who we are
+          </p>
+          <p className="mb-3 text-base drop-shadow-lg">
+            <span className="font-bold">E. Nduta Munene &amp; Company Advocates</span> is a boutique law firm specializing in delivering tailored
+            legal solutions with a personal touch. Our team of dedicated legal consultants brings extensive
+            experience and a deep understanding of various practice areas, ensuring our clients receive expert
+            guidance and representation.
+          </p>
+          <p className="mb-3 text-base drop-shadow-lg">
+            Led by <span className="font-bold">Eva Nduta Munene</span>, an accomplished Advocate of the High Court of Kenya with over 14
+            years of dedicated legal practice, the firm is committed to providing personalized, reliable, and
+            strategic legal solutions to individuals, businesses, and institutions across Kenya and beyond.
+          </p>
+          <p className="text-base drop-shadow-lg">
+            With a strong foundation in real estate and conveyancing, corporate and commercial law, and
+            banking securities and finance, the firm brings a practical, results-oriented approach to every
+            matter we handle. Our legal acumen is grounded in years of experience working with diverse
+            clients, from individual property buyers to multinational corporations.
+          </p>
         </div>
+      </motion.div>
+    </div>
+
+    {/* Desktop: text left, mosaic images right */}
+    <div className="items-center hidden grid-cols-2 gap-12 lg:grid">
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeIn" }}
+        className="max-w-lg"
+      >
+        <p className="mb-6 text-5xl font-semibold tracking-tight text-secondary">
+          Who we are
+        </p>
+        <p className="mb-4 text-lg text-primary">
+          <span className="font-bold text-slate-800">E. Nduta Munene &amp; Company Advocates</span> is a boutique law firm specializing in delivering tailored
+          legal solutions with a personal touch. Our team of dedicated legal consultants brings extensive
+          experience and a deep understanding of various practice areas, ensuring our clients receive expert
+          guidance and representation.
+        </p>
+        <p className="mb-4 text-lg text-primary">
+          Led by <span className="font-bold text-slate-800">Eva Nduta Munene</span>, an accomplished Advocate of the High Court of Kenya with over 14
+          years of dedicated legal practice, the firm is committed to providing personalized, reliable, and
+          strategic legal solutions to individuals, businesses, and institutions across Kenya and beyond.
+        </p>
+        <p className="text-lg text-primary">
+          With a strong foundation in real estate and conveyancing, corporate and commercial law, and
+          banking securities and finance, the firm brings a practical, results-oriented approach to every
+          matter we handle. Our legal acumen is grounded in years of experience working with diverse
+          clients, from individual property buyers to multinational corporations.
+        </p>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 1, ease: "easeIn" }}
+        className="grid grid-cols-2 grid-rows-2 gap-4 h-[420px] w-full"
+      >
+        <img
+          src="https://github.com/gacheruevans/enmlegal/blob/main/dist/profile.png?raw=true"
+          alt="Founder Eva Nduta Munene"
+          className="object-cover w-full h-full col-span-2 row-span-2 rounded-md bg-secondary"
+        />
+        <img
+          src="https://github.com/gacheruevans/enmlegal/blob/main/dist/profile2.png?raw=true"
+          alt="Founder Eva Nduta Munene"
+          className="absolute object-cover w-48 h-48 -translate-x-1/2 -translate-y-1/2 border-4 border-white rounded-md shadow-lg top-1/2 left-2/3 bg-slate-900"
+          style={{ zIndex: 2 }}
+        />
+      </motion.div>
+    </div>
+  </div>
       </div>
       <hr className="mt-16 border-neutral"/>
       <div className="px-6 mx-auto max-w-7xl lg:px-8">
