@@ -128,7 +128,7 @@ const About = () => {
             className="grid grid-cols-2 grid-rows-2 gap-4 h-[420px] w-full"
           >
             <img
-              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/profile.png?raw=true"
+              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/about-bg.png?raw=true"
               alt="Founder Eva Nduta Munene"
               className="object-cover w-full h-full col-span-2 row-span-2 rounded-md bg-secondary"
             />
@@ -183,7 +183,7 @@ const About = () => {
         {/* Vision Section */}
         <div className="grid items-center grid-cols-1 lg:grid-cols-2 gap-y-8 lg:gap-x-8">
           {/* Mobile: image with overlayed text */}
-          <div className="relative block w-full overflow-hidden rounded-md h-80 lg:hidden">
+          <div className="relative block w-full mb-12 overflow-hidden rounded-md h-80 lg:hidden">
             <img
               alt="vision"
               src="https://github.com/gacheruevans/enmlegal/blob/main/dist/innovation.jpg?raw=true"
