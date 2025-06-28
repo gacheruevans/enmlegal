@@ -109,8 +109,8 @@ const posts = [
   
   const Blog = () => {
     return (
-      <div className="py-24 bg-white bg sm:py-32">
-        <div id="blog" className="px-6 mx-auto max-w-7xl lg:px-8">
+      <div id="blog" className="py-24 bg-white bg sm:py-32">
+        <div className="px-6 mx-auto max-w-7xl lg:px-8">
           <div  className="max-w-2xl mx-auto lg:mx-0">
             <h2 className="text-4xl font-semibold tracking-tight text-secondary text-pretty sm:text-5xl">From the blog</h2>
             <p className="mt-2 text-secondary text-lg/8">Trusted Legal Perspectives.</p>
