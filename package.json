@@ -11,6 +11,7 @@
   "dependencies": {
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
+    "@nestjs/axios": "^4.0.0",
     "@refinedev/cli": "^2.16.21",
     "@refinedev/core": "^4.47.1",
     "@refinedev/devtools": "^1.1.32",
@@ -27,6 +28,7 @@
     "graphql-tag": "^2.12.6",
     "graphql-ws": "^5.9.1",
     "motion": "^12.12.1",
+    "openai": "^5.8.2",
     "react": "^18.0.0",
     "react-datepicker": "^8.4.0",
     "react-dom": "^18.0.0",
@@ -56,7 +58,7 @@
     "vite": "^4.3.1"
   },
   "scripts": {
-    "dev": "refine dev",
+    "dev": "refine dev && cd backend && nest start --watch",
     "build": "tsc && refine build",
     "start": "refine start",
     "refine": "refine",
