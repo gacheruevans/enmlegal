@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
-
+import * as dotenv from 'dotenv';
+dotenv.config();
 @Injectable()
 export class GptService {
   private openai: OpenAI;
@@ -12,14 +10,10 @@ export class GptService {
     if (!apiKey) {
       throw new Error('OPENAI_API_KEY is not defined in environment variables');
     }
-
     this.openai = new OpenAI({ apiKey: apiKey });
   }
 
-  async chatWithGPT(
-    message: string,
-    history: { role: string; content: string }[] = [],
-  ) {
+  async chatWithGPT(message: string) {
     try {
       const response = await this.openai.chat.completions.create({
         model: 'gpt-3.5-turbo',
@@ -28,8 +22,10 @@ export class GptService {
             role: 'system',
             content: 'You are a helpful legal assistant for Kenya law.',
           },
-          ...history,
-          { role: 'user', content: message },
+          {
+            role: 'user',
+            content: message,
+          },
         ],
       });
       if (!response.choices || response.choices.length === 0) {

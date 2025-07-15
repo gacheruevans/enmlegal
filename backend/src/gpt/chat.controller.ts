@@ -13,8 +13,11 @@ export class ChatController {
       history?: { role: string; content: string }[];
     },
   ) {
-    const { message, history = [] } = body;
-    const reply = await this.gptService.chatWithGPT(message, history);
+    const { message } = body;
+    if (typeof message !== 'string') {
+      throw new Error('Message must be a string');
+    }
+    const reply = await this.gptService.chatWithGPT(message);
     return { reply };
   }
 }
