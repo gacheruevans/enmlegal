@@ -7,6 +7,8 @@ export default {
         'sans': ['Sans', 'sans-serif'],
         'serif': ['Merriweather', 'serif'],
         'mono': ['Fira Code', 'monospace'],
+        'mea-culpa': ['Mea Culpa', 'cursive'],
+        'ballet':["Ballet", 'cursive']
       },
       colors: {
         'primary': '#5D473A',

@@ -9,6 +9,7 @@
   "description": "A web for a legal firm in Kenya, built with React and Tailwind.",
   "license": "MIT",
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
     "@nestjs/axios": "^4.0.0",
@@ -41,7 +42,7 @@
     "@graphql-codegen/import-types-preset": "^3.0.0",
     "@graphql-codegen/typescript": "^4.0.1",
     "@graphql-codegen/typescript-operations": "^4.0.1",
-    "@types/node": "^18.16.2",
+    "@types/node": "^18.19.113",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/react-modal": "^3.16.3",
