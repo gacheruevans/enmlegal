@@ -64,14 +64,14 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <div className="layout">
       <div className="content">
-          <Hero />
-          <About />
-          <Services />
-          <Blog />
-          <Footer/>
+        <Hero />
+        <About />
+        <Services />
+        <Blog />
+        <Footer />
         <div>{children}</div>
-        <ChatBot />
         <ScrollToTopButton show={showScrollTop} onClick={handleScrollToTop} />
+        <ChatBot />
       </div>
     </div>
   );
