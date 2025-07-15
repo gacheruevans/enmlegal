@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'Mea Culpa';
+  src: url('https://fonts.gstatic.com/s/meaculpa/v1/4i0b2c8d3f5e7c8f6b9e4c8d3f5e7c8f.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Ballet';
+  src: url('https://fonts.gstatic.com/s/ballet/v1/4i0b2c8d3f5e7c8f6b9e4c8d3f5e7c8f.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}   

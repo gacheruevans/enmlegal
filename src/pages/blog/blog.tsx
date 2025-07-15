@@ -139,7 +139,7 @@ const posts = [
                 <div className="relative group">
                   <h3 className="mt-3 font-semibold text-secondary text-lg/6 group-hover:text-greenroyal">
                     <a href={post.href}>
-                      <span className="absolute inset-0" />
+                      <span className="absolute inset-0 font-mea-culpa" />
                       {post.title}
                     </a>
                   </h3>
