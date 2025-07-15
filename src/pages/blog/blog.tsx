@@ -139,14 +139,14 @@ const posts = [
                 <div className="relative group">
                   <h3 className="mt-3 font-semibold text-secondary text-lg/6 group-hover:text-greenroyal">
                     <a href={post.href}>
-                      <span className="absolute inset-0" />
+                      <span className="absolute inset-0 font-mea-culpa" />
                       {post.title}
                     </a>
                   </h3>
                   <p className="mt-5 text-gray-600 line-clamp-3 text-sm/6">{post.description}</p>
                 </div>
                 <div className="relative flex items-center mt-8 gap-x-4">
-                  <img alt="" src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/${post.author.imageUrl}?raw=true`} className="rounded-full size-10 bg-gray-50" />
+                  <img alt="" src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/${post.author.imageUrl}?raw=true`} className="rounded-full object-fit size-10 bg-gray-50" />
                   <div className="text-sm/6">
                     <p className="font-semibold text-light">
                       <a href={post.author.href}>

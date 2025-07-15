@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Hero, About, Services, Blog } from "../../pages";
 import Footer from "../../components/footer";
 import ScrollToTopButton from "../scrolltotop";
+import ChatBot from "../chat";
 
 
 export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -63,13 +64,14 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <div className="layout">
       <div className="content">
-          <Hero />
-          <About />
-          <Services />
-          <Blog />
-          <Footer/>
+        <Hero />
+        <About />
+        <Services />
+        <Blog />
+        <Footer />
         <div>{children}</div>
         <ScrollToTopButton show={showScrollTop} onClick={handleScrollToTop} />
+        <ChatBot />
       </div>
     </div>
   );

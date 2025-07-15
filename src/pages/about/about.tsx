@@ -9,7 +9,7 @@ const About = () => {
           {/* Mobile: text over background image */}
           <div className="block lg:hidden relative h-[500px] rounded-md overflow-hidden">
             <img
-              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/about-bg.jpg?raw=true"
+              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/books-background2.jpg?raw=true"
               alt="Founder Eva Nduta Munene"
               className="absolute inset-0 object-cover object-center w-full h-full brightness-75"
             />
@@ -20,7 +20,7 @@ const About = () => {
               className="relative z-10 flex flex-col justify-center h-full px-4 py-8 text-white bg-black/40"
             >
               <div className="max-w-lg mx-auto text-center text-wrap">
-                <p className="mb-4 text-3xl font-semibold tracking-tight drop-shadow-lg text-royal">
+                <p className="mb-4 text-3xl font-semibold tracking-tight font-mea-culpa drop-shadow-lg text-royal">
                   Who we are
                 </p>
                 <p className="mb-3 text-base drop-shadow-lg">
@@ -44,7 +44,7 @@ const About = () => {
               transition={{ duration: 0.5, ease: "easeIn" }}
               className="max-w-lg"
             >
-              <p className="mb-6 text-5xl font-semibold tracking-tight text-secondary">
+              <p className="mb-6 text-5xl font-semibold tracking-tight font-mea-culpa text-secondary">
                 Who we are
               </p>
               <p className="mb-4 text-lg text-primary">
@@ -72,7 +72,7 @@ const About = () => {
               className="grid grid-cols-2 grid-rows-2 gap-4 h-[420px] w-full"
             >
               <img
-                src="https://github.com/gacheruevans/enmlegal/blob/main/dist/about-bg.jpg?raw=true"
+                src="https://github.com/gacheruevans/enmlegal/blob/main/dist/books-background2.jpg?raw=true"
                 alt="Founder Eva Nduta Munene"
                 className="object-cover w-full h-full col-span-2 row-span-2 rounded-md bg-secondary"
               />
@@ -98,7 +98,7 @@ const About = () => {
               className="absolute inset-0 object-cover object-center w-full h-full brightness-75"
             />
             <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-4 py-8 bg-black/40">
-              <h2 className="mb-4 text-3xl font-bold text-royal drop-shadow-lg">Our mission</h2>
+              <h2 className="mb-4 text-3xl font-bold font-mea-culpa text-royal drop-shadow-lg">Our mission</h2>
               <p className="mb-2 text-base font-medium text-center text-white drop-shadow-lg">
                 To provide high-quality legal services with a focus on exceptional client care.
               </p>
@@ -115,7 +115,7 @@ const About = () => {
             className="hidden object-cover w-full rounded-md lg:block h-96"
           />
           <div className="hidden pl-8 lg:block">
-            <h2 className="mb-6 text-5xl font-bold text-secondary">Our mission</h2>
+            <h2 className="mb-6 text-5xl font-bold font-mea-culpa text-secondary">Our mission</h2>
             <p className="mb-4 text-lg font-medium text-primary">
               To provide high-quality legal services with a focus on exceptional client care.
             </p>
@@ -136,7 +136,7 @@ const About = () => {
               className="absolute inset-0 object-cover object-center w-full h-full brightness-75"
             />
             <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-4 py-8 bg-black/40">
-              <h2 className="mb-4 text-3xl font-bold text-royal drop-shadow-lg">Our Vision</h2>
+              <h2 className="mb-4 text-3xl font-bold font-mea-culpa text-royal drop-shadow-lg">Our Vision</h2>
               <p className="text-base font-medium text-center text-white drop-shadow-lg">
                 We seek to be the premier boutique law firm recognized for our unwavering commitment to excellence, innovation, and client success.<br />
                 We envision a future where our firm is synonymous with legal excellence, client satisfaction, and a positive impact on the legal profession and the broader community.
@@ -146,7 +146,7 @@ const About = () => {
           
           {/* Desktop: text left, image right */}
           <div className="hidden pr-8 lg:block">
-            <h2 className="mb-6 text-5xl font-bold text-secondary">Our Vision</h2>
+            <h2 className="mb-6 text-5xl font-bold font-mea-culpa text-secondary">Our Vision</h2>
             <p className="text-lg font-medium text-primary">
               We seek to be the premier boutique law firm recognized for our unwavering commitment to excellence, innovation, and client success.<br />
               We envision a future where our firm is synonymous with legal excellence, client satisfaction, and a positive impact on the legal profession and the broader community.
