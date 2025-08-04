@@ -1,6 +1,7 @@
 import React from 'react'
 
 const Footer = () => {
+    const currentYear = new Date().getFullYear();
   return (
     <footer className="px-8 py-8 text-white bg-gray-800 md:px-16 lg:px-28">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
@@ -40,7 +41,7 @@ const Footer = () => {
         </div>
         <div className="div"></div>
         <div className="pt-6 mt-6 text-center text-gray-300 border-t border-gray-800">
-            <p> © 2025 CREATIVEZINK. All rights reserved. </p>
+            <p> © {currentYear} CREATIVEZINK. All rights reserved. </p>
         </div>
         <div>
             <h2 className="mb-4 text-lg font-weight-300"> Follow Us</h2>
