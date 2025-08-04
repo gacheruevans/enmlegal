@@ -69,9 +69,9 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
         <Services />
         <Blog />
         <Footer />
+        <ChatBot />
         <div>{children}</div>
         <ScrollToTopButton show={showScrollTop} onClick={handleScrollToTop} />
-        <ChatBot />
       </div>
     </div>
   );

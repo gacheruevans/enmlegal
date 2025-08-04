@@ -98,7 +98,7 @@ export const NavBar = () => {
           {/* Scroll to Top Button */}
           <button
             onClick={handleScrollToTop}
-            className="fixed z-50 p-3 text-white transition rounded-full shadow-lg bottom-8 right-8 bg-royal hover:bg-greenroyal"
+            className="fixed p-3 text-white transition rounded-full shadow-lg z-1 bottom-8 right-8 bg-royal hover:bg-greenroyal"
             aria-label="Scroll to top"
             style={{ display: showScrollTop ? 'block' : 'none' }}
           >
@@ -129,7 +129,7 @@ export const NavBar = () => {
           </div>
           <div className="flow-root mt-6">
             <div className="-my-6 divide-y divide-gray-500/10">
-              {/* <div className=""> */}
+              
                 {navigation.map((item) => (
                   <div className={`py-6 space-y-2 ${activeFilter === item.name ? 'border-b-2 border-white' : ''}`} key={item.name}>
                       <a
@@ -146,7 +146,7 @@ export const NavBar = () => {
                       </a>
                   </div>
                 ))}
-              {/* </div> */}
+             
               <div className="py-6">
                 <a
                   href="#"

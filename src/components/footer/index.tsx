@@ -3,7 +3,7 @@ import React from 'react'
 const Footer = () => {
     const currentYear = new Date().getFullYear();
   return (
-    <footer className="px-8 py-8 text-white bg-gray-800 md:px-16 lg:px-28 isolate">
+    <footer className="px-8 py-8 text-white bg-slate-950 md:px-16 lg:px-28 isolate">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
             <div>
                 <h2 className="mb-4 text-lg font-weight-300">Office</h2>

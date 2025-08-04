@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 const About = () => {
   return (
     <div id="about" className="overflow-hidden bg-white border-b-4 border-secondary elative isolate sm:py-32">
-      <div className="px-6 mx-auto max-w-7xl lg:px-8">
+      <div className="px-6 mx-auto border-l max-w-7xl lg:px-8">
         <div className="relative w-full max-w-6xl px-4 py-8 mx-auto">
           {/* Mobile: text over background image */}
           <div className="block lg:hidden relative h-[500px] rounded-md overflow-hidden">
@@ -89,7 +89,7 @@ const About = () => {
       <div className="px-6 mx-auto max-w-7xl lg:px-8">
         <hr className="mb-8"/>
         {/* Mission Section */}
-        <div className="grid items-center grid-cols-1 mb-16 lg:grid-cols-2 gap-y-8 lg:gap-x-8">
+        <div className="grid items-center grid-cols-1 mb-16 border-r lg:grid-cols-2 gap-y-8 lg:gap-x-8">
           {/* Mobile: image with overlayed text */}
           <div className="relative block w-full overflow-hidden rounded-md h-80 lg:hidden">
             <img
@@ -114,7 +114,7 @@ const About = () => {
             src="https://github.com/gacheruevans/enmlegal/blob/main/dist/services.jpg?raw=true"
             className="hidden object-cover w-full rounded-md lg:block h-96"
           />
-          <div className="hidden pl-8 lg:block">
+          <div className="hidden pl-8 border-l lg:block">
             <h2 className="mb-6 text-5xl font-bold font-mea-culpa text-secondary">Our mission</h2>
             <p className="mb-4 text-lg font-medium text-primary">
               To provide high-quality legal services with a focus on exceptional client care.
@@ -127,7 +127,7 @@ const About = () => {
         <hr className="mb-8"/>
         {/* Aspirations Section */}
         {/* Vision Section */}
-        <div className="grid items-center grid-cols-1 lg:grid-cols-2 gap-y-8 lg:gap-x-8">
+        <div className="grid grid-cols-1 p-4 border-l item s-center lg:grid-cols-2 gap-y-8 lg:gap-x-8">
           {/* Mobile: image with overlayed text */}
           <div className="relative block w-full mb-12 overflow-hidden rounded-md h-80 lg:hidden">
             <img
@@ -145,7 +145,7 @@ const About = () => {
           </div>
           
           {/* Desktop: text left, image right */}
-          <div className="hidden pr-8 lg:block">
+          <div className="hidden px-8 py-8 pr-8 border-r lg:block">
             <h2 className="mb-6 text-5xl font-bold font-mea-culpa text-secondary">Our Vision</h2>
             <p className="text-lg font-medium text-primary">
               We seek to be the premier boutique law firm recognized for our unwavering commitment to excellence, innovation, and client success.<br />
