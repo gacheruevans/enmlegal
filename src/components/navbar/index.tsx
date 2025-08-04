@@ -8,6 +8,7 @@ const navigation = [
   { name: 'practice Areas', href: '/practice-areas' },
   { name: 'blog', href: '/blog' },
   { name: 'contacts', href: '/contacts' },
+  { name: 'admin', href: '/admin/login' },
 ];
 
 export const NavBar = () => {
