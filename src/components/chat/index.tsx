@@ -43,7 +43,7 @@ const ChatBot = () => {
         <button 
           
           onClick={() => { setMinimize(true); setMessages([]); setInput(''); setLoading(false); }}
-          className="p-1 mb-4 text-slate-300 hover:text-red-400 hover:"
+          className="p-1 mb-4 text-amber-900 hover:text-red-700 hover:"
         >x</button>)
         }
       </div>

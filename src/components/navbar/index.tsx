@@ -114,7 +114,7 @@ export const NavBar = () => {
               <span className="sr-only">ENM Legal</span>
               <img
                 alt=""
-                src="/public/enmlegal-logo.png"
+                src="/enmlegal-logo.png"
                 className="w-auto h-12"
               />
             </a>
