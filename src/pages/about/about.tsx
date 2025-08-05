@@ -11,7 +11,7 @@ const About = () => {
             <img
               src="https://github.com/gacheruevans/enmlegal/blob/main/dist/books-background2.jpg?raw=true"
               alt="Founder Eva Nduta Munene"
-              className="absolute inset-0 object-cover object-center w-full h-full brightness-75"
+              className="absolute inset-0 object-cover object-center w-full h-full shadow brightness-75"
             />
             <motion.div
               initial={{ opacity: 0 }}
@@ -48,7 +48,7 @@ const About = () => {
                 Who we are
               </p>
               <p className="mb-4 text-lg text-primary">
-                <span className="font-bold text-slate-800">E. Nduta Munene &amp; Company Advocates</span> is a boutique law firm specializing in delivering tailored
+                <span className="font-bold text-slate-800">E. Nduta Munene </span> <span className="font-ballet text-slate-800"> &amp; Company Advocates</span> is a boutique law firm specializing in delivering tailored
                 legal solutions with a personal touch. Our team of dedicated legal consultants brings extensive
                 experience and a deep understanding of various practice areas, ensuring our clients receive expert
                 guidance and representation.
@@ -74,13 +74,12 @@ const About = () => {
               <img
                 src="https://github.com/gacheruevans/enmlegal/blob/main/dist/books-background2.jpg?raw=true"
                 alt="Founder Eva Nduta Munene"
-                className="object-cover w-full h-full col-span-2 row-span-2 rounded-md bg-secondary"
+                className="object-cover w-full h-full col-span-2 row-span-2 rounded-md shadow-2xl bg-secondary"
               />
               <img
                 src="https://github.com/gacheruevans/enmlegal/blob/main/dist/profile2.png?raw=true"
                 alt="Founder Eva Nduta Munene"
-                className="absolute object-cover w-48 h-48 -translate-x-1/2 -translate-y-1/2 border-4 border-white rounded-md shadow-lg top-1/2 left-2/3 bg-slate-900"
-                style={{ zIndex: 2 }}
+                className="absolute object-cover w-48 h-48 -translate-x-1/2 -translate-y-1/2 border-4 border-white rounded-md shadow-2xl z-2 top-1/2 left-2/3 bg-slate-900"
               />
             </motion.div>
           </div>
