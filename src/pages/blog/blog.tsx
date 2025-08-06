@@ -110,7 +110,7 @@ const posts = [
     const scrollRef = useRef<HTMLDivElement>(null)
     
     return (
-      <div id="blog" className="py-24 bg-white bg sm:py-32 isolate">
+      <div id="blog" className="h-screen py-24 bg-white bg sm:py-32 isolate">
         <div className="px-6 mx-auto max-w-7xl lg:px-8">
           <div  className="max-w-2xl mx-auto lg:mx-0">
             <h2 className="text-4xl font-semibold tracking-tight text-secondary text-pretty sm:text-5xl">From the blog</h2>

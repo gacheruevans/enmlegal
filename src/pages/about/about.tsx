@@ -94,7 +94,7 @@ const About = () => {
             <img
               alt="mission"
               src="https://github.com/gacheruevans/enmlegal/blob/main/dist/services.jpg?raw=true"
-              className="absolute inset-0 object-cover object-center w-full h-full brightness-75"
+              className="absolute inset-0 object-cover object-center w-full h-full shadow-2xl brightness-75"
             />
             <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-4 py-8 bg-black/40">
               <h2 className="mb-4 text-3xl font-bold font-mea-culpa text-royal drop-shadow-lg">Our mission</h2>
@@ -111,7 +111,7 @@ const About = () => {
           <img
             alt="mission"
             src="https://github.com/gacheruevans/enmlegal/blob/main/dist/services.jpg?raw=true"
-            className="hidden object-cover w-full rounded-md lg:block h-96"
+            className="hidden object-cover w-full rounded-md shadow-2xl lg:block h-96"
           />
           <div className="hidden pl-8 border-l lg:block">
             <h2 className="mb-6 text-5xl font-bold font-mea-culpa text-secondary">Our mission</h2>
@@ -132,7 +132,7 @@ const About = () => {
             <img
               alt="vision"
               src="https://github.com/gacheruevans/enmlegal/blob/main/dist/innovation.jpg?raw=true"
-              className="absolute inset-0 object-cover object-center w-full h-full brightness-75"
+              className="absolute inset-0 object-cover object-center w-full h-full shadow-2xl brightness-75"
             />
             <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-4 py-8 bg-black/40">
               <h2 className="mb-4 text-3xl font-bold font-mea-culpa text-royal drop-shadow-lg">Our Vision</h2>
@@ -154,7 +154,7 @@ const About = () => {
           <img
             alt="vision"
             src="https://github.com/gacheruevans/enmlegal/blob/main/dist/innovation.jpg?raw=true"
-            className="hidden object-cover w-full rounded-md lg:block h-96"
+            className="hidden object-cover w-full rounded-md shadow-2xl lg:block h-96"
           />
         </div>
       </div>
