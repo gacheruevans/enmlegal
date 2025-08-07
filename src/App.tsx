@@ -6,6 +6,9 @@ import routerProvider, { CatchAllNavigate, NavigateToResource } from "@refinedev
 import { BrowserRouter, Outlet, Route, Routes } from "react-router"
 
 import "./App.css";
+import CssBaseline from "@mui/material/CssBaseline"
+import GlobalStyles from "@mui/material/GlobalStyles"
+
 import {
   AuthPage,
   ErrorComponent,
@@ -14,8 +17,22 @@ import {
   useNotificationProvider,
 } from "@refinedev/mui"
 import { useTranslation } from "react-i18next"
+
 import { authProvider } from "./authProvider"
+import { Header } from "./components/header"
+import { ColorModeContextProvider } from "./context/color-mode"
+
 import { Layout } from "./components/layout"
+import { 
+  CategoryCreate,
+  CategoryEdit, 
+  CategoryList, 
+  CategoryShow } from "./pages/categories"
+import { 
+  ProductList, 
+  ProductCreate, 
+  ProductShow, 
+  ProductEdit } from "./pages/posts"
 
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((config) => {
@@ -37,99 +54,104 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Layout>
-        <Refine
-          dataProvider={dataProvider("https://api-fake-rest.refine.dev")}
-          notificationProvider={useNotificationProvider}
-          routerProvider={routerProvider}
-          authProvider={authProvider}
-          i18nProvider={i18nProvider}
-          resources={[
-            {
-              name: "posts",
-              list: "/posts",
-              create:"/posts/new",
-              edit: "posts/:id/edit",
-              show: "/posts/:id"
-            },{
-              name: "categories",
-              list: "/categories",
-              create: "/categories/new",
-              edit: "/categories/:id/edit",
-              show: "/categories/:id",
-              meta: {
-                canDelete: true,
-              }
-            }
-          ]}
-        >
-          <Routes>
-            <Route
-                element={
-                  <Authenticated
-                    key="authenticated-inner"
-                    fallback={<CatchAllNavigate to="/login" />}
-                  >
-                    <ThemedLayoutV2 Header={() => <Header sticky />}>
-                      <Outlet />
-                    </ThemedLayoutV2>
-                  </Authenticated>
-                }
-              >
-              <Route
-                index
-                element={<NavigateToResource resource="posts" />}
-              />
-              <Route path="/products">
-                  <Route index element={<ProductList />} />
-                  <Route path="new" element={<ProductCreate />} />
-                  <Route path=":id" element={<ProductShow />} />
-                  <Route path=":id/edit" element={<ProductEdit />} />
-                </Route>
-                <Route path="/categories">
-                  <Route index element={<CategoryList />} />
-                  <Route path="new" element={<CategoryCreate />} />
-                  <Route path=":id" element={<CategoryShow />} />
-                  <Route path=":id/edit" element={<CategoryEdit />} />
-                </Route>
-                <Route path="*" element={<ErrorComponent />} />
-              </Route>
-              <Route
-                element={
-                  <Authenticated
-                    key="authenticated-outer"
-                    fallback={<Outlet />}
-                  >
-                    <NavigateToResource />
-                  </Authenticated>
-                }
-              >
-                <Route
-                  path="/login"
-                  element={
-                    <AuthPage
-                      type="login"
-                      formProps={{
-                        defaultValues: {
-                          email: "demo@refine.dev",
-                          password: "demodemo",
-                        },
-                      }}
-                    />
+      <ColorModeContextProvider>
+        <CssBaseline />
+        <GlobalStyles styles={{ html: { WebkitFontSmoothing: "auto" } }} />
+        <RefineSnackbarProvider>
+          
+            <Refine
+              dataProvider={dataProvider("https://api-fake-rest.refine.dev")}
+              notificationProvider={useNotificationProvider}
+              routerProvider={routerProvider}
+              authProvider={authProvider}
+              i18nProvider={i18nProvider}
+              resources={[
+                {
+                  name: "posts",
+                  list: "/posts",
+                  create:"/posts/new",
+                  edit: "posts/:id/edit",
+                  show: "/posts/:id"
+                },{
+                  name: "categories",
+                  list: "/categories",
+                  create: "/categories/new",
+                  edit: "/categories/:id/edit",
+                  show: "/categories/:id",
+                  meta: {
+                    canDelete: true,
                   }
-                />
+                }
+              ]}
+            >
+              <Routes>
                 <Route
-                  path="/forgot-password"
-                  element={<AuthPage type="forgotPassword" />}
-                />
-                <Route
-                  path="/update-password"
-                  element={<AuthPage type="updatePassword" />}
-                />
-              </Route>
-          </Routes>
-        </Refine>
-      </Layout>
+                    element={
+                      <Authenticated
+                        key="authenticated-inner"
+                      >
+                        <ThemedLayoutV2 Header={() => <Header sticky />}>
+                          <Layout />
+                          <Outlet />
+                        </ThemedLayoutV2>
+                      </Authenticated>
+                    }
+                  >
+                  <Route
+                    index
+                    element={<NavigateToResource resource="posts" />}
+                  />
+                  <Route path="/products">
+                      <Route index element={<ProductList />} />
+                      <Route path="new" element={<ProductCreate />} />
+                      <Route path=":id" element={<ProductShow />} />
+                      <Route path=":id/edit" element={<ProductEdit />} />
+                    </Route>
+                    <Route path="/categories">
+                      <Route index element={<CategoryList />} />
+                      <Route path="new" element={<CategoryCreate />} />
+                      <Route path=":id" element={<CategoryShow />} />
+                      <Route path=":id/edit" element={<CategoryEdit />} />
+                    </Route>
+                    <Route path="*" element={<ErrorComponent />} />
+                  </Route>
+                  <Route
+                    element={
+                      <Authenticated
+                        key="authenticated-outer"
+                        fallback={<Outlet />}
+                      >
+                        <NavigateToResource />
+                      </Authenticated>
+                    }
+                  >
+                    <Route
+                      path="/login"
+                      element={
+                        <AuthPage
+                          type="login"
+                          formProps={{
+                            defaultValues: {
+                              email: "demo@refine.dev",
+                              password: "demodemo",
+                            },
+                          }}
+                        />
+                      }
+                    />
+                    <Route
+                      path="/forgot-password"
+                      element={<AuthPage type="forgotPassword" />}
+                    />
+                    <Route
+                      path="/update-password"
+                      element={<AuthPage type="updatePassword" />}
+                    />
+                  </Route>
+              </Routes>
+            </Refine>
+        </RefineSnackbarProvider>
+      </ColorModeContextProvider>
     </BrowserRouter>
   );
 }
