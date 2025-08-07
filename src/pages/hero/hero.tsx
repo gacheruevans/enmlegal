@@ -8,7 +8,7 @@ const Hero = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div id="home" className="relative py-24 overflow-hidden border-b isolate sm:py-32 bg-slate-900 border-b-royal">
+    <div id="home" className="relative h-screen py-24 overflow-hidden border-b isolate sm:py-32 bg-slate-900 border-b-royal">
       <img
         alt=""
         src="https://github.com/gacheruevans/enmlegal/blob/main/dist/office-lobby.jpg?raw=true"
@@ -20,7 +20,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.8, ease: 'easeIn' }}
-          className="py-20 mx-auto text-center max-w-8xl sm:py-48 lg:py-56"
+          className="max-w-6xl py-20 mx-auto text-center sm:py-48 lg:py-56"
         >
           <h1 className="text-5xl font-semibold tracking-tight text-white text-shadow-lg text-shadow-sky-300 text-balance sm:text-7xl">
             A Personal Legal Practice You Can Trust- In Kenya and from Abroad!

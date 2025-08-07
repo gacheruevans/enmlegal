@@ -61,7 +61,7 @@ const Services = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div id="services" className="relative py-24 overflow-hidden bg-white border border-b-1 border-b-light sm:py-32 isolate">
+    <div id="services" className="relative h-screen py-24 overflow-hidden bg-white border border-b-1 border-b-light sm:py-32 isolate">
       {/* Mobile */}
       <img
         alt="services"

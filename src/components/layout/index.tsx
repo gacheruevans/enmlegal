@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Hero, About, Services, Blog } from "../../pages";
 import Footer from "../../components/footer";
 import ScrollToTopButton from "../scrolltotop";
-import ChatBot from "../chat";
+// import ChatBot from "../chat";
 
 
 export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -69,7 +69,7 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
         <Services />
         <Blog />
         <Footer />
-        <ChatBot />
+        {/* <ChatBot /> */}
         <div>{children}</div>
         <ScrollToTopButton show={showScrollTop} onClick={handleScrollToTop} />
       </div>
