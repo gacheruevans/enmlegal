@@ -1,16 +1,17 @@
 import React from 'react'
 
 const Footer = () => {
+    const currentYear = new Date().getFullYear();
   return (
-    <footer className="px-8 py-8 text-white bg-gray-800 md:px-16 lg:px-28">
+    <footer className="px-8 py-8 text-white bg-slate-950 md:px-16 lg:px-28 isolate">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
             <div>
-                <h2 className="mb-4 text-lg font-weight-300">Office Address</h2>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Block B, 3rd Floor, Suite 3.2</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">KMA Center, Chyulu Road</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Upper Hill, Nairobi</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Phone: +254 701-857-030</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Email: info@enmlegal.com</p>
+                <h2 className="mb-4 text-lg font-weight-300">Office</h2>
+                <p className="py-1 text-sm text-gray-300 font-weight-100">Address: Block B, 3rd Floor, Suite 3.2</p>
+                <p className="py-1 text-sm text-gray-300 font-weight-100">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; KMA Center, Chyulu Road, Upper Hill</p>
+                <p className="py-1 text-sm text-gray-300 font-weight-100">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; P.O Box 40964-00100, Nairobi</p>
+                <p className="py-1 text-sm text-gray-300 font-weight-100">Contacts: +254 733-700-004 & +254 701-857-030</p>
+                <p className="py-1 text-sm text-gray-300 font-weight-100">Email: &nbsp; &nbsp; &nbsp; info@enmlegal.com</p>
             </div>
             <div>
                 <h2 className="mb-4 text-lg font-weight-300">Quick Links</h2>
@@ -40,7 +41,7 @@ const Footer = () => {
         </div>
         <div className="div"></div>
         <div className="pt-6 mt-6 text-center text-gray-300 border-t border-gray-800">
-            <p> © 2025 CREATIVEZINK. All rights reserved. </p>
+            <p> © {currentYear} CREATIVEZINK. All rights reserved. </p>
         </div>
         <div>
             <h2 className="mb-4 text-lg font-weight-300"> Follow Us</h2>
