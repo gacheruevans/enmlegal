@@ -7,9 +7,9 @@ import { Controller } from "react-hook-form";
 
 import { Autocomplete, Box, TextField } from "@mui/material";
 import { Edit, useAutocomplete } from "@refinedev/mui";
-import type { Product } from "./types";
+import type { Article } from "./types";
 
-export const ProductEdit = () => {
+export const PostEdit = () => {
   const translate = useTranslate();
   const {
     saveButtonProps,
@@ -17,13 +17,13 @@ export const ProductEdit = () => {
     register,
     control,
     formState: { errors },
-  } = useForm<Product, HttpError, Product>();
+  } = useForm<Article, HttpError, Article>();
 
-  const productsData = query?.data?.data;
+  const postsData = query?.data?.data;
 
   const { autocompleteProps: categoryAutocompleteProps } = useAutocomplete({
     resource: "categories",
-    defaultValue: productsData?.category?.id,
+    defaultValue: postsData?.category?.id,
   });
 
   return (
@@ -43,7 +43,7 @@ export const ProductEdit = () => {
             },
           }}
           type="number"
-          label={translate("products.fields.id")}
+          label={translate("posts.fields.id")}
           name="id"
           disabled
         />
@@ -61,7 +61,7 @@ export const ProductEdit = () => {
             },
           }}
           type="text"
-          label={translate("products.fields.name")}
+          label={translate("posts.fields.name")}
           name="name"
         />
         <TextField
@@ -81,46 +81,11 @@ export const ProductEdit = () => {
           label={translate("products.fields.description")}
           name="description"
         />
-        <TextField
-          {...register("price", {
-            required: translate("form.required"),
-            valueAsNumber: true,
-          })}
-          error={!!errors?.price}
-          helperText={<>{errors?.price?.message}</>}
-          margin="normal"
-          fullWidth
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
-          type="number"
-          label={translate("products.fields.price")}
-          name="price"
-        />
-        <TextField
-          {...register("material", {
-            required: translate("form.required"),
-          })}
-          error={!!errors?.material}
-          helperText={<>{errors?.material?.message}</>}
-          margin="normal"
-          fullWidth
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
-          type="text"
-          label={translate("products.fields.material")}
-          name="material"
-        />
         <Controller
           control={control}
           name="category"
           rules={{ required: translate("form.required") }}
-          defaultValue={productsData?.category ?? null}
+          defaultValue={postsData?.category ?? null}
           render={({ field }) => (
             <Autocomplete
               {...categoryAutocompleteProps}
@@ -139,7 +104,7 @@ export const ProductEdit = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label={translate("products.fields.category")}
+                  label={translate("posts.fields.category")}
                   margin="normal"
                   variant="outlined"
                   error={!!errors?.category?.id}

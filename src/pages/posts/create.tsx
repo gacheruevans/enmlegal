@@ -4,9 +4,9 @@ import { Controller } from "react-hook-form";
 
 import { Autocomplete, Box, TextField } from "@mui/material";
 import { Create, useAutocomplete } from "@refinedev/mui";
-import type { Product } from "./types";
+import type { Article } from "./types";
 
-export const ProductCreate: React.FC = () => {
+export const PostCreate: React.FC = () => {
   const translate = useTranslate();
   const {
     saveButtonProps,
@@ -14,7 +14,7 @@ export const ProductCreate: React.FC = () => {
     register,
     control,
     formState: { errors },
-  } = useForm<Product, HttpError, Product>();
+  } = useForm<Article, HttpError, Article>();
 
   const { autocompleteProps: categoryAutocompleteProps } = useAutocomplete({
     resource: "categories",
@@ -41,7 +41,7 @@ export const ProductCreate: React.FC = () => {
             },
           }}
           type="text"
-          label={translate("products.fields.name")}
+          label={translate("posts.fields.name")}
           name="name"
         />
         <TextField
@@ -58,44 +58,8 @@ export const ProductCreate: React.FC = () => {
             },
           }}
           multiline
-          label={translate("products.fields.description")}
+          label={translate("posts.fields.description")}
           name="description"
-        />
-        <TextField
-          {...register("price", {
-            required: translate("form.required"),
-            min: 0.1,
-            valueAsNumber: true,
-          })}
-          error={!!errors?.price}
-          helperText={<>{errors?.price?.message}</>}
-          margin="normal"
-          fullWidth
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
-          type="number"
-          label={translate("products.fields.price")}
-          name="price"
-        />
-        <TextField
-          {...register("material", {
-            required: translate("form.required"),
-          })}
-          error={!!errors?.material}
-          helperText={<>{errors?.material?.message}</>}
-          margin="normal"
-          fullWidth
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
-          type="text"
-          label={translate("products.fields.material")}
-          name="material"
         />
         <Controller
           control={control}
@@ -119,7 +83,7 @@ export const ProductCreate: React.FC = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label={translate("products.fields.category")}
+                  label={translate("posts.fields.category")}
                   margin="normal"
                   variant="outlined"
                   error={!!errors?.category}

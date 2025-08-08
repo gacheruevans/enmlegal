@@ -1,23 +1,22 @@
-import { useOne, useShow, useTranslate } from "@refinedev/core";
-
-import Skeleton from "@mui/material/Skeleton";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
+import { useOne, useShow, useTranslate } from "@refinedev/core"
+import Skeleton from "@mui/material/Skeleton"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
 
 import {
   NumberField,
   Show,
   TextFieldComponent as TextField,
-} from "@refinedev/mui";
-import type { Product } from "./types";
+} from "@refinedev/mui"
+import type { Article } from "./types"
 
-export const ProductShow: React.FC = () => {
+export const PostShow: React.FC = () => {
   const translate = useTranslate();
   const {
-    query: { data: productResult, isLoading },
-  } = useShow<Product>();
+    query: { data: postResult, isLoading },
+  } = useShow<Article>();
 
-  const product = productResult?.data;
+  const post = postResult?.data;
 
   const {
     data: categoryData,
@@ -25,9 +24,9 @@ export const ProductShow: React.FC = () => {
     isError: categoryError,
   } = useOne({
     resource: "categories",
-    id: product?.category?.id,
+    id: post?.category?.id,
     queryOptions: {
-      enabled: !!product?.category?.id,
+      enabled: !!post?.category?.id,
     },
   });
 
@@ -35,47 +34,39 @@ export const ProductShow: React.FC = () => {
     <Show isLoading={isLoading}>
       <Stack gap={1}>
         <Typography variant="body1" fontWeight="bold">
-          {translate("products.fields.id")}
+          {translate("posts.fields.id")}
         </Typography>
-        {product ? (
-          <NumberField value={product.id} />
+        {post ? (
+          <NumberField value={post.id} />
         ) : (
           <Skeleton height="20px" width="200px" />
         )}
         <Typography variant="body1" fontWeight="bold">
-          {translate("products.fields.name")}
+          {translate("posts.fields.name")}
         </Typography>
-        {product ? (
-          <TextField value={product.name} />
+        {post ? (
+          <TextField value={post.name} />
         ) : (
           <Skeleton height="20px" width="200px" />
         )}
         <Typography variant="body1" fontWeight="bold">
-          {translate("products.fields.description")}
+          {translate("posts.fields.description")}
         </Typography>
-        {product ? (
-          <TextField value={product.description} />
+        {post ? (
+          <TextField value={post.description} />
         ) : (
           <Skeleton height="20px" width="200px" />
         )}
         <Typography variant="body1" fontWeight="bold">
-          {translate("products.fields.price")}
+          {translate("posts.fields.price")}
         </Typography>
-        {product ? (
-          <NumberField value={product.price} />
-        ) : (
-          <Skeleton height="20px" width="200px" />
-        )}
+       
         <Typography variant="body1" fontWeight="bold">
-          {translate("products.fields.material")}
+          {translate("posts.fields.material")}
         </Typography>
-        {product ? (
-          <TextField value={product.material} />
-        ) : (
-          <Skeleton height="20px" width="200px" />
-        )}
+
         <Typography variant="body1" fontWeight="bold">
-          {translate("products.fields.category")}
+          {translate("posts.fields.category")}
         </Typography>
         {categoryError ? null : categoryLoading ? (
           <Skeleton height="20px" width="200px" />

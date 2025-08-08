@@ -29,10 +29,10 @@ import {
   CategoryList, 
   CategoryShow } from "./pages/categories"
 import { 
-  ProductList, 
-  ProductCreate, 
-  ProductShow, 
-  ProductEdit } from "./pages/posts"
+  PostList, 
+  PostCreate, 
+  PostShow, 
+  PostEdit } from "./pages/posts"
 
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((config) => {
@@ -58,9 +58,8 @@ function App() {
         <CssBaseline />
         <GlobalStyles styles={{ html: { WebkitFontSmoothing: "auto" } }} />
         <RefineSnackbarProvider>
-          
             <Refine
-              dataProvider={dataProvider("https://api-fake-rest.refine.dev")}
+              dataProvider={dataProvider("./db.json")}
               notificationProvider={useNotificationProvider}
               routerProvider={routerProvider}
               authProvider={authProvider}
@@ -85,27 +84,32 @@ function App() {
               ]}
             >
               <Routes>
+                 <Route
+                  index
+                  path="/"
+                  element={
+                    <Layout/>
+                  }
+                />
                 <Route
                     element={
                       <Authenticated
                         key="authenticated-inner"
                       >
                         <ThemedLayoutV2 Header={() => <Header sticky />}>
-                          <Layout />
                           <Outlet />
                         </ThemedLayoutV2>
                       </Authenticated>
                     }
                   >
                   <Route
-                    index
                     element={<NavigateToResource resource="posts" />}
                   />
-                  <Route path="/products">
-                      <Route index element={<ProductList />} />
-                      <Route path="new" element={<ProductCreate />} />
-                      <Route path=":id" element={<ProductShow />} />
-                      <Route path=":id/edit" element={<ProductEdit />} />
+                  <Route path="/posts">
+                      <Route index element={<PostList />} />
+                      <Route path="new" element={<PostCreate />} />
+                      <Route path=":id" element={<PostShow />} />
+                      <Route path=":id/edit" element={<PostEdit />} />
                     </Route>
                     <Route path="/categories">
                       <Route index element={<CategoryList />} />
@@ -115,6 +119,7 @@ function App() {
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>
+                  
                   <Route
                     element={
                       <Authenticated
@@ -132,7 +137,7 @@ function App() {
                           type="login"
                           formProps={{
                             defaultValues: {
-                              email: "demo@refine.dev",
+                              email: "eva@enmlegal.com",
                               password: "demodemo",
                             },
                           }}
