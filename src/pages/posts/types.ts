@@ -1,10 +1,6 @@
-export interface Product {
+export interface Article {
   id: string;
   name: string;
   description: string;
-  price: number;
-  material: string;
-  category?: {
-    id: string;
-  } | null;
+  category: { id: string} | null;
 }

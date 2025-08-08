@@ -95,14 +95,6 @@ export const NavBar = () => {
               </div>
           ))}
         </div>
-        <div className="flex py-6">
-          <a
-            href="/login"
-            className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-white hover:bg-gray-50"
-          >
-            Login
-          </a>
-        </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           {/* Scroll to Top Button */}
           <button

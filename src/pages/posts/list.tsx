@@ -1,25 +1,22 @@
 import { useMemo } from "react";
 
 import {
-  useGetLocale,
   useList,
   useTranslate,
-} from "@refinedev/core";
+} from "@refinedev/core"
 
-import { DataGrid, type GridColDef } from "@mui/x-data-grid";
+import { DataGrid, type GridColDef } from "@mui/x-data-grid"
 import {
   DeleteButton,
   EditButton,
   List,
-  NumberField,
   ShowButton,
   useDataGrid,
-} from "@refinedev/mui";
+} from "@refinedev/mui"
+import type { Article } from "./types"
 
-export const ProductList = () => {
-  const { dataGridProps } = useDataGrid();
-
-  const locale = useGetLocale()();
+export const PostList = () => {
+  const { dataGridProps } = useDataGrid<Article>();
 
   const translate = useTranslate();
 
@@ -30,21 +27,21 @@ export const ProductList = () => {
     },
   });
 
-  const columns = useMemo<GridColDef[]>(
+  const columns = useMemo<GridColDef<Article>[]>(
     () => [
       {
         field: "name",
         flex: 1,
-        headerName: translate("products.fields.name"),
+        headerName: translate("posts.fields.name"),
         minWidth: 300,
       },
       {
         field: "category",
         flex: 1,
-        headerName: translate("products.fields.category"),
+        headerName: translate("posts.fields.category"),
         minWidth: 200,
-        valueGetter: ({ row }) => {
-          const value = row?.category;
+        valueGetter: ({ row }: { row: Article }) => {
+          const value = row.category;
           return value;
         },
         display: "flex",
@@ -58,28 +55,11 @@ export const ProductList = () => {
         },
       },
       {
-        field: "price",
-        flex: 1,
-        headerName: translate("products.fields.price"),
-        minWidth: 100,
-        maxWidth: 150,
-        display: "flex",
-        renderCell: ({ value }) => {
-          return (
-            <NumberField
-              value={value}
-              locale={locale}
-              options={{ style: "currency", currency: "USD" }}
-            />
-          );
-        },
-      },
-      {
         field: "actions",
         headerName: translate("table.actions"),
         sortable: false,
         display: "flex",
-        renderCell: function render({ row }) {
+        renderCell: function render({ row }: { row: Article }) {
           return (
             <>
               <ShowButton hideText recordItemId={row.id} />
@@ -93,12 +73,16 @@ export const ProductList = () => {
         minWidth: 80,
       },
     ],
-    [categoryLoading, categoryData, locale, translate],
+    [categoryLoading, categoryData, translate],
   );
 
   return (
     <List>
-      <DataGrid {...dataGridProps} columns={columns} />
+      <DataGrid
+        {...dataGridProps}
+        columns={columns}
+        getRowId={(row: Article) => row.id}
+      />
     </List>
   );
 };
