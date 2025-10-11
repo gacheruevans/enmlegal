@@ -1,14 +1,14 @@
 'use client'
-import React, { useState } from "react";
-import  { NavBar }  from '../../components/navbar'
-import { motion } from 'motion/react'
+import { motion } from 'motion/react';
+import { useState } from "react";
 import ConsultationModal from "../../components/consultationmodal";
+import { NavBar } from '../../components/navbar';
 
 const Hero = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div id="home" className="relative py-24 overflow-hidden border-b isolate sm:py-32 bg-slate-900 border-b-royal">
+  <div id="home" className="relative py-24 overflow-hidden border-b isolate sm:py-32 bg-slate-900 border-b-royal">
       <img
         alt=""
         src="https://github.com/gacheruevans/enmlegal/blob/main/dist/office-lobby.jpg?raw=true"

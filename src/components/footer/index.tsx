@@ -1,4 +1,3 @@
-import React from 'react'
 
 const Footer = () => {
   return (
@@ -9,6 +8,7 @@ const Footer = () => {
                 <p className="py-1 text-sm text-gray-300 font-weight-100">Block B, 3rd Floor, Suite 3.2</p>
                 <p className="py-1 text-sm text-gray-300 font-weight-100">KMA Center, Chyulu Road</p>
                 <p className="py-1 text-sm text-gray-300 font-weight-100">Upper Hill, Nairobi</p>
+                <p className="py-1 text-sm text-gray-300 font-weight-100">P.O. Box 40964-00100,</p>
                 <p className="py-1 text-sm text-gray-300 font-weight-100">Phone: +254 701-857-030</p>
                 <p className="py-1 text-sm text-gray-300 font-weight-100">Email: info@enmlegal.com</p>
             </div>
