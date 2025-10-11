@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Hero, About, Services, Blog } from "../../pages";
+import React, { useEffect, useState } from "react";
 import Footer from "../../components/footer";
+import { About, Blog, Hero, Services } from "../../pages";
 import ScrollToTopButton from "../scrolltotop";
-import ChatBot from "../chat";
 
 
 export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -71,7 +70,7 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
         <Footer />
         <div>{children}</div>
         <ScrollToTopButton show={showScrollTop} onClick={handleScrollToTop} />
-        <ChatBot />
+        {/* <ChatBot /> */}
       </div>
     </div>
   );
