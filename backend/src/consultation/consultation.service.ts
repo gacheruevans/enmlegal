@@ -1,5 +1,11 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { google } from 'googleapis';
+import { JWT } from 'google-auth-library';
 import nodemailer from 'nodemailer';
 import { v4 as uuid } from 'uuid';
 import { BookConsultationDto } from './consultation.dto';
@@ -16,8 +22,8 @@ interface CreateConsultationResult {
 export class ConsultationService {
   private readonly logger = new Logger(ConsultationService.name);
   private calendar = google.calendar('v3');
-  private authClient; // JWT auth client
-  private transporter; // nodemailer transporter
+  private authClient: JWT | null = null; // JWT auth client
+  private transporter: nodemailer.Transporter | null = null; // nodemailer transporter
 
   constructor() {
     // Initialize Google auth (service account)
@@ -28,9 +34,11 @@ export class ConsultationService {
       privateKey = privateKey.replace(/\\n/g, '\n');
     }
     if (!clientEmail || !privateKey) {
-      this.logger.warn('Google service account credentials missing; calendar creation will fail.');
+      this.logger.warn(
+        'Google service account credentials missing; calendar creation will fail.',
+      );
     }
-    this.authClient = new google.auth.JWT({
+    this.authClient = new JWT({
       email: clientEmail,
       key: privateKey,
       scopes: ['https://www.googleapis.com/auth/calendar'],
@@ -38,11 +46,15 @@ export class ConsultationService {
 
     // Initialize nodemailer
     const host = process.env.SMTP_HOST;
-    const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
+    const port = process.env.SMTP_PORT
+      ? parseInt(process.env.SMTP_PORT, 10)
+      : 587;
     const user = process.env.SMTP_USER;
     const pass = process.env.SMTP_PASS;
     if (!host || !user || !pass) {
-      this.logger.warn('SMTP configuration incomplete; email sending will fail.');
+      this.logger.warn(
+        'SMTP configuration incomplete; email sending will fail.',
+      );
     }
     this.transporter = nodemailer.createTransport({
       host,
@@ -56,7 +68,9 @@ export class ConsultationService {
     const calendarId = process.env.CALENDAR_ID || 'primary';
 
     const startIso = dto.start;
-    const endIso = dto.end || new Date(new Date(startIso).getTime() + 30 * 60000).toISOString();
+    const endIso =
+      dto.end ||
+      new Date(new Date(startIso).getTime() + 30 * 60000).toISOString();
 
     const summary = `Consultation with ${dto.applicantName || dto.applicantEmail}`;
     const description = `Automated booking for ${dto.applicantEmail}${dto.applicantName ? ` (Name: ${dto.applicantName})` : ''}`;
@@ -66,50 +80,62 @@ export class ConsultationService {
     let meetLink: string | undefined;
 
     try {
-      const insertRes = await this.calendar.events.insert({
-        auth: this.authClient,
+      const { data: event } = await this.calendar.events.insert({
         calendarId,
         requestBody: {
-          id: eventId.replace(/-/g, ''), // Calendar event IDs must be 5-1024 chars; UUID w/o dashes fine
+          id: eventId.replace(/-/g, ''),
           summary,
           description,
           start: { dateTime: startIso },
           end: { dateTime: endIso },
-          attendees: [
-            { email: dto.applicantEmail },
-          ],
+          attendees: [{ email: dto.applicantEmail }],
           conferenceData: {
             createRequest: {
               requestId: uuid(),
-              conferenceSolutionKey: { type: 'hangoutsMeet' },
+              conferenceSolutionKey: {
+                type: 'hangoutsMeet',
+              },
             },
           },
         },
         conferenceDataVersion: 1,
       });
-      const event = insertRes.data;
-      eventId = event.id || eventId;
-      htmlLink = event.htmlLink;
-      meetLink = event.conferenceData?.entryPoints?.find(p => p.entryPointType === 'video')?.uri;
-    } catch (err) {
-      this.logger.error('Failed to create calendar event', err as any);
+
+      eventId = event.id ?? eventId;
+      htmlLink = event.htmlLink ?? undefined;
+
+      // .uri can be null, normalize to string | undefined
+      meetLink =
+        event.conferenceData?.entryPoints?.find(
+          ({ entryPointType }) => entryPointType === 'video',
+        )?.uri ?? undefined;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.logger.error('Failed to create calendar event', message);
       throw new InternalServerErrorException('Failed to create calendar event');
     }
 
     // Send email notification
     try {
-      const from = process.env.FROM_EMAIL || `no-reply@${new URL(process.env.APP_BASE_URL || 'http://localhost').hostname}`;
-      const mailText = `Your consultation has been booked.\n\nStart: ${startIso}\nEnd: ${endIso}\n${meetLink ? `Google Meet: ${meetLink}\n` : ''}If you need to reschedule reply to this email.`;
-      const mailHtml = `<p>Your consultation has been booked.</p><p><strong>Start:</strong> ${startIso}<br/><strong>End:</strong> ${endIso}</p>${meetLink ? `<p><strong>Google Meet:</strong> <a href="${meetLink}">${meetLink}</a></p>` : ''}<p>If you need to reschedule reply to this email.</p>`;
-      await this.transporter.sendMail({
-        to: dto.applicantEmail,
-        from,
-        subject: summary,
-        text: mailText,
-        html: mailHtml,
-      });
-    } catch (err) {
-      this.logger.error('Failed to send email', err as any);
+      if (!this.transporter) {
+        this.logger.warn('No SMTP transporter configured; skipping email.');
+      } else {
+        const from =
+          process.env.FROM_EMAIL ||
+          `no-reply@${new URL(process.env.APP_BASE_URL || 'http://localhost').hostname}`;
+        const mailText = `Your consultation has been booked.\n\nStart: ${startIso}\nEnd: ${endIso}\n${meetLink ? `Google Meet: ${meetLink}\n` : ''}If you need to reschedule reply to this email.`;
+        const mailHtml = `<p>Your consultation has been booked.</p><p><strong>Start:</strong> ${startIso}<br/><strong>End:</strong> ${endIso}</p>${meetLink ? `<p><strong>Google Meet:</strong> <a href="${meetLink}">${meetLink}</a></p>` : ''}<p>If you need to reschedule reply to this email.</p>`;
+        await this.transporter.sendMail({
+          to: dto.applicantEmail,
+          from,
+          subject: summary,
+          text: mailText,
+          html: mailHtml,
+        });
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.logger.error('Failed to send email', message);
       // Do not fail entire booking if email fails; return event info
     }
 

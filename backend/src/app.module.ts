@@ -3,12 +3,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConsultationController } from './consultation/consultation.controller';
 import { ConsultationService } from './consultation/consultation.service';
-import { ChatController } from './gpt/chat.controller';
-import { GptService } from './gpt/gpt.service';
+import { AuthModule } from './auth/auth.module';
+import { CategoriesModule } from './categories/categories.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController, ChatController, ConsultationController],
-  providers: [AppService, GptService, ConsultationService],
+  imports: [AuthModule, CategoriesModule, PostsModule],
+  controllers: [AppController, ConsultationController],
+  providers: [AppService, ConsultationService],
 })
 export class AppModule {}

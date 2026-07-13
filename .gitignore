@@ -38,3 +38,4 @@ _.sln
 .env.test.local
 .env.production.local
 .env.local
+.env.vault

@@ -9,12 +9,15 @@ export class ConsultationController {
   constructor(private readonly consultationService: ConsultationService) {}
 
   @Post('book')
-  async book(@Body() body: any) {
+  async book(@Body() body: any): Promise<any> {
     // Manual validation (alternatively use ValidationPipe globally)
     const dto = plainToInstance(BookConsultationDto, body);
     const errors = await validate(dto);
     if (errors.length) {
-      return { message: 'Validation failed', errors: errors.map(e => e.toString()) };
+      return {
+        message: 'Validation failed',
+        errors: errors.map((e) => e.toString()),
+      };
     }
     const result = await this.consultationService.book(dto);
     return result;
