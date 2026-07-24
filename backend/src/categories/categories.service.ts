@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -22,7 +26,10 @@ export class CategoriesService {
   }
 
   async create(data: { title: string }) {
-    const slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    const slug = data.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
     try {
       return await this.prisma.category.create({
         data: {
@@ -31,7 +38,9 @@ export class CategoriesService {
         },
       });
     } catch {
-      throw new ConflictException(`Category with title "${data.title}" already exists`);
+      throw new ConflictException(
+        `Category with title "${data.title}" already exists`,
+      );
     }
   }
 
@@ -40,7 +49,10 @@ export class CategoriesService {
     const updateData: any = {};
     if (data.title) {
       updateData.title = data.title;
-      updateData.slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      updateData.slug = data.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
     }
 
     try {
