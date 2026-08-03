@@ -9,8 +9,9 @@ const About = () => {
           {/* Mobile: text over background image */}
           <div className="block lg:hidden relative h-[500px] rounded-md overflow-hidden">
             <img
-              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/books-background2.jpg?raw=true"
-              alt="Founder Eva Nduta Munene"
+              src=
+              {`https://github.com/gacheruevans/enmlegal/blob/main/dist/books-background2.jpg?raw=true`}
+              alt="Books.jpg"
               className="absolute inset-0 object-cover object-center w-full h-full brightness-75"
             />
             <motion.div
@@ -48,13 +49,13 @@ const About = () => {
                 Who we are
               </p>
               <p className="mb-4 text-lg text-primary">
-                <span className="font-bold text-slate-800 font-mea-culpa text-3xl">E. Nduta Munene &amp; Company Advocates</span> is a boutique law firm specializing in delivering tailored
+                <span className="text-3xl font-bold text-slate-800 font-mea-culpa">E. Nduta Munene &amp; Company Advocates</span> is a boutique law firm specializing in delivering tailored
                 legal solutions with a personal touch. Our team of dedicated legal consultants brings extensive
                 experience and a deep understanding of various practice areas, ensuring our clients receive expert
                 guidance and representation.
               </p>
               <p className="mb-4 text-lg text-primary">
-                Led by <span className="font-bold text-slate-800 font-mea-culpa text-3xl">Eva Nduta Munene</span>, an accomplished Advocate of the High Court of Kenya with over 14
+                Led by <span className="text-3xl font-bold text-slate-800 font-mea-culpa">Eva Nduta Munene</span>, an accomplished Advocate of the High Court of Kenya with over 14
                 years of dedicated legal practice, the firm is committed to providing personalized, reliable, and
                 strategic legal solutions to individuals, businesses, and institutions across Kenya and beyond.
               </p>
@@ -72,14 +73,14 @@ const About = () => {
               className="grid grid-cols-2 grid-rows-2 gap-4 h-[420px] w-full"
             >
               <img
-                src="https://github.com/gacheruevans/enmlegal/blob/main/dist/books-background2.jpg?raw=true"
-                alt="Founder Eva Nduta Munene"
+                src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/books-background2.jpg?raw=true`}
+                alt="Books"
                 className="object-cover w-full h-full col-span-2 row-span-2 rounded-md bg-secondary blur-0"
               />
               <img
-                src="https://github.com/gacheruevans/enmlegal/blob/main/dist/profile2.png?raw=true"
-                alt="Founder Eva Nduta Munene"
-                className="absolute object-cover w-64 h-68 -translate-x-1/2 -translate-y-1/2 border-4 border-white rounded-md shadow-lg top-1/2 left-2/3 bg-slate-900"
+                src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/profile2.png?raw=true`}
+                alt="Profile"
+                className="absolute object-cover w-64 -translate-x-1/2 -translate-y-1/2 border-4 border-white rounded-md shadow-lg h-68 top-1/2 left-2/3 bg-slate-900"
                 style={{ zIndex: 2 }}
               />
             </motion.div>
@@ -93,8 +94,8 @@ const About = () => {
           {/* Mobile: image with overlayed text */}
           <div className="relative block w-full overflow-hidden rounded-md h-80 lg:hidden">
             <img
-              alt="mission"
-              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/services.jpg?raw=true"
+              alt="Services"
+              src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/services.jpg?raw=true`}
               className="absolute inset-0 object-cover object-center w-full h-full brightness-75"
             />
             <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-4 py-8 bg-black/40">
@@ -110,8 +111,8 @@ const About = () => {
           
           {/* Desktop: image left, text right */}
           <img
-            alt="mission"
-            src="https://github.com/gacheruevans/enmlegal/blob/main/dist/services.jpg?raw=true"
+            alt="Services"
+            src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/services.jpg?raw=true`}
             className="hidden object-cover w-full rounded-md lg:block h-96"
           />
           <div className="hidden pl-8 lg:block">
@@ -131,8 +132,8 @@ const About = () => {
           {/* Mobile: image with overlayed text */}
           <div className="relative block w-full mb-12 overflow-hidden rounded-md h-80 lg:hidden">
             <img
-              alt="vision"
-              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/innovation.jpg?raw=true"
+              alt="Innovation"
+              src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/innovation.jpg?raw=true`}
               className="absolute inset-0 object-cover object-center w-full h-full brightness-75"
             />
             <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-4 py-8 bg-black/40">
@@ -153,8 +154,8 @@ const About = () => {
             </p>
           </div>
           <img
-            alt="vision"
-            src="https://github.com/gacheruevans/enmlegal/blob/main/dist/innovation.jpg?raw=true"
+            alt="Innovation"
+            src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/innovation.jpg?raw=true`}
             className="hidden object-cover w-full rounded-md lg:block h-96"
           />
         </div>

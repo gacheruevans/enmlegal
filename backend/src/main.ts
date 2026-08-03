@@ -20,8 +20,8 @@ function configureSwagger(app: NestExpressApplication) {
   }
 
   const config = new DocumentBuilder()
-    .setTitle('ENM Legal API')
-    .setDescription('API documentation for ENM Legal')
+    .setTitle('ENM LEGAL API')
+    .setDescription('API documentation for ENM LEGAL')
     .setVersion('1.0')
     .build();
 

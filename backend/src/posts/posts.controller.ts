@@ -17,7 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { PostsService } from './posts.service';
-import { JwtAuthGuard } from '../auth/jwt.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 const storage = diskStorage({
   destination: './uploads',
@@ -45,7 +45,7 @@ export class PostsController {
     return this.postsService.findAll({
       authorId,
       categoryId,
-      status: status === 'ALL' ? undefined : (status || 'PUBLISHED'),
+      status: status === 'ALL' ? undefined : status || 'PUBLISHED',
       search,
       year,
       month,
@@ -115,7 +115,10 @@ export class PostsController {
       limits: { fileSize: 5 * 1024 * 1024 },
       fileFilter: (req, file, cb) => {
         if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
-          return cb(new BadRequestException('Only image files are allowed!'), false);
+          return cb(
+            new BadRequestException('Only image files are allowed!'),
+            false,
+          );
         }
         cb(null, true);
       },

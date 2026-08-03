@@ -110,31 +110,31 @@ export const BlogPostList = () => {
   const pageCount = getPageCount();
 
   return (
-    <div className="bg-white shadow rounded-lg border border-gray-200">
+    <div className="bg-white border border-gray-200 rounded-lg shadow">
       {/* Title Header */}
-      <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Blog Posts</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage articles, edit drafts and upload images.</p>
+          <p className="mt-1 text-sm text-gray-500">Manage articles, edit drafts and upload images.</p>
         </div>
         <button
           onClick={() => create("blog_posts")}
-          className="px-4 py-2 text-sm font-semibold text-white bg-royal rounded-lg hover:bg-royal/90 shadow transition cursor-pointer"
+          className="px-4 py-2 text-sm font-semibold text-white transition rounded-lg shadow cursor-pointer bg-royal hover:bg-royal/90"
         >
           Create Post
         </button>
       </div>
 
       {/* Table Container */}
-      <div className="overflow-x-auto w-full">
-        <table className="min-w-full divide-y divide-gray-200 text-left text-sm">
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-full text-sm text-left divide-y divide-gray-200">
           <thead className="bg-gray-50">
             {getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-6 py-3 font-semibold text-gray-700 uppercase tracking-wider text-xs"
+                    className="px-6 py-3 text-xs font-semibold tracking-wider text-gray-700 uppercase"
                   >
                     {!header.isPlaceholder &&
                       flexRender(
@@ -146,9 +146,9 @@ export const BlogPostList = () => {
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
+          <tbody className="bg-white divide-y divide-gray-200">
             {getRowModel().rows.map((row) => (
-              <tr key={row.id} className="hover:bg-slate-50/80 transition">
+              <tr key={row.id} className="transition hover:bg-slate-50/80">
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-6 py-4 align-middle">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -158,7 +158,7 @@ export const BlogPostList = () => {
             ))}
             {getRowModel().rows.length === 0 && (
               <tr>
-                <td colSpan={columns.length} className="text-center py-12 text-gray-400">
+                <td colSpan={columns.length} className="py-12 text-center text-gray-400">
                   No blog posts found. Create your first post!
                 </td>
               </tr>
@@ -168,7 +168,7 @@ export const BlogPostList = () => {
       </div>
 
       {/* Pagination Footer */}
-      <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-gray-50 rounded-b-lg">
+      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 rounded-b-lg bg-gray-50">
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setPageIndex(0)}

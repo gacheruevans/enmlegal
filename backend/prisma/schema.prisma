@@ -9,12 +9,26 @@ datasource db {
   provider = "sqlite"
 }
 
+// ─────────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────────
+
+enum Role {
+  AUTHOR
+  ADMIN
+  SUPERADMIN
+  ASSISTANT
+}
+
 model User {
   id        String   @id @default(uuid())
-  email     String   @unique
   name      String
-  role      String   @default("Author")
+  email     String   @unique
+  phone     String?
+  role      Role     @default(ADMIN)
   imageUrl  String?
+  password  String
+  isActive  Boolean  @default(true)
   posts     Post[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -30,22 +44,22 @@ model Category {
 }
 
 model Post {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   title       String
-  slug        String   @unique
+  slug        String  @unique
   description String
   content     String
   imageUrl    String?
-  status      String   @default("DRAFT") // DRAFT, PUBLISHED
+  status      String  @default("DRAFT") // DRAFT, PUBLISHED
   date        String
   datetime    String
-  
-  // Relations
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  // Relations
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

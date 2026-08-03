@@ -10,8 +10,8 @@ const Hero = () => {
   return (
   <div id="home" className="relative py-24 overflow-hidden border-b isolate sm:py-32 bg-slate-900 border-b-royal">
       <img
-        alt=""
-        src="https://github.com/gacheruevans/enmlegal/blob/main/dist/office-lobby.jpg?raw=true"
+        alt="Office lobby"
+        src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/office-lobby.jpg?raw=true`}
         className="absolute inset-0 object-cover object-right opacity-40 -z-10 size-full md:object-center saturation-200"
       />
       <NavBar />

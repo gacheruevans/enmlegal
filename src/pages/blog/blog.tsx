@@ -5,7 +5,7 @@ const posts = [
     {
       id: 1,
       title: 'Probate Administration: Navigating the Legal Landscape',
-      href: '#',
+      href: '/view',
       description:
         "Navigating the probate process can be emotionally and legally complex, especially after the loss of a loved one. In this article, we break down the key stages of probate administration in Kenya, including obtaining a grant of probate or letters of administration, handling estate assets, settling debts, and distributing inheritance. Whether you're an executor, administrator, or beneficiary, this guide will help you understand your rights, responsibilities, and the legal framework involved. Learn how to avoid common pitfalls and ensure a smooth, compliant administration of the deceased’s estate.",
       date: 'Mar 16, 2025',
@@ -22,7 +22,7 @@ const posts = [
     {
       id: 2,
       title: 'Real Estate & Conveyancing: A Comprehensive Guide',
-      href: '#',
+      href: '/view',
       description:
         "Buying, selling, or transferring property in Kenya involves intricate legal steps that must be followed to protect your rights. This article demystifies the conveyancing process—covering land searches, sale agreements, title transfers, and registration procedures. Whether you're a first-time buyer or seasoned investor, you'll gain clarity on the legal safeguards and due diligence needed in every transaction.",
       date: 'Apr 16, 2025',
@@ -39,7 +39,7 @@ const posts = [
     {
       id: 3,
       title: 'Banking Securities: An Introduction to Banking Securities & Collateral Law in Kenya',
-      href: '#',
+      href: '/view',
       description:
         "Securing loans with collateral involves detailed legal procedures that protect both lenders and borrowers. This article explores the legal framework around charges, mortgages, debentures, and asset securitization in Kenya. Whether you're a financier or business owner, get a clear understanding of your legal obligations and rights under secured lending agreements.",
       date: 'Jun 16, 2025',
@@ -56,7 +56,7 @@ const posts = [
     {
       id: 4,
       title: 'Dispute Resolution: Effective Strategies for Resolving Legal Conflicts',
-      href: '#',
+      href: '/view',
       description:
         "Disputes are inevitable—but how you resolve them makes all the difference. This article compares mediation, arbitration, and litigation in Kenya, offering guidance on the most efficient and cost-effective approach for different legal scenarios. Learn how to resolve disputes while preserving relationships and minimizing disruptions.",
       date: 'Apr 16, 2024',
@@ -73,7 +73,7 @@ const posts = [
     {
       id: 5,
       title: 'Startups & SMEs: Legal Essentials for Entrepreneurs',
-      href: '#',
+      href: '/view',
       description:
         "From registration to funding to IP protection, startups face unique legal challenges. This article outlines the core legal steps for launching and scaling a business in Kenya—covering company formation, contracts, compliance, and investor readiness. Empower your venture with the legal tools for sustainable growth.",
       date: 'May 16, 2024',
@@ -90,7 +90,7 @@ const posts = [
     {
       id: 6,
       title: 'Legal Audit & Compliance: Ensuring Your Business Meets Regulatory Standards',
-      href: '#',
+      href: '/view',
       description:
         "A legal audit isn’t just about checking boxes—it’s about protecting your organization. This article explains how legal audits identify regulatory gaps, strengthen internal controls, and prevent costly penalties. Ideal for growing enterprises, NGOs, and corporates seeking to stay ahead of compliance risks in Kenya’s evolving legal landscape.",
       date: 'Jun 16, 2024',
@@ -186,7 +186,7 @@ const posts = [
                   <p className="mt-5 text-gray-600 line-clamp-3 text-sm/6">{post.description}</p>
                 </div>
                 <div className="relative flex items-center mt-8 gap-x-4">
-                  <img alt="" src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/${post.author.imageUrl}?raw=true`} className="rounded-full size-10 bg-gray-50" />
+                  <img alt="" src={post.author.imageUrl ? post.author.imageUrl :`https://github.com/gacheruevans/enmlegal/blob/main/dist/${post.author.imageUrl}?raw=true`} className="rounded-full size-10 bg-gray-50" />
                   <div className="text-sm/6">
                     <p className="font-semibold text-light">
                       <a href={post.author.href}>

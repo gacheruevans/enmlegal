@@ -5,7 +5,8 @@ import "./App.css";
 
 import { Layout } from "./components/layout";
 import { AdminLayout } from "./components/admin-layout";
-import { Login } from "./pages/login";
+import { Login } from "./pages/login/login";
+import { ViewPost } from "./pages/blog/view";
 import { dataProvider } from "./providers/dataProvider";
 import { authProvider } from "./providers/authProvider";
 import { BlogPostList, BlogPostCreate, BlogPostEdit, BlogPostShow } from "./pages/blog-posts";
@@ -45,7 +46,7 @@ function App() {
         <Routes>
           {/* Public Landing Page */}
           <Route path="/" element={<Layout />} />
-
+          <Route path="/view" element={<ViewPost />} />
           {/* Login Page */}
           <Route path="/login" element={<Login />} />
 

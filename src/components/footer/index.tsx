@@ -40,7 +40,7 @@ const Footer = () => {
         </div>
         <div className="div"></div>
         <div className="pt-6 mt-6 text-center text-gray-300 border-t border-gray-800">
-            <p> © 2025 CREATIVEZINK. All rights reserved. </p>
+            <p> © 2026 Powered by PENTACLOVER Ltd. All rights reserved. </p>
         </div>
         <div>
             <h2 className="mb-4 text-lg font-weight-300"> Follow Us</h2>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 
 const navigation = [
-  { name: 'home', href: '/#home' },
+  { name: 'home', href: '/' },
   { name: 'about', href: '/about' },
   { name: 'practice Areas', href: '/practice-areas' },
   { name: 'blog', href: '/blog' },
@@ -86,18 +86,16 @@ export const NavBar = () => {
     }
   };
   
-  // Removed duplicate scroll-to-top logic (centralized in Layout)
-
   return (
     <header className="absolute inset-x-0 top-0 z-50">
       <nav aria-label="Global" className="flex items-center justify-between p-4 lg:px-8">
         <div className="flex lg:flex-1">
           <a href="/" className="-m-1.5 p-1.5">
-            <span className="sr-only">ENM Legal</span>
+            <span className="sr-only">ENM LEGAL</span>
             <img
-              alt="Company logo"
-              src="https://github.com/gacheruevans/enmlegal/blob/main/dist/logo_white_text.png?raw=true"
-              className="w-auto h-10 md:h-14 lg:h-16 transition-all duration-300"
+              alt="./logo_white_text.png"
+              src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/logo_white_text.png?raw=true`}
+              className="w-auto h-10 transition-all duration-300 md:h-14 lg:h-16"
             />
           </a>
         </div>

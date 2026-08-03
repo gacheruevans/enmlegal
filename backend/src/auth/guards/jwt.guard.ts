@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
@@ -13,7 +18,7 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException('Access token missing');
     }
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload: [] = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET || 'enmlegal-blog-jwt-secret-key-2026!',
       });
       request['user'] = payload;
