@@ -96,7 +96,7 @@ export const Login = () => {
                         </form>
 
                         <div className="mt-8 text-center">
-                            <p className="font-sans text-xs font-medium tracking-tighter text-slate-400">Developed by <span className="font-bold text-green-700 uppercase">Powered by Pentaclover LTD </span> all rights reserved @2026</p>
+                            <p className="font-sans text-xs font-medium tracking-tighter text-slate-400">Developed & <span className="font-bold text-green-700 uppercase">Powered by Pentaclover LTD </span> all rights reserved @2026</p>
                         </div>
                     </div>
                     <div className="absolute w-32 h-32 translate-x-16 -translate-y-16 rounded-full opacity-50 -bottom-32 -left-24 bg-royal"></div>

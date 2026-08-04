@@ -1,9 +1,14 @@
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seeding database...');
+
+  const superAdminPassword = await bcrypt.hash('@1234Eii!', 10);
+  const adminPassword = await bcrypt.hash('Admin@1234!', 10);
+  const authorPassword = await bcrypt.hash('Password@123!', 10);
 
   // 1. Create Author / User
   const author = await prisma.user.upsert({
@@ -14,9 +19,46 @@ async function main() {
       name: 'Advocate Eva Nduta Munene',
       role: 'ADMIN',
       imageUrl: 'profile.png',
+      password: authorPassword,
     },
   });
   console.log(`Upserted default author: ${author.name}`);
+
+  const superAdmin = await prisma.user.upsert({
+    where: { email: 'admin@pentaclover.co.ke' },
+    update: {
+      name: 'Super Admin',
+      role: 'SUPERADMIN',
+      password: superAdminPassword,
+      isActive: true,
+    },
+    create: {
+      email: 'admin@pentaclover.co.ke',
+      name: 'Super Admin',
+      role: 'SUPERADMIN',
+      password: superAdminPassword,
+      isActive: true,
+    },
+  });
+  console.log(`Upserted super admin: ${superAdmin.email}`);
+
+  const admin = await prisma.user.upsert({
+    where: { email: 'editor@pentaclover.co.ke' },
+    update: {
+      name: 'Admin User',
+      role: 'ADMIN',
+      password: adminPassword,
+      isActive: true,
+    },
+    create: {
+      email: 'editor@pentaclover.co.ke',
+      name: 'Admin User',
+      role: 'ADMIN',
+      password: adminPassword,
+      isActive: true,
+    },
+  });
+  console.log(`Upserted admin: ${admin.email}`);
 
   // 2. Create Categories
   const categoriesData = [
