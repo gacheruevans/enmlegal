@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { JwtModule, JwtModuleOptions, JwtSignOptions } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PrismaService } from '../prisma/prisma.service';
@@ -20,11 +20,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         if (!secret) {
           throw new Error('JWT_SECRET environment variable is required');
         }
-        const expiresIn: string | number =
-          config.get<string>('JWT_EXPIRES_IN') || '7d';
+        const expiresInValue = config.get<string>('JWT_EXPIRES_IN') || '7d';
+        const signOptions: JwtSignOptions = {
+          expiresIn: expiresInValue as JwtSignOptions['expiresIn'],
+        };
         return {
           secret,
-          signOptions: { expiresIn },
+          signOptions,
         };
       },
     }),
