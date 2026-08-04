@@ -1,8 +1,8 @@
 {
   "name": "backend",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Blog backend for ENM Legal",
+  "author": "Evans Gacheru Munene",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

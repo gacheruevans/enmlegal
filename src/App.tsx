@@ -13,6 +13,8 @@ import { BlogPostList, BlogPostCreate, BlogPostEdit, BlogPostShow } from "./page
 import { CategoryList } from "./pages/categories/list";
 
 function App() {
+  const isAuthenticated = typeof window !== "undefined" && Boolean(localStorage.getItem("token"));
+
   return (
     <BrowserRouter>
       <Refine
@@ -47,11 +49,16 @@ function App() {
           {/* Public Landing Page */}
           <Route path="/" element={<Layout />} />
           <Route path="/view" element={<ViewPost />} />
+          <Route path="/view/:id" element={<ViewPost />} />
+          <Route path="/blog/:id" element={<ViewPost />} />
           {/* Login Page */}
           <Route path="/login" element={<Login />} />
 
           {/* Admin Panel (Protected) */}
-          <Route path="/admin" element={<AdminLayout />}>
+          <Route
+            path="/admin"
+            element={isAuthenticated ? <AdminLayout /> : <Navigate to="/login" replace />}
+          >
             <Route index element={<Navigate to="/admin/blog-posts" replace />} />
             <Route path="blog-posts" element={<BlogPostList />} />
             <Route path="blog-posts/create" element={<BlogPostCreate />} />
