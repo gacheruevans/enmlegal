@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import api from '../../lib/api';
 
 type BlogPostSummary = {
@@ -125,16 +125,22 @@ const Blog = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [posts, setPosts] = useState<BlogPostSummary[]>(examplePosts);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 6;
 
   useEffect(() => {
     let isMounted = true;
 
     const loadPosts = async () => {
+      setIsLoading(true);
+
       try {
         const { data } = await api.get('/posts', {
           params: {
             status: 'PUBLISHED',
-            limit: 6,
+            page: currentPage,
+            limit: pageSize,
           },
         });
 
@@ -167,10 +173,12 @@ const Blog = () => {
             }))
           : [];
 
-        setPosts([...examplePosts, ...dbPosts].slice(0, 8));
+        setPosts(dbPosts.length > 0 ? dbPosts : currentPage === 1 ? examplePosts : []);
+        setTotalPages(data?.totalPages || 1);
       } catch (error) {
         if (isMounted) {
-          setPosts(examplePosts);
+          setPosts(currentPage === 1 ? examplePosts : []);
+          setTotalPages(1);
         }
       } finally {
         if (isMounted) {
@@ -184,9 +192,7 @@ const Blog = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
-
-  const postsToRender = useMemo(() => posts, [posts]);
+  }, [currentPage]);
 
   return (
     <div id="blog" className="z-10 py-24 bg-white bg sm:py-32">
@@ -197,7 +203,7 @@ const Blog = () => {
         </div>
 
         {isLoading ? (
-          <div className="pt-10 mt-10 border-t border-gray-400 text-sm text-gray-500">
+          <div className="pt-10 mt-10 text-sm text-gray-500 border-t border-gray-400">
             Loading posts...
           </div>
         ) : null}
@@ -208,7 +214,7 @@ const Blog = () => {
             className="flex gap-6 px-8 py-2 overflow-x-auto snap-x snap-mandatory scroll-smooth"
             style={{ scrollPaddingLeft: 16, scrollPaddingRight: 16 }}
           >
-            {postsToRender.map((post) => (
+            {posts.map((post) => (
               <article key={post.id} className="flex flex-col items-start justify-between max-w-xs min-w-[320px] flex-shrink-0 snap-center bg-white rounded-lg shadow p-4">
                 <div className="flex items-center text-xs gap-x-4">
                   <time dateTime={post.datetime} className="text-gray-500">
@@ -252,7 +258,7 @@ const Blog = () => {
         </div>
 
         <div className="hidden max-w-2xl grid-cols-1 pt-10 mx-auto mt-10 border-t border-gray-400 lg:grid gap-x-8 gap-y-16 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-          {postsToRender.map((post) => (
+          {posts.map((post) => (
             <article key={post.id} className="flex flex-col items-start justify-between max-w-xl">
               <div className="flex items-center text-xs gap-x-4">
                 <time dateTime={post.datetime} className="text-gray-500">
@@ -293,6 +299,30 @@ const Blog = () => {
             </article>
           ))}
         </div>
+
+        {totalPages > 1 ? (
+          <div className="flex items-center justify-center gap-3 mt-10 text-sm text-gray-600">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={currentPage === 1 || isLoading}
+              className="px-4 py-2 transition border border-gray-300 rounded-full hover:border-greenroyal hover:text-greenroyal disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="font-medium text-secondary">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={currentPage >= totalPages || isLoading}
+              className="px-4 py-2 transition border border-gray-300 rounded-full hover:border-greenroyal hover:text-greenroyal disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );
