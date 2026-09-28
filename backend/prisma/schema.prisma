@@ -53,6 +53,8 @@ model Post {
   status      String  @default("DRAFT") // DRAFT, PUBLISHED
   date        String
   datetime    String
+  likes       Int      @default(0)
+  views       Int      @default(0)
 
   // Relations
   categoryId String

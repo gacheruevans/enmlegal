@@ -1,7 +1,11 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import * as bcrypt from 'bcrypt';
+import * as path from 'path';
 
-const prisma = new PrismaClient();
+const dbPath = path.resolve(__dirname, '../dev.db');
+const adapter = new PrismaBetterSqlite3({ url: dbPath });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log('Seeding database...');
@@ -13,7 +17,11 @@ async function main() {
   // 1. Create Author / User
   const author = await prisma.user.upsert({
     where: { email: 'eva.nduta@enmlegal.com' },
-    update: {},
+    update: {
+      password: authorPassword,
+      isActive: true,
+      role: 'ADMIN',
+    },
     create: {
       email: 'eva.nduta@enmlegal.com',
       name: 'Advocate Eva Nduta Munene',
@@ -59,6 +67,25 @@ async function main() {
     },
   });
   console.log(`Upserted admin: ${admin.email}`);
+
+  const testPassword = await bcrypt.hash('Password123!', 10);
+  const testUser = await prisma.user.upsert({
+    where: { email: 'test@enmlegal.com' },
+    update: {
+      name: 'Test Admin',
+      role: 'ADMIN',
+      password: testPassword,
+      isActive: true,
+    },
+    create: {
+      email: 'test@enmlegal.com',
+      name: 'Test Admin',
+      role: 'ADMIN',
+      password: testPassword,
+      isActive: true,
+    },
+  });
+  console.log(`Upserted test user: ${testUser.email}`);
 
   // 2. Create Categories
   const categoriesData = [

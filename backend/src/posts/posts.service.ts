@@ -14,6 +14,7 @@ export class PostsService {
     month?: string;
     page?: string;
     limit?: string;
+    includeFuture?: string;
   }) {
     const page = parseInt(query.page || '1', 10);
     const limit = parseInt(query.limit || '10', 10);
@@ -29,8 +30,21 @@ export class PostsService {
       where.categoryId = query.categoryId;
     }
 
-    if (query.status) {
+    if (query.status && query.status !== 'ALL') {
       where.status = query.status;
+    }
+
+    // Default for public requests is PUBLISHED
+    if (!query.status) {
+      where.status = 'PUBLISHED';
+    }
+
+    // Filter out future scheduled posts for public published requests
+    if (where.status === 'PUBLISHED' && query.includeFuture !== 'true') {
+      const nowIso = new Date().toISOString();
+      const todayDate = this.formatDatetime(new Date());
+      const cutoff = nowIso > todayDate ? nowIso : todayDate;
+      where.datetime = { lte: cutoff };
     }
 
     if (query.search) {
@@ -113,11 +127,13 @@ export class PostsService {
     status?: string;
     categoryId: string;
     authorId: string;
+    date?: string;
+    datetime?: string;
   }) {
     const slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '-' + Date.now();
-    const now = new Date();
-    const dateStr = this.formatDate(now);
-    const datetimeStr = this.formatDatetime(now);
+    const targetDate = data.datetime ? new Date(data.datetime) : new Date();
+    const dateStr = data.date || this.formatDate(isNaN(targetDate.getTime()) ? new Date() : targetDate);
+    const datetimeStr = data.datetime || this.formatDatetime(targetDate);
 
     try {
       return await this.prisma.post.create({
@@ -152,6 +168,8 @@ export class PostsService {
       imageUrl?: string;
       status?: string;
       categoryId?: string;
+      date?: string;
+      datetime?: string;
     },
   ) {
     await this.findOne(id);
@@ -159,6 +177,16 @@ export class PostsService {
 
     if (data.title) {
       updateData.slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '-' + Date.now();
+    }
+
+    if (data.datetime) {
+      updateData.datetime = data.datetime;
+      if (!data.date) {
+        const targetDate = new Date(data.datetime);
+        if (!isNaN(targetDate.getTime())) {
+          updateData.date = this.formatDate(targetDate);
+        }
+      }
     }
 
     try {
@@ -179,6 +207,36 @@ export class PostsService {
     await this.findOne(id);
     return this.prisma.post.delete({
       where: { id },
+    });
+  }
+
+  async likePost(id: string, action: 'like' | 'unlike' = 'like') {
+    const post = await this.findOne(id);
+    const currentLikes = post.likes ?? 0;
+    const newLikes = action === 'unlike' ? Math.max(0, currentLikes - 1) : currentLikes + 1;
+    return this.prisma.post.update({
+      where: { id },
+      data: {
+        likes: newLikes,
+      },
+      select: {
+        id: true,
+        likes: true,
+      },
+    });
+  }
+
+  async recordView(id: string) {
+    await this.findOne(id);
+    return this.prisma.post.update({
+      where: { id },
+      data: {
+        views: { increment: 1 },
+      },
+      select: {
+        id: true,
+        views: true,
+      },
     });
   }
 

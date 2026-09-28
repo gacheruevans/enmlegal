@@ -45,16 +45,18 @@ export class PostsController {
     @Query('month') month?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('includeFuture') includeFuture?: string,
   ) {
     return this.postsService.findAll({
       authorId,
       categoryId,
-      status: status === 'ALL' ? undefined : status || 'PUBLISHED',
+      status,
       search,
       year,
       month,
       page,
       limit,
+      includeFuture,
     });
   }
 
@@ -74,6 +76,21 @@ export class PostsController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
+  }
+
+  @Public()
+  @Post(':id/like')
+  async like(
+    @Param('id') id: string,
+    @Body() body?: { action?: 'like' | 'unlike' },
+  ) {
+    return this.postsService.likePost(id, body?.action || 'like');
+  }
+
+  @Public()
+  @Post(':id/view')
+  async recordView(@Param('id') id: string) {
+    return this.postsService.recordView(id);
   }
 
   @Post()

@@ -19,12 +19,20 @@ export class CreatePostDto {
 
   @IsString()
   @IsOptional()
-  @IsIn(['DRAFT', 'PUBLISHED'])
+  @IsIn(['DRAFT', 'PUBLISHED', 'ARCHIVED'])
   status?: string;
 
   @IsString()
   @IsNotEmpty()
   categoryId!: string;
+
+  @IsString()
+  @IsOptional()
+  date?: string;
+
+  @IsString()
+  @IsOptional()
+  datetime?: string;
 }
 
 export class UpdatePostDto {
@@ -46,10 +54,19 @@ export class UpdatePostDto {
 
   @IsString()
   @IsOptional()
-  @IsIn(['DRAFT', 'PUBLISHED'])
+  @IsIn(['DRAFT', 'PUBLISHED', 'ARCHIVED'])
   status?: string;
 
   @IsString()
   @IsOptional()
   categoryId?: string;
+
+  @IsString()
+  @IsOptional()
+  date?: string;
+
+  @IsString()
+  @IsOptional()
+  datetime?: string;
 }
+

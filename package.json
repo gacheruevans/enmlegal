@@ -57,6 +57,7 @@
     "@typescript-eslint/parser": "^5.57.1",
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.19",
+    "concurrently": "^10.0.5",
     "eslint": "^8.38.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
@@ -66,7 +67,7 @@
     "vite": "^4.3.1"
   },
   "scripts": {
-    "dev": "refine dev && cd backend && nest start --watch",
+    "dev": "concurrently -n \"frontend,backend\" -c \"blue,green\" \"refine dev\" \"npm --prefix backend run start:dev\"",
     "build": "tsc && refine build",
     "start": "refine start",
     "refine": "refine",
