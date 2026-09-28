@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { EnvelopeIcon, KeyIcon } from '@heroicons/react/24/outline'
-// import { useRouter } from "next/navigation";
-import  api from '../../lib/api';
+import { EnvelopeIcon, KeyIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from "react-router";
+import api from '../../lib/api';
 
 export const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    // const router = useRouter();
+    const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -16,12 +16,11 @@ export const Login = () => {
         setError('');
         try {
             const { data } = await api.post('/auth/login', {email, password});
-            localStorage.setItem('token', data.accessToken);
+            const token = data.accessToken || data.token;
+            localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(data.user));
 
-            if(data.user.role === 'Admin') {
-                // router.push("/admin/blog-posts");
-            }
+            navigate('/admin/blog-posts');
         } catch (error: any) {
              setError(error.response?.data?.message || "Invalid credentials");
         } finally {

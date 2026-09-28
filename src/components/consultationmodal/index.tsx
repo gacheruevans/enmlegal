@@ -1,8 +1,8 @@
-import emailjs from "@emailjs/browser";
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Modal from "react-modal";
+import api from "../../lib/api";
 
 interface ConsultationModalProps {
   isOpen: boolean;
@@ -46,26 +46,27 @@ const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, onRequest
     setResult(null);
     setIcsData(null);
     try {
-      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-      if (!serviceId || !templateId || !publicKey) {
-        throw new Error('EmailJS environment variables missing');
-      }
-      const startLocal = selectedDate.toLocaleString();
-      const endLocal = new Date(selectedDate.getTime() + durationMinutes * 60000).toLocaleString();
-      const templateParams = {
-        sender_name: name || 'Anonymous',
-        sender_email: email,
-        consultation_datetime: `${startLocal} - ${endLocal}`,
-        message: `Consultation request from ${name || email} for ${startLocal} (${durationMinutes} min)`,
+      const payload = {
+        applicantName: name || undefined,
+        applicantEmail: email,
+        start: selectedDate.toISOString(),
+        durationMinutes,
       };
-      await emailjs.send(serviceId, templateId, templateParams, { publicKey });
+
+      const { data } = await api.post('/consultations/book', payload);
       const ics = generateIcs(selectedDate, durationMinutes, name || 'Anonymous', email);
       setIcsData(ics);
-      setResult({ start: selectedDate.toISOString(), end: new Date(selectedDate.getTime() + durationMinutes*60000).toISOString(), meetLink: undefined });
+      setResult({
+        start: data.start || selectedDate.toISOString(),
+        end: data.end || new Date(selectedDate.getTime() + durationMinutes * 60000).toISOString(),
+        meetLink: data.meetLink || undefined,
+      });
     } catch (err: any) {
-      setError(err.message || 'Failed to send email');
+      setError(
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to book consultation. Please try again or reach out directly.',
+      );
     } finally {
       setLoading(false);
     }

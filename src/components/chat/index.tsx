@@ -1,36 +1,42 @@
 'use client';
-import React, { useState } from 'react'
-import axios from 'axios'
+import React, { useState } from 'react';
+import api from '../../lib/api';
 
-type message = {role:'user' | 'assistant', content: string}
-
+type message = { role: 'user' | 'assistant'; content: string };
 
 const ChatBot = () => {
-    const [messages, setMessages] = useState<message[]>([])
-    const [minimize, setMinimize] = useState<boolean>(false)
-    const [input, setInput] = useState<string>('')
-    const [loading, setLoading] = useState<boolean>(false)
+    const [messages, setMessages] = useState<message[]>([]);
+    const [minimize, setMinimize] = useState<boolean>(false);
+    const [input, setInput] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
 
     const sendMessage = async () => {
-        if (!input.trim()) return;
-        const newMessage: message = { role: 'user', content: input }
-        setMessages([...messages, newMessage])
-        setInput('')
-        setLoading(true)
+        if (!input.trim() || loading) return;
+        const currentInput = input.trim();
+        const newMessage: message = { role: 'user', content: currentInput };
+        const updatedMessages = [...messages, newMessage];
+        setMessages(updatedMessages);
+        setInput('');
+        setLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:3000/chat', {
-                message: input,
-                history: messages
-            })
-            const reply: message = { role: 'assistant', content: response.data.reply }
-            setMessages([...messages, newMessage, reply])
+            const response = await api.post('/chat', {
+                message: currentInput,
+                history: messages,
+            });
+            const reply: message = { role: 'assistant', content: response.data.reply };
+            setMessages([...updatedMessages, reply]);
         } catch (error) {
-            console.error('Error sending message:', error)
+            console.error('Error sending message to legal assistant:', error);
+            const fallbackReply: message = {
+                role: 'assistant',
+                content: 'Thank you for your inquiry. Our AI assistant is currently connecting. For immediate assistance, please book a consultation with Advocate Eva Nduta Munene using the button above.',
+            };
+            setMessages([...updatedMessages, fallbackReply]);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
   return (
     <div className="fixed max-w-xl p-4 mx-auto shadow right-8 bottom-8 ">
       <div className="relative inline-flex items-center justify-start w-full px-6 py-3 overflow-hidden font-medium transition-all bg-indigo-100 rounded hover:bg-white group ">
