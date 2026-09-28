@@ -18,6 +18,9 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { PostsService } from './posts.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { Public } from '../auth/decorators/public.decorators';
+import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
+import { Request } from 'express';
 
 const storage = diskStorage({
   destination: './uploads',
@@ -31,6 +34,7 @@ const storage = diskStorage({
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @Public()
   @Get()
   async findAll(
     @Query('authorId') authorId?: string,
@@ -54,11 +58,19 @@ export class PostsController {
     });
   }
 
+  @Public()
   @Get('archive-meta')
   async getArchiveMeta() {
     return this.postsService.getArchiveMeta();
   }
 
+  @Public()
+  @Get('slug/:slug')
+  async findBySlug(@Param('slug') slug: string) {
+    return this.postsService.findBySlug(slug);
+  }
+
+  @Public()
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
@@ -67,16 +79,8 @@ export class PostsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   async create(
-    @Req() req: any,
-    @Body()
-    body: {
-      title: string;
-      content: string;
-      description: string;
-      imageUrl?: string;
-      status?: string;
-      categoryId: string;
-    },
+    @Req() req: Request & { user: { sub: string } },
+    @Body() body: CreatePostDto,
   ) {
     return this.postsService.create({
       ...body,
@@ -88,15 +92,7 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   async update(
     @Param('id') id: string,
-    @Body()
-    body: {
-      title?: string;
-      content?: string;
-      description?: string;
-      imageUrl?: string;
-      status?: string;
-      categoryId?: string;
-    },
+    @Body() body: UpdatePostDto,
   ) {
     return this.postsService.update(id, body);
   }

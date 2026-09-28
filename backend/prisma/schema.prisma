@@ -63,3 +63,22 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Consultation {
+  id              String   @id @default(uuid())
+  applicantName   String
+  applicantEmail  String
+  applicantPhone  String?
+  start           DateTime
+  end             DateTime
+  durationMinutes Int      @default(30)
+  status          String   @default("CONFIRMED") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  notes           String?
+  calendarEventId String?
+  meetLink        String?
+  calendarLink    String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+

@@ -90,6 +90,21 @@ export class PostsService {
     return post;
   }
 
+  async findBySlug(slug: string) {
+    const post = await this.prisma.post.findUnique({
+      where: { slug },
+      include: {
+        category: true,
+        author: true,
+      },
+    });
+    if (!post) {
+      throw new NotFoundException(`Post with slug "${slug}" not found`);
+    }
+    return post;
+  }
+
+
   async create(data: {
     title: string;
     content: string;
