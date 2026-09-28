@@ -39,3 +39,7 @@ _.sln
 .env.production.local
 .env.local
 .env.vault
+
+# Agents
+agents
+.agents
