@@ -12,6 +12,8 @@ import { join } from 'path';
 import helmet from 'helmet';
 import * as express from 'express';
 import { ConfigService } from '@nestjs/config';
+import * as fs from 'fs';
+import { tmpdir } from 'os';
 
 
 let cachedApp: NestExpressApplication;
@@ -95,9 +97,12 @@ export async function bootstrapApp(): Promise<NestExpressApplication> {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  app.useStaticAssets(join(process.cwd(), 'uploads'), {
-    prefix: '/uploads/',
-  });
+  const uploadsPath = process.env.VERCEL ? tmpdir() : join(process.cwd(), 'uploads');
+  if (fs.existsSync(uploadsPath)) {
+    app.useStaticAssets(uploadsPath, {
+      prefix: '/uploads/',
+    });
+  }
 
   await app.init();
   return app;

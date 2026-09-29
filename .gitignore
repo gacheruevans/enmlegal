@@ -43,3 +43,4 @@ _.sln
 # Agents
 agents
 .agents
+.vercel

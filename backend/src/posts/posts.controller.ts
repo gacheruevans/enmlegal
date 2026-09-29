@@ -16,14 +16,28 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { tmpdir } from 'os';
+import * as fs from 'fs';
 import { PostsService } from './posts.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { Public } from '../auth/decorators/public.decorators';
 import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
 import { Request } from 'express';
 
+const getUploadDir = () => (process.env.VERCEL ? tmpdir() : './uploads');
+
 const storage = diskStorage({
-  destination: './uploads',
+  destination: (req, file, cb) => {
+    const dir = getUploadDir();
+    try {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    } catch {
+      // Ignore directory creation errors
+    }
+    cb(null, dir);
+  },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
