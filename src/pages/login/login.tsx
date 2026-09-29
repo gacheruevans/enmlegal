@@ -3,8 +3,15 @@ import { EnvelopeIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/2
 import { useNavigate, useSearchParams } from "react-router";
 import api from '../../lib/api';
 import { isTokenExpired } from '../../lib/auth';
+import { usePageSEO } from '../../hooks/usePageSEO';
 
 export const Login = () => {
+    usePageSEO({
+        title: 'Admin Portal Login',
+        description: 'Authorized administrative access for ENM Legal Advocates.',
+        noindex: true,
+    });
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);

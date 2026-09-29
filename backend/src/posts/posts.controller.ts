@@ -21,6 +21,8 @@ import * as fs from 'fs';
 import { PostsService } from './posts.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { Public } from '../auth/decorators/public.decorators';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
 import { Request } from 'express';
 
@@ -109,6 +111,7 @@ export class PostsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   async create(
     @Req() req: Request & { user: { sub: string } },
     @Body() body: CreatePostDto,
@@ -121,6 +124,7 @@ export class PostsController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   async update(
     @Param('id') id: string,
     @Body() body: UpdatePostDto,
@@ -130,12 +134,14 @@ export class PostsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   async remove(@Param('id') id: string) {
     return this.postsService.remove(id);
   }
 
   @Post('upload')
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   @UseInterceptors(
     FileInterceptor('file', {
       storage,

@@ -2,8 +2,15 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { ArrowLeftIcon, LockClosedIcon, ShieldCheckIcon, EyeIcon } from '@heroicons/react/24/outline';
 import Footer from '../../components/footer';
+import { usePageSEO } from '../../hooks/usePageSEO';
 
 export const PrivacyPolicy: React.FC = () => {
+  usePageSEO({
+    title: 'Privacy Policy & Data Protection',
+    description: 'Privacy Policy and client data protection practices at ENM Legal Advocates in compliance with the Kenya Data Protection Act, 2019.',
+    canonicalPath: '/privacy',
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {

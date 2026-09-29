@@ -73,8 +73,19 @@ export class AuthService {
       });
 
       if (!user) {
-        // Auto-provision Google authenticated admin/author
-        const randomPassword = await bcrypt.hash(uuidv4(), 10);
+        // Enforce explicit authorization for administrative access
+        const authorizedAdmins = (process.env.ADMIN_EMAILS || 'eva.nduta@enmlegal.com,admin@enmlegal.com')
+          .split(',')
+          .map((e) => e.trim().toLowerCase());
+
+        if (!authorizedAdmins.includes(email)) {
+          this.logger.warn(`Unauthorized Google login attempt: ${email}`);
+          throw new UnauthorizedException(
+            'Your email is not authorized for administrative access. Please contact ENM Legal administration.',
+          );
+        }
+
+        const randomPassword = await bcrypt.hash(uuidv4(), 12);
         user = await this.prisma.user.create({
           data: {
             email,
@@ -85,7 +96,7 @@ export class AuthService {
             isActive: true,
           },
         });
-        this.logger.log(`Created new user via Google login: ${user.email}`);
+        this.logger.log(`Created authorized admin user via Google login: ${user.email}`);
       } else if (!user.isActive) {
         throw new UnauthorizedException('User account has been deactivated');
       }

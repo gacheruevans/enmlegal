@@ -40,6 +40,11 @@ export async function bootstrapApp(): Promise<NestExpressApplication> {
   app.use(
     helmet({
       crossOriginEmbedderPolicy: false,
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+      xContentTypeOptions: true,
+      frameguard: { action: 'sameorigin' },
+      dnsPrefetchControl: { allow: false },
     }),
   );
 
@@ -123,9 +128,7 @@ export default async function (req: any, res: any) {
     if (res && typeof res.status === 'function') {
       return res.status(500).json({
         statusCode: 500,
-        message: 'Serverless Function Execution Error during application bootstrap',
-        error: err?.message || String(err),
-        stack: err?.stack || null,
+        message: 'Internal server error occurred during application bootstrap',
       });
     }
     throw err;

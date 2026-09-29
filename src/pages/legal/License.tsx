@@ -2,8 +2,15 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { ArrowLeftIcon, CheckBadgeIcon, CodeBracketIcon, BuildingLibraryIcon } from '@heroicons/react/24/outline';
 import Footer from '../../components/footer';
+import { usePageSEO } from '../../hooks/usePageSEO';
 
 export const License: React.FC = () => {
+  usePageSEO({
+    title: 'Legal Practice License & Accreditations',
+    description: 'Statutory legal accreditations, Law Society of Kenya (LSK) licensing, and regulatory compliance disclosures for ENM Legal Advocates.',
+    canonicalPath: '/license',
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {

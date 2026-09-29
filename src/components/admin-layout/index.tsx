@@ -2,8 +2,15 @@ import { useGetIdentity, useLogout } from "@refinedev/core";
 import { useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router";
 import { isTokenExpired, getTimeUntilExpiration, handleSessionExpired } from "../../lib/auth";
+import { usePageSEO } from "../../hooks/usePageSEO";
 
 export const AdminLayout = () => {
+  usePageSEO({
+    title: 'Admin Control Center',
+    description: 'ENM Legal Advocates administrative management system.',
+    noindex: true,
+  });
+
   const navigate = useNavigate();
   const location = useLocation();
   const token = localStorage.getItem("token");

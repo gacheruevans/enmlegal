@@ -2,8 +2,15 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { ArrowLeftIcon, ShieldCheckIcon, DocumentTextIcon, ScaleIcon } from '@heroicons/react/24/outline';
 import Footer from '../../components/footer';
+import { usePageSEO } from '../../hooks/usePageSEO';
 
 export const TermsOfService: React.FC = () => {
+  usePageSEO({
+    title: 'Terms of Service',
+    description: 'Terms of Service governing legal engagement and client counsel with ENM Legal Advocates in Kenya.',
+    canonicalPath: '/terms',
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {

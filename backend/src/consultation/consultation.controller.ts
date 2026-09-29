@@ -17,6 +17,8 @@ import {
 } from './consultation.service';
 import { Public } from '../auth/decorators/public.decorators';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 
 @ApiTags('consultations')
 @Controller('consultations')
@@ -31,6 +33,7 @@ export class ConsultationController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   async findAll(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -41,12 +44,14 @@ export class ConsultationController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   async findOne(@Param('id') id: string) {
     return this.consultationService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   async updateStatus(
     @Param('id') id: string,
     @Body() dto: UpdateConsultationStatusDto,
@@ -56,6 +61,7 @@ export class ConsultationController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   async remove(@Param('id') id: string) {
     return this.consultationService.remove(id);
   }

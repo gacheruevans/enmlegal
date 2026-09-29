@@ -11,6 +11,8 @@ import {
 import { CategoriesService } from './categories.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { Public } from '../auth/decorators/public.decorators';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -33,18 +35,21 @@ export class CategoriesController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   async create(@Body() body: CreateCategoryDto) {
     return this.categoriesService.create(body);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   async update(@Param('id') id: string, @Body() body: UpdateCategoryDto) {
     return this.categoriesService.update(id, body);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   async remove(@Param('id') id: string) {
     return this.categoriesService.remove(id);
   }

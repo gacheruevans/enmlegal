@@ -1,0 +1,32 @@
+# https://www.robotstxt.org/robotstxt.html
+# ENM Legal Advocates — Crawler Access Directives
+
+User-agent: *
+Allow: /
+Allow: /home
+Allow: /about
+Allow: /practice-areas
+Allow: /services
+Allow: /blog
+Allow: /contacts
+Allow: /terms
+Allow: /terms-of-service
+Allow: /privacy
+Allow: /privacy-policy
+Allow: /license
+Allow: /view/
+Allow: /blog/
+
+# Protect authenticated and administrative portals
+Disallow: /admin
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /login
+Disallow: /login/
+
+# Protect backend API endpoints from indexation
+Disallow: /api/
+Disallow: /api/*
+
+# XML Sitemap
+Sitemap: https://enmlegal.com/sitemap.xml

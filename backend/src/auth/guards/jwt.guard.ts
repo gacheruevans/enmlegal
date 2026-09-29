@@ -8,12 +8,14 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorators';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
+    private prisma: PrismaService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -47,8 +49,27 @@ export class JwtAuthGuard implements CanActivate {
       >(token, {
         secret,
       });
-      request.user = payload;
-    } catch {
+
+      // Verify that user exists in database and remains active
+      if (payload.sub && typeof payload.sub === 'string') {
+        const dbUser = await this.prisma.user.findUnique({
+          where: { id: payload.sub },
+          select: { id: true, email: true, role: true, isActive: true },
+        });
+
+        if (!dbUser || !dbUser.isActive) {
+          throw new UnauthorizedException('User account is inactive or revoked');
+        }
+
+        request.user = {
+          ...payload,
+          ...dbUser,
+        };
+      } else {
+        request.user = payload;
+      }
+    } catch (err: any) {
+      if (err instanceof UnauthorizedException) throw err;
       throw new UnauthorizedException('Invalid or expired token');
     }
     return true;

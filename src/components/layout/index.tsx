@@ -106,6 +106,18 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
       if (targetPath && window.location.pathname !== targetPath && !manualSelected) {
         window.history.replaceState(null, '', targetPath);
       }
+
+      // Sync descriptive page title for SEO and user experience
+      const titlesBySection: Record<string, string> = {
+        home: "ENM Legal Advocates | Leading Law Firm in Upper Hill, Nairobi, Kenya",
+        about: "About the Firm & Advocate Eva Nduta Munene | ENM Legal Advocates",
+        services: "Practice Areas & Legal Services | ENM Legal Advocates Nairobi",
+        blog: "Legal Insights & Analysis | ENM Legal Advocates",
+        contacts: "Contact Our Legal Team & Consultations | ENM Legal Advocates Upper Hill",
+      };
+      if (titlesBySection[activeSection]) {
+        document.title = titlesBySection[activeSection];
+      }
     }
   }, [activeSection, manualSelected]);
 

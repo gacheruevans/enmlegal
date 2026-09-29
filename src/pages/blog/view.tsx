@@ -11,6 +11,7 @@ import {
   FaRegHeart,
 } from "react-icons/fa6";
 import api from "../../lib/api";
+import { usePageSEO } from "../../hooks/usePageSEO";
 
 type BlogPostDetail = {
   id: string;
@@ -33,6 +34,13 @@ export const ViewPost = () => {
   const [post, setPost] = useState<BlogPostDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Dynamic SEO Synchronization
+  usePageSEO({
+    title: post ? `${post.title} | ENM Legal Advocates` : "Legal Insight | ENM Legal",
+    description: post?.description || "Read legal commentary and insights from ENM Legal Advocates.",
+    canonicalPath: id ? `/blog/${id}` : "/blog",
+  });
 
   // Likes state
   const [likesCount, setLikesCount] = useState<number>(0);
@@ -291,7 +299,25 @@ export const ViewPost = () => {
         {/* Article Content */}
         <article className="prose prose-lg prose-slate max-w-none text-gray-800 leading-relaxed font-normal">
           <div className="markdown-body leading-relaxed">
-            <Markdown>{post.content}</Markdown>
+            <Markdown
+              components={{
+                a: ({ href, children, ...props }) => {
+                  const isExternal = !!href && /^https?:\/\//i.test(href);
+                  return (
+                    <a
+                      href={href}
+                      {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                      className="text-royal font-semibold underline underline-offset-2 hover:text-royal/80 transition-colors"
+                      {...props}
+                    >
+                      {children}
+                    </a>
+                  );
+                },
+              }}
+            >
+              {post.content}
+            </Markdown>
           </div>
         </article>
 
