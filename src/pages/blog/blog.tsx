@@ -32,117 +32,8 @@ type BlogPostSummary = {
   status?: string;
   likes?: number;
 };
+import { useLayoutContext } from '../../components/layout/LayoutContext';
 
-const examplePosts: BlogPostSummary[] = [
-  {
-    id: 'sample-1',
-    title: 'Probate Administration: Navigating the Legal Landscape',
-    href: '/blog/sample-1',
-    description:
-      "Navigating the probate process can be emotionally and legally complex, especially after the loss of a loved one. In this article, we break down the key stages of probate administration in Kenya, including obtaining a grant of probate or letters of administration, handling estate assets, settling debts, and distributing inheritance.",
-    date: 'Mar 16, 2025',
-    datetime: '2025-03-16',
-    likes: 14,
-    category: { title: 'Administration', href: '#' },
-    author: {
-      name: 'Advocate Eva Nduta Munene',
-      role: 'Founding Partner',
-      href: '#',
-      imageUrl: '/profile.png',
-    },
-    content: 'Probate administration requires careful planning, accurate documentation, and sound legal guidance.',
-  },
-  {
-    id: 'sample-2',
-    title: 'Real Estate & Conveyancing: A Comprehensive Guide',
-    href: '/blog/sample-2',
-    description:
-      "Buying, selling, or transferring property in Kenya involves intricate legal steps that must be followed to protect your rights. This article demystifies the conveyancing process—covering land searches, sale agreements, title transfers, and registration procedures.",
-    date: 'Apr 16, 2025',
-    datetime: '2025-04-16',
-    likes: 28,
-    category: { title: 'Realestate', href: '#' },
-    author: {
-      name: 'Advocate Eva Nduta Munene',
-      role: 'Founding Partner',
-      href: '#',
-      imageUrl: '/profile.png',
-    },
-    content: 'Conveyancing in Kenya involves due diligence, agreements, transfer documentation, and registration safeguards.',
-  },
-  {
-    id: 'sample-3',
-    title: 'Banking Securities: An Introduction to Banking Securities & Collateral Law in Kenya',
-    href: '/blog/sample-3',
-    description:
-      "Securing loans with collateral involves detailed legal procedures that protect both lenders and borrowers. This article explores the legal framework around charges, mortgages, debentures, and asset securitization in Kenya.",
-    date: 'Jun 16, 2025',
-    datetime: '2025-06-16',
-    likes: 21,
-    category: { title: 'Banking', href: '#' },
-    author: {
-      name: 'Advocate Eva Nduta Munene',
-      role: 'Founding Partner',
-      href: '#',
-      imageUrl: '/profile.png',
-    },
-    content: 'Collateral and banking securities should be structured and documented carefully.',
-  },
-  {
-    id: 'sample-4',
-    title: 'Dispute Resolution: Effective Strategies for Resolving Legal Conflicts',
-    href: '/blog/sample-4',
-    description:
-      "Disputes are inevitable—but how you resolve them makes all the difference. This article compares mediation, arbitration, and litigation in Kenya, offering guidance on the most efficient and cost-effective approach for different legal scenarios.",
-    date: 'Apr 16, 2024',
-    datetime: '2024-04-16',
-    likes: 33,
-    category: { title: 'Social', href: '#' },
-    author: {
-      name: 'Advocate Eva Nduta Munene',
-      role: 'Founding Partner',
-      href: '#',
-      imageUrl: '/profile.png',
-    },
-    content: 'Effective dispute resolution strategies often balance legal rights, business goals, and long-term relationships.',
-  },
-  {
-    id: 'sample-5',
-    title: 'Startups & SMEs: Legal Essentials for Entrepreneurs',
-    href: '/blog/sample-5',
-    description:
-      "From registration to funding to IP protection, startups face unique legal challenges. This article outlines the core legal steps for launching and scaling a business in Kenya—covering company formation, contracts, compliance, and investor readiness.",
-    date: 'May 16, 2024',
-    datetime: '2024-05-16',
-    likes: 47,
-    category: { title: 'Startups', href: '#' },
-    author: {
-      name: 'Advocate Eva Nduta Munene',
-      role: 'Founding Partner',
-      href: '#',
-      imageUrl: '/profile.png',
-    },
-    content: 'Startups need a strong legal foundation from incorporation through funding agreements.',
-  },
-  {
-    id: 'sample-6',
-    title: 'Legal Audit & Compliance: Ensuring Your Business Meets Regulatory Standards',
-    href: '/blog/sample-6',
-    description:
-      "A legal audit isn’t just about checking boxes—it’s about protecting your organization. This article explains how legal audits identify regulatory gaps, strengthen internal controls, and prevent costly penalties in Kenya’s evolving landscape.",
-    date: 'Jun 16, 2024',
-    datetime: '2024-06-16',
-    likes: 36,
-    category: { title: 'Audits', href: '#' },
-    author: {
-      name: 'Advocate Eva Nduta Munene',
-      role: 'Founding Partner',
-      href: '#',
-      imageUrl: '/profile.png',
-    },
-    content: 'Legal compliance reviews help businesses identify gaps, improve controls, and reduce exposure.',
-  },
-];
 
 interface CategoryItem {
   id: string;
@@ -151,6 +42,7 @@ interface CategoryItem {
 }
 
 const Blog = () => {
+  const { setHasBlogPosts } = useLayoutContext();
   const scrollRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -174,8 +66,8 @@ const Blog = () => {
     title: post.title,
     href: `/blog/${post.id}`,
     description: post.description,
-    date: post.date || new Date(post.createdAt).toLocaleDateString(),
-    datetime: post.datetime || post.createdAt,
+    date: post.date || (post.createdAt ? new Date(post.createdAt).toLocaleDateString() : ''),
+    datetime: post.datetime || post.createdAt || '',
     likes: typeof post.likes === "number" ? post.likes : 0,
     category: {
       title: post.category?.title || "Uncategorized",
@@ -185,7 +77,11 @@ const Blog = () => {
       name: post.author?.name || "Advocate Eva Nduta Munene",
       role: post.author?.role || "Founding Partner",
       href: "#",
-      imageUrl: post.author?.imageUrl || "/profile.png",
+      imageUrl: post.author?.imageUrl
+        ? (post.author.imageUrl.startsWith("http") || post.author.imageUrl.startsWith("/")
+            ? post.author.imageUrl
+            : `/${post.author.imageUrl}`)
+        : "/profile.png",
     },
     content: post.content,
     imageUrl: post.imageUrl,
@@ -241,26 +137,34 @@ const Blog = () => {
 
         if (!isMounted) return;
 
-        const dbPosts = Array.isArray(data?.nodes)
-          ? data.nodes.map(mapPostSummary)
+        const rawList = Array.isArray(data?.nodes)
+          ? data.nodes
+          : Array.isArray(data?.posts)
+          ? data.posts
+          : Array.isArray(data)
+          ? data
           : [];
 
-        if (dbPosts.length > 0) {
-          setPosts(dbPosts);
-        } else if (selectedCategory === 'ALL') {
-          setPosts(examplePosts);
-        } else {
-          setPosts([]);
+        const dbPosts = rawList.map(mapPostSummary);
+
+        if (selectedCategory === 'ALL') {
+          setHasBlogPosts(dbPosts.length > 0);
         }
+
+        setPosts(dbPosts);
 
         const totalP = data?.totalPages || 1;
         setTotalPages(totalP);
         setHasMore(1 < totalP);
-      } catch {
+      } catch (err) {
         if (isMounted) {
-          setPosts(selectedCategory === 'ALL' ? examplePosts : []);
+          console.error("Failed to load blog posts from database:", err);
+          setPosts([]);
           setTotalPages(1);
           setHasMore(false);
+          if (selectedCategory === 'ALL') {
+            setHasBlogPosts(false);
+          }
         }
       } finally {
         if (isMounted) {
@@ -274,7 +178,7 @@ const Blog = () => {
     return () => {
       isMounted = false;
     };
-  }, [selectedCategory]);
+  }, [selectedCategory, setHasBlogPosts]);
 
   // Load next page of posts for infinite scroll
   const loadNextPage = useCallback(async () => {
@@ -295,9 +199,15 @@ const Blog = () => {
       }
 
       const { data } = await api.get('/posts', { params });
-      const incomingPosts = Array.isArray(data?.nodes)
-        ? data.nodes.map(mapPostSummary)
+      const rawList = Array.isArray(data?.nodes)
+        ? data.nodes
+        : Array.isArray(data?.posts)
+        ? data.posts
+        : Array.isArray(data)
+        ? data
         : [];
+
+      const incomingPosts = rawList.map(mapPostSummary);
 
       setPosts((prev) => {
         const seen = new Set(prev.map((p) => p.id));
@@ -369,19 +279,17 @@ const Blog = () => {
       })
     );
 
-    if (!post.id.startsWith('sample-')) {
-      try {
-        const res = await api.post(`/posts/${post.id}/like`, {
-          action: nextLiked ? 'like' : 'unlike',
-        });
-        if (typeof res.data?.likes === 'number') {
-          setPosts((prev) =>
-            prev.map((p) => (p.id === post.id ? { ...p, likes: res.data.likes } : p))
-          );
-        }
-      } catch (err) {
-        console.error("Failed to like post", err);
+    try {
+      const res = await api.post(`/posts/${post.id}/like`, {
+        action: nextLiked ? 'like' : 'unlike',
+      });
+      if (typeof res.data?.likes === 'number') {
+        setPosts((prev) =>
+          prev.map((p) => (p.id === post.id ? { ...p, likes: res.data.likes } : p))
+        );
       }
+    } catch (err) {
+      console.error("Failed to like post", err);
     }
   };
 
@@ -453,6 +361,10 @@ const Blog = () => {
       scrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
     }
   };
+
+  if (!isLoading && posts.length === 0 && selectedCategory === 'ALL') {
+    return null;
+  }
 
   return (
     <div id="blog" className="z-10 py-24 bg-white sm:py-32">

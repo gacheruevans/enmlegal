@@ -70,7 +70,15 @@ export class PostsService {
         where,
         include: {
           category: true,
-          author: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+              imageUrl: true,
+            },
+          },
         },
         orderBy: { createdAt: 'desc' },
         skip,
@@ -95,7 +103,15 @@ export class PostsService {
       where: { id },
       include: {
         category: true,
-        author: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            imageUrl: true,
+          },
+        },
       },
     });
     if (!post) {
@@ -109,7 +125,15 @@ export class PostsService {
       where: { slug },
       include: {
         category: true,
-        author: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            imageUrl: true,
+          },
+        },
       },
     });
     if (!post) {
@@ -151,7 +175,15 @@ export class PostsService {
         },
         include: {
           category: true,
-          author: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+              imageUrl: true,
+            },
+          },
         },
       });
     } catch (e: any) {
@@ -195,7 +227,15 @@ export class PostsService {
         data: updateData,
         include: {
           category: true,
-          author: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+              imageUrl: true,
+            },
+          },
         },
       });
     } catch (e: any) {

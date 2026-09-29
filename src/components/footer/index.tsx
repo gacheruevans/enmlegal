@@ -1,58 +1,233 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router';
+import { useLayoutContext } from '../layout/LayoutContext';
 
-const Footer = () => {
+const Footer: React.FC = () => {
+  const { hasBlogPosts, setManualSelected } = useLayoutContext();
+  const navigate = useNavigate();
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+
+  const handleQuickLink = (name: string, sectionId: string, path: string) => {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+      window.history.pushState(null, '', path);
+    } else {
+      navigate(path);
+    }
+    setManualSelected(name);
+  };
+
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.message) return;
+    setFormSubmitted(true);
+    setTimeout(() => {
+      setFormData({ name: '', email: '', message: '' });
+      setFormSubmitted(false);
+    }, 4000);
+  };
+
   return (
-    <footer className="px-8 py-8 text-white bg-gray-800 md:px-16 lg:px-28">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-            <div>
-                <h2 className="mb-4 text-lg font-weight-300">Office Address</h2>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Block B, 3rd Floor, Suite 3.2</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">KMA Center, Chyulu Road</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Upper Hill, Nairobi</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">P.O. Box 40964-00100,</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Phone: +254 701-857-030</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Email: info@enmlegal.com</p>
-            </div>
-            <div>
-                <h2 className="mb-4 text-lg font-weight-300">Quick Links</h2>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Home</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">About</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Practice Areas</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Blog</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Contacts</p>
-            </div>
-            <div>
-                <h2 className="mb-4 text-lg font-weight-300">Legal</h2>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Terms of service</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">Privacy policy</p>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">License </p>
-            </div>
-            <div className="div">
-                <h2 className="mb-4 text-lg font-weight-300">Contact Us</h2>
-                <p className="py-1 text-sm text-gray-300 font-weight-100">We are here to help you with your legal needs. Reach out to us anytime.</p>
-                <form className="mt-4">
-                    <input type="text" placeholder="Your Name" className="w-full p-2 mb-2 bg-gray-700 border border-gray-600 rounded" />
-                    <input type="email" placeholder="Your Email" className="w-full p-2 mb-2 bg-gray-700 border border-gray-600 rounded" />
-                    <textarea placeholder="Your Message" className="w-full p-2 mb-2 bg-gray-700 border border-gray-600 rounded"></textarea>
-                    <button type="submit" className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700">Send Message</button>
-                </form> 
-            </div>
-           
-        </div>
-        <div className="div"></div>
-        <div className="pt-6 mt-6 text-center text-gray-300 border-t border-gray-800">
-            <p> © 2026 Powered by PENTACLOVER Ltd. All rights reserved. </p>
-        </div>
+    <footer id="contacts" className="relative px-8 py-16 text-white bg-slate-900 border-t border-slate-800 md:px-16 lg:px-28">
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
+        {/* Office Address */}
         <div>
-            <h2 className="mb-4 text-lg font-weight-300"> Follow Us</h2>
-            <ul className="flex space-x-4 text-gray-300">
-                <li>Facebook</li>
-                <li>Twitter</li>
-                <li>LinkedIn</li>
-                <li>Instagram</li>
-            </ul>
+          <h2 className="mb-4 text-lg font-semibold tracking-wide text-white">Office Address</h2>
+          <div className="space-y-1.5 text-sm text-gray-300 font-light">
+            <p className="font-medium text-gray-200">Advocate Eva Nduta Munene</p>
+            <p>Block B, 3rd Floor, Suite 3.2</p>
+            <p>KMA Center, Chyulu Road</p>
+            <p>Upper Hill, Nairobi, Kenya</p>
+            <p>P.O. Box 40964-00100</p>
+            <p className="pt-2">
+              <span className="text-gray-400">Phone: </span>
+              <a href="tel:+254701857030" className="hover:text-amber-400 transition-colors">
+                +254 701-857-030
+              </a>
+            </p>
+            <p>
+              <span className="text-gray-400">Email: </span>
+              <a href="mailto:info@enmlegal.com" className="hover:text-amber-400 transition-colors">
+                info@enmlegal.com
+              </a>
+            </p>
+          </div>
         </div>
-    </footer>
-  )
-}
 
-export default Footer
+        {/* Quick Links */}
+        <div>
+          <h2 className="mb-4 text-lg font-semibold tracking-wide text-white">Quick Links</h2>
+          <ul className="space-y-2 text-sm text-gray-300">
+            <li>
+              <button
+                type="button"
+                onClick={() => handleQuickLink('home', 'home', '/home')}
+                className="text-left text-gray-300 hover:text-white hover:translate-x-1 transition-all cursor-pointer font-light"
+              >
+                Home
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => handleQuickLink('about', 'about', '/about')}
+                className="text-left text-gray-300 hover:text-white hover:translate-x-1 transition-all cursor-pointer font-light"
+              >
+                About
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => handleQuickLink('practice Areas', 'services', '/practice-areas')}
+                className="text-left text-gray-300 hover:text-white hover:translate-x-1 transition-all cursor-pointer font-light"
+              >
+                Practice Areas
+              </button>
+            </li>
+            {hasBlogPosts && (
+              <li>
+                <button
+                  type="button"
+                  onClick={() => handleQuickLink('blog', 'blog', '/blog')}
+                  className="text-left text-gray-300 hover:text-white hover:translate-x-1 transition-all cursor-pointer font-light"
+                >
+                  Blog
+                </button>
+              </li>
+            )}
+            <li>
+              <button
+                type="button"
+                onClick={() => handleQuickLink('contacts', 'contacts', '/contacts')}
+                className="text-left text-gray-300 hover:text-white hover:translate-x-1 transition-all cursor-pointer font-light"
+              >
+                Contacts
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        {/* Legal Links */}
+        <div>
+          <h2 className="mb-4 text-lg font-semibold tracking-wide text-white">Legal</h2>
+          <ul className="space-y-2 text-sm text-gray-300">
+            <li>
+              <Link
+                to="/terms"
+                className="block text-gray-300 hover:text-white hover:translate-x-1 transition-all font-light"
+              >
+                Terms of Service
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/privacy"
+                className="block text-gray-300 hover:text-white hover:translate-x-1 transition-all font-light"
+              >
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/license"
+                className="block text-gray-300 hover:text-white hover:translate-x-1 transition-all font-light"
+              >
+                License & Credentials
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Contact Form */}
+        <div>
+          <h2 className="mb-4 text-lg font-semibold tracking-wide text-white">Contact Us</h2>
+          <p className="text-xs text-gray-300 font-light leading-relaxed mb-4">
+            We are here to help you with your legal needs. Reach out to our advocates anytime.
+          </p>
+          {formSubmitted ? (
+            <div className="p-3 text-xs text-emerald-300 bg-emerald-950/60 border border-emerald-700/50 rounded-lg">
+              ✓ Thank you for reaching out! We have received your message and will respond promptly.
+            </div>
+          ) : (
+            <form onSubmit={handleContactSubmit} className="space-y-2.5">
+              <input
+                type="text"
+                required
+                placeholder="Your Name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-3 py-2 text-sm text-white bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:border-royal focus:ring-1 focus:ring-royal transition"
+              />
+              <input
+                type="email"
+                required
+                placeholder="Your Email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full px-3 py-2 text-sm text-white bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:border-royal focus:ring-1 focus:ring-royal transition"
+              />
+              <textarea
+                required
+                rows={3}
+                placeholder="Your Legal Inquiry"
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                className="w-full px-3 py-2 text-sm text-white bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:border-royal focus:ring-1 focus:ring-royal transition"
+              />
+              <button
+                type="submit"
+                className="w-full px-4 py-2 text-sm font-medium text-white bg-royal hover:bg-royal/80 rounded-lg transition-colors cursor-pointer"
+              >
+                Send Message
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom Bar & Social Links */}
+      <div className="pt-10 mt-12 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+        <p>© 2026 ENM Legal • Advocate Eva Nduta Munene. All rights reserved.</p>
+        <div className="flex items-center space-x-6">
+          <a
+            href="https://facebook.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors"
+          >
+            Facebook
+          </a>
+          <a
+            href="https://twitter.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors"
+          >
+            Twitter / X
+          </a>
+          <a
+            href="https://linkedin.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors"
+          >
+            LinkedIn
+          </a>
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors"
+          >
+            Instagram
+          </a>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;

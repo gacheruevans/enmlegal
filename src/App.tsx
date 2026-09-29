@@ -13,6 +13,10 @@ import { BlogPostList, BlogPostCreate, BlogPostEdit, BlogPostShow } from "./page
 import { CategoryList } from "./pages/categories/list";
 import { isTokenExpired, clearAuth } from "./lib/auth";
 
+import { TermsOfService } from "./pages/legal/TermsOfService";
+import { PrivacyPolicy } from "./pages/legal/PrivacyPolicy";
+import { License } from "./pages/legal/License";
+
 const AdminRoute = () => {
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   if (!token || isTokenExpired(token)) {
@@ -58,11 +62,27 @@ function App() {
         }}
       >
         <Routes>
-          {/* Public Landing Page */}
+          {/* Public Landing Page & Clean Section Routes (NO `#` in URL) */}
           <Route path="/" element={<Layout />} />
+          <Route path="/home" element={<Layout />} />
+          <Route path="/about" element={<Layout />} />
+          <Route path="/practice-areas" element={<Layout />} />
+          <Route path="/services" element={<Layout />} />
+          <Route path="/blog" element={<Layout />} />
+          <Route path="/contacts" element={<Layout />} />
+
+          {/* Legal Pages */}
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/license" element={<License />} />
+
+          {/* Blog Article View */}
           <Route path="/view" element={<ViewPost />} />
           <Route path="/view/:id" element={<ViewPost />} />
           <Route path="/blog/:id" element={<ViewPost />} />
+
           {/* Login Page */}
           <Route path="/login" element={<Login />} />
 

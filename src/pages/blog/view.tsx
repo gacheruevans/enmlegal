@@ -27,111 +27,6 @@ type BlogPostDetail = {
   author?: { name?: string; role?: string; imageUrl?: string | null } | null;
 };
 
-const samplePosts: BlogPostDetail[] = [
-  {
-    id: "sample-1",
-    title: "Probate Administration: Navigating the Legal Landscape",
-    description:
-      "A practical guide to understanding the probate process in Kenya and the responsibilities of executors, administrators, and beneficiaries.",
-    content:
-      "Probate administration requires careful planning, accurate documentation, and sound legal guidance. This article outlines the practical steps involved in estate administration in Kenya, including obtaining grants, proving the will, identifying assets, settling liabilities, and distributing the estate in accordance with the law.",
-    date: "Mar 16, 2025",
-    datetime: "2025-03-16",
-    likes: 12,
-    category: { title: "Administration" },
-    author: {
-      name: "Advocate Eva Nduta Munene",
-      role: "Founding Partner",
-      imageUrl: "/profile.png",
-    },
-  },
-  {
-    id: "sample-2",
-    title: "Real Estate & Conveyancing: A Comprehensive Guide",
-    description:
-      "A clear overview of conveyancing steps from search to transfer, with practical guidance for buyers, sellers, and investors.",
-    content:
-      "Conveyancing in Kenya involves due diligence, sale agreement review, title verification, transfer documentation, and registration safeguards that protect both the buyer and the seller. A strong legal process helps avoid disputes later and ensures that ownership is transferred correctly.",
-    date: "Apr 16, 2025",
-    datetime: "2025-04-16",
-    likes: 24,
-    category: { title: "Realestate" },
-    author: {
-      name: "Advocate Eva Nduta Munene",
-      role: "Founding Partner",
-      imageUrl: "/profile.png",
-    },
-  },
-  {
-    id: "sample-3",
-    title: "Banking Securities: An Introduction to Banking Securities & Collateral Law in Kenya",
-    description:
-      "An introduction to secured lending, collateral, and the legal structure of banking securities in Kenya.",
-    content:
-      "Collateral and banking securities should be structured and documented carefully to ensure legal enforceability and protection for all parties involved. This article explains how charges, mortgages, and debentures fit into secured lending arrangements.",
-    date: "Jun 16, 2025",
-    datetime: "2025-06-16",
-    likes: 18,
-    category: { title: "Banking" },
-    author: {
-      name: "Advocate Eva Nduta Munene",
-      role: "Founding Partner",
-      imageUrl: "/profile.png",
-    },
-  },
-  {
-    id: "sample-4",
-    title: "Dispute Resolution: Effective Strategies for Resolving Legal Conflicts",
-    description:
-      "A balanced perspective on mediation, arbitration, and litigation for efficient dispute resolution.",
-    content:
-      "Effective dispute resolution strategies often balance legal rights, business goals, and long-term relationships. This article highlights the practical differences between mediation, arbitration, and litigation in the Kenyan context.",
-    date: "Apr 16, 2024",
-    datetime: "2024-04-16",
-    likes: 31,
-    category: { title: "Social" },
-    author: {
-      name: "Advocate Eva Nduta Munene",
-      role: "Founding Partner",
-      imageUrl: "/profile.png",
-    },
-  },
-  {
-    id: "sample-5",
-    title: "Startups & SMEs: Legal Essentials for Entrepreneurs",
-    description:
-      "A practical legal checklist for founders navigating registration, contracts, funding, and compliance.",
-    content:
-      "Startups need a strong legal foundation from incorporation through funding agreements and day-to-day governance. This article covers the key legal essentials for founders and SMEs in Kenya as they scale and grow.",
-    date: "May 16, 2024",
-    datetime: "2024-05-16",
-    likes: 45,
-    category: { title: "Startups" },
-    author: {
-      name: "Advocate Eva Nduta Munene",
-      role: "Founding Partner",
-      imageUrl: "/profile.png",
-    },
-  },
-  {
-    id: "sample-6",
-    title: "Legal Audit & Compliance: Ensuring Your Business Meets Regulatory Standards",
-    description:
-      "How legal audits help organizations identify compliance risks, strengthen controls, and prevent penalties.",
-    content:
-      "Legal compliance reviews help businesses identify gaps, improve controls, and reduce exposure to regulatory penalties. This article explains why proactive legal audits remain a valuable tool for modern organizations.",
-    date: "Jun 16, 2024",
-    datetime: "2024-06-16",
-    likes: 29,
-    category: { title: "Audits" },
-    author: {
-      name: "Advocate Eva Nduta Munene",
-      role: "Founding Partner",
-      imageUrl: "/profile.png",
-    },
-  },
-];
-
 export const ViewPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -155,22 +50,13 @@ export const ViewPost = () => {
         return;
       }
 
-      const sampleMatch = samplePosts.find((entry) => entry.id === id);
-      if (sampleMatch) {
-        setPost(sampleMatch);
-        setLikesCount(sampleMatch.likes || 0);
-        setHasLiked(localStorage.getItem(`liked_post_${sampleMatch.id}`) === "true");
-        setLoading(false);
-        return;
-      }
-
       try {
         const { data } = await api.get(`/posts/${id}`);
         setPost(data);
         setLikesCount(data.likes || 0);
         setHasLiked(localStorage.getItem(`liked_post_${data.id}`) === "true");
       } catch {
-        setError("The requested article is not available right now.");
+        setError("The requested article could not be found or is not available.");
       } finally {
         setLoading(false);
       }
@@ -181,7 +67,7 @@ export const ViewPost = () => {
 
   // Record user view count automatically (visible to admins only in dashboard)
   useEffect(() => {
-    if (post && post.id && !post.id.startsWith("sample-")) {
+    if (post && post.id) {
       const sessionKey = `viewed_post_${post.id}`;
       if (!sessionStorage.getItem(sessionKey)) {
         sessionStorage.setItem(sessionKey, "true");
@@ -209,13 +95,11 @@ export const ViewPost = () => {
 
     setIsLiking(true);
     try {
-      if (!post.id.startsWith("sample-")) {
-        const res = await api.post(`/posts/${post.id}/like`, {
-          action: nextLiked ? "like" : "unlike",
-        });
-        if (typeof res.data?.likes === "number") {
-          setLikesCount(res.data.likes);
-        }
+      const res = await api.post(`/posts/${post.id}/like`, {
+        action: nextLiked ? "like" : "unlike",
+      });
+      if (typeof res.data?.likes === "number") {
+        setLikesCount(res.data.likes);
       }
     } catch (err) {
       console.error("Failed to sync like state with server", err);

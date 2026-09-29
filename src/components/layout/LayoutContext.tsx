@@ -4,6 +4,8 @@ export interface LayoutContextValue {
   activeSection: string;
   manualSelected: string | null;
   setManualSelected: (val: string | null) => void;
+  hasBlogPosts: boolean;
+  setHasBlogPosts: (val: boolean) => void;
 }
 
 const LayoutContext = createContext<LayoutContextValue | undefined>(undefined);
@@ -12,8 +14,16 @@ export const LayoutProvider: React.FC<React.PropsWithChildren<{ value: LayoutCon
   return <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>;
 };
 
-export const useLayoutContext = () => {
+export const useLayoutContext = (): LayoutContextValue => {
   const ctx = useContext(LayoutContext);
-  if (!ctx) throw new Error('useLayoutContext must be used within LayoutProvider');
+  if (!ctx) {
+    return {
+      activeSection: '',
+      manualSelected: null,
+      setManualSelected: () => {},
+      hasBlogPosts: true,
+      setHasBlogPosts: () => {},
+    };
+  }
   return ctx;
 };

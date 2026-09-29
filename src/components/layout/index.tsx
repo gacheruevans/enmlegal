@@ -11,10 +11,43 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("");
   const [manualSelected, setManualSelected] = useState<string | null>(null);
+  const [hasBlogPosts, setHasBlogPosts] = useState<boolean>(true);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
+  // Map section IDs to clean browser paths (no hash)
+  const sectionPathMap: Record<string, string> = {
+    home: '/home',
+    about: '/about',
+    services: '/practice-areas',
+    blog: '/blog',
+    contacts: '/contacts',
+  };
+
+  // On initial mount or URL load, scroll to section matching clean pathname
   useEffect(() => {
-    const sectionIds = ["home", "about", "services", "blog"]; // align with nav (renamed hero->home)
+    const pathToSection: Record<string, string> = {
+      '/': 'home',
+      '/home': 'home',
+      '/about': 'about',
+      '/practice-areas': 'services',
+      '/services': 'services',
+      '/blog': 'blog',
+      '/contacts': 'contacts',
+    };
+    const targetSection = pathToSection[window.location.pathname];
+    if (targetSection && targetSection !== 'home') {
+      const timer = setTimeout(() => {
+        const el = document.getElementById(targetSection);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 180);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  useEffect(() => {
+    const sectionIds = ["home", "about", "services", ...(hasBlogPosts ? ["blog"] : []), "contacts"];
     const sections = sectionIds
       .map(id => document.getElementById(id))
       .filter((el): el is HTMLElement => !!el);
@@ -32,7 +65,7 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
         if (visible.length) {
           const id = visible[0].target.id;
           setActiveSection(id);
-          // If user is scrolling (not a manual click) and the newly active section differs from manualSelected, clear manualSelected so highlight follows scroll.
+          // If user is scrolling and the newly active section differs from manualSelected, clear manualSelected so highlight follows scroll.
           if (manualSelected && manualSelected !== id && window.scrollY > 20) {
             setManualSelected(null);
           }
@@ -64,26 +97,26 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
       observerRef.current?.disconnect();
       window.removeEventListener('scroll', onScroll);
     };
-  }, [manualSelected, activeSection]);
+  }, [manualSelected, activeSection, hasBlogPosts]);
 
-  // Sync hash when active section changes (avoid jump by using history API)
+  // Sync clean pathname when active section changes (NO `#` hash in URL)
   useEffect(() => {
     if (activeSection) {
-      const currentHash = window.location.hash.replace('#', '');
-      if (currentHash !== activeSection) {
-        history.replaceState(null, '', `#${activeSection}`);
+      const targetPath = sectionPathMap[activeSection];
+      if (targetPath && window.location.pathname !== targetPath && !manualSelected) {
+        window.history.replaceState(null, '', targetPath);
       }
     }
-  }, [activeSection]);
+  }, [activeSection, manualSelected]);
 
   const handleScrollToTop = () => {
     document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' });
-    // Reset manual selection so observer drives highlight.
+    window.history.replaceState(null, '', '/home');
     setManualSelected(null);
   };
-  // activeSection state is currently not rendered; expose via context or props if nav highlighting is needed.
+
   return (
-    <LayoutProvider value={{ activeSection, manualSelected, setManualSelected }}>
+    <LayoutProvider value={{ activeSection, manualSelected, setManualSelected, hasBlogPosts, setHasBlogPosts }}>
       <div className="layout">
         <div className="content">
           <ScrollProgressBar />
@@ -91,7 +124,7 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
           <Hero />
           <About />
           <Services />
-          <Blog />
+          {hasBlogPosts && <Blog />}
           <Footer />
           <div>{children}</div>
           <ScrollToTopButton show={showScrollTop} onClick={handleScrollToTop} />

@@ -1,14 +1,21 @@
 import React, { useEffect, useRef } from 'react';
-
-const navigation = [
-  { name: 'home', href: '/' },
-  { name: 'about', href: '/about' },
-  { name: 'practice Areas', href: '/practice-areas' },
-  { name: 'blog', href: '/blog' },
-  { name: 'contacts', href: '/contacts' },
-];
-
+import { useNavigate } from 'react-router';
 import { useLayoutContext } from '../layout/LayoutContext';
+
+interface NavItem {
+  name: string;
+  href: string;
+  path: string;
+  sectionId: string;
+}
+
+const navigation: NavItem[] = [
+  { name: 'home', href: '/home', path: '/home', sectionId: 'home' },
+  { name: 'about', href: '/about', path: '/about', sectionId: 'about' },
+  { name: 'practice Areas', href: '/practice-areas', path: '/practice-areas', sectionId: 'services' },
+  { name: 'blog', href: '/blog', path: '/blog', sectionId: 'blog' },
+  { name: 'contacts', href: '/contacts', path: '/contacts', sectionId: 'contacts' },
+];
 
 // Enhanced highlight bar with gradient, throttled rAF positioning, resize observer & reduced-motion support.
 const HighlightBar: React.FC<{ activeSection: string }> = ({ activeSection }) => {
@@ -68,21 +75,23 @@ const HighlightBar: React.FC<{ activeSection: string }> = ({ activeSection }) =>
 };
 
 export const NavBar = () => {
-  const { activeSection, manualSelected, setManualSelected } = useLayoutContext();
+  const { activeSection, manualSelected, setManualSelected, hasBlogPosts } = useLayoutContext();
+  const navigate = useNavigate();
   const liveRegionRef = useRef<HTMLDivElement | null>(null);
-  const handleNavClick = (name: string) => {
-    let sectionId = name === 'practice Areas' ? 'services' : name;
-    // Check if an element with the given id exists and is a div
-    const section = document.getElementById(sectionId);
-    if (section && section.tagName.toLowerCase() === 'div') {
+
+  const visibleNavItems = navigation.filter(item => item.name !== 'blog' || hasBlogPosts);
+
+  const handleNavClick = (item: NavItem) => {
+    const section = document.getElementById(item.sectionId);
+    if (section) {
       section.scrollIntoView({ behavior: 'smooth' });
+      window.history.pushState(null, '', item.path);
     } else {
-      window.location.href = `/#${sectionId}`;
+      navigate(item.path);
     }
-    setManualSelected(name);
-    // Announce manual selection
+    setManualSelected(item.name);
     if (liveRegionRef.current) {
-      liveRegionRef.current.textContent = `Navigated to ${name.replace('practice Areas', 'services')}`;
+      liveRegionRef.current.textContent = `Navigated to ${item.name}`;
     }
   };
   
@@ -90,7 +99,14 @@ export const NavBar = () => {
     <header className="absolute inset-x-0 top-0 z-50">
       <nav aria-label="Global" className="flex items-center justify-between p-4 lg:px-8">
         <div className="flex lg:flex-1">
-          <a href="/" className="-m-1.5 p-1.5">
+          <a
+            href="/home"
+            className="-m-1.5 p-1.5"
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavClick(navigation[0]);
+            }}
+          >
             <span className="sr-only">ENM LEGAL</span>
             <img
               alt="./logo_white_text.png"
@@ -116,13 +132,14 @@ export const NavBar = () => {
             const next = links[nextIdx];
             next?.focus();
             const name = next?.getAttribute('data-name');
-            if (name) handleNavClick(name);
+            const targetItem = visibleNavItems.find(i => i.name === name);
+            if (targetItem) handleNavClick(targetItem);
           }}
           role="menubar"
           aria-label="Primary"
         >
-          {navigation.map((item) => {
-            const observedActive = activeSection === item.name || (item.name === 'practice Areas' && activeSection === 'services');
+          {visibleNavItems.map((item) => {
+            const observedActive = activeSection === item.name || (item.name === 'practice Areas' && activeSection === 'services') || (item.name === 'contacts' && activeSection === 'contacts');
             const isActive = manualSelected ? manualSelected === item.name : observedActive;
             return (
               <div className="py-1 space-y-2" key={item.name}>
@@ -134,7 +151,7 @@ export const NavBar = () => {
                   aria-current={isActive ? 'page' : undefined}
                   onClick={(e) => {
                     e.preventDefault();
-                    handleNavClick(item.name);
+                    handleNavClick(item);
                   }}
                 >
                   {item.name}
@@ -148,5 +165,6 @@ export const NavBar = () => {
         <div className="hidden lg:flex lg:flex-1 lg:justify-end" />
       </nav>
     </header>
-  )
+  );
 };
+
