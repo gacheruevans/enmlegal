@@ -45,7 +45,7 @@ async function bootstrap() {
     : [
       'http://localhost:5174',
       'http://localhost:5173',
-      'https://https://enmlegal-bsgmawwwq-gacheruevans-projects.vercel.app/#home',
+      'https://enmlegal-9jm9.vercel.app/',
       'http://localhost:3000'];
 
   app.enableCors({
