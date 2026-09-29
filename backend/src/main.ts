@@ -7,6 +7,8 @@ import { AppModule } from './app.module';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import express, { Express } from 'express';
 import { join } from 'path';
 
 function createValidationPipe() {
@@ -36,17 +38,24 @@ function configureSwagger(app: NestExpressApplication) {
   );
 }
 
-async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+const server: Express = express();
+let isAppInitialized = false;
+
+export async function createNestApp(): Promise<NestExpressApplication> {
+  const app = await NestFactory.create<NestExpressApplication>(
+    AppModule,
+    new ExpressAdapter(server),
+  );
+
   app.useGlobalPipes(createValidationPipe());
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
   const configuredOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
     : [
-      'http://localhost:5174',
-      'http://localhost:5173',
-      'https://enmlegal-9jm9.vercel.app/',
-      'http://localhost:3000'];
+        'http://localhost:5174',
+        'http://localhost:5173',
+        'https://enmlegal-9jm9.vercel.app',
+        'http://localhost:3000',
+      ];
 
   app.enableCors({
     origin: configuredOrigins,
@@ -59,10 +68,29 @@ async function bootstrap() {
 
   configureSwagger(app);
 
+  await app.init();
+  isAppInitialized = true;
+  return app;
+}
+
+// Standalone server for local development
+async function bootstrap() {
+  const app = await createNestApp();
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
   await app.listen(port);
 
-  Logger.log(
-    `Application is running on port: ${port}`,
-  );
+  Logger.log(`Application is running on port: ${port}`);
 }
-void bootstrap();
+
+// Only listen on port if not running in Vercel serverless environment
+if (!process.env.VERCEL) {
+  void bootstrap();
+}
+
+// Default export handler for Vercel serverless functions
+export default async function handler(req: any, res: any) {
+  if (!isAppInitialized) {
+    await createNestApp();
+  }
+  return server(req, res);
+}
