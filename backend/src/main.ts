@@ -7,90 +7,133 @@ import { AppModule } from './app.module';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import type { NestExpressApplication } from '@nestjs/platform-express';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import express, { Express } from 'express';
 import { join } from 'path';
 
-function createValidationPipe() {
-  return new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  });
-}
+import helmet from 'helmet';
+import * as express from 'express';
+import { ConfigService } from '@nestjs/config';
 
-function configureSwagger(app: NestExpressApplication) {
-  if (process.env.NODE_ENV === 'production') {
-    return;
+
+let cachedApp: NestExpressApplication;
+
+export async function bootstrapApp(): Promise<NestExpressApplication> {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Production security assertions (evaluated after ConfigModule loads .env)
+  const configService = app.get(ConfigService);
+  const jwtSecret = configService.get<string>('JWT_SECRET') || process.env.JWT_SECRET;
+  if (!jwtSecret || jwtSecret.includes('change-in-production') || jwtSecret.length < 32) {
+    if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
+      throw new Error(
+        'SECURITY CRITICAL: JWT_SECRET must be configured with a high-entropy secret (at least 32 chars) in production.',
+      );
+    } else {
+      console.warn(
+        '⚠️ WARNING: JWT_SECRET is not configured or is under 32 characters. Please set JWT_SECRET in environment variables.',
+      );
+    }
   }
 
+  // Security HTTP headers
+  app.use(
+    helmet({
+      crossOriginEmbedderPolicy: false,
+    }),
+  );
+
+  // Payload body size limits — safeguard against buffer exhaustion / Memory DoS
+  app.use(express.json({ limit: '100kb' }));
+  app.use(express.urlencoded({ extended: true, limit: '100kb' }));
+
+  // Global prefix — exclude root so GET / serves the health check
+  app.setGlobalPrefix('api/v1', {
+    exclude: ['/'],
+  });
+
+  // CORS — allow Next.js frontend (production, preview deployments, local dev)
+  const allowedOrigins = [
+    'http://localhost:5174',
+    'http://localhost:5173',
+    'https://enmlegal-9jm9.vercel.app',
+    'http://localhost:3000',
+    process.env.FRONTEND_URL,
+  ].filter(Boolean) as string[];
+
+  app.enableCors({
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('vercel.app')) {
+        callback(null, true);
+      }
+      else {
+        callback(new Error(`CORS blocked for origin: ${origin}`));
+      }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    credentials: true,
+  });
+
+  // Global Validation pipe with strict sanitization and whitelist
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: false,
+      },
+    }),
+  );
+
+  // Swagger / OpenAPI docs
   const config = new DocumentBuilder()
     .setTitle('ENM LEGAL API')
     .setDescription('API documentation for ENM LEGAL')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  Logger.log(
-    `Swagger documentation: http://localhost:${process.env.PORT ?? 3000}/api/docs`,
-  );
-}
-
-const server: Express = express();
-let isAppInitialized = false;
-
-export async function createNestApp(): Promise<NestExpressApplication> {
-  const app = await NestFactory.create<NestExpressApplication>(
-    AppModule,
-    new ExpressAdapter(server),
-  );
-
-  app.useGlobalPipes(createValidationPipe());
-  const configuredOrigins = process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
-    : [
-        'http://localhost:5174',
-        'http://localhost:5173',
-        'https://enmlegal-9jm9.vercel.app',
-        'http://localhost:3000',
-      ];
-
-  app.enableCors({
-    origin: configuredOrigins,
-    credentials: true,
-  });
-
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads/',
   });
 
-  configureSwagger(app);
-
   await app.init();
-  isAppInitialized = true;
   return app;
 }
 
-// Standalone server for local development
-async function bootstrap() {
-  const app = await createNestApp();
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-  await app.listen(port);
-
-  Logger.log(`Application is running on port: ${port}`);
-}
-
-// Only listen on port if not running in Vercel serverless environment
-if (!process.env.VERCEL) {
-  void bootstrap();
-}
-
-// Default export handler for Vercel serverless functions
-export default async function handler(req: any, res: any) {
-  if (!isAppInitialized) {
-    await createNestApp();
+// Handler for Vercel Serverless Functions
+export default async function (req: any, res: any) {
+  try {
+    if (!cachedApp) {
+      cachedApp = await bootstrapApp();
+    }
+    const server = cachedApp.getHttpAdapter().getInstance();
+    return server(req, res);
+  } catch (err: any) {
+    console.error('⚠️ Vercel serverless handler bootstrap error:', err);
+    if (res && typeof res.status === 'function') {
+      return res.status(500).json({
+        statusCode: 500,
+        message: 'Serverless Function Execution Error during application bootstrap',
+        error: err?.message || String(err),
+        stack: err?.stack || null,
+      });
+    }
+    throw err;
   }
-  return server(req, res);
+}
+
+// local standalone server
+async function bootstrap() {
+  const app = await bootstrapApp();
+  const port = process.env.PORT ?? 3001;
+  await app.listen(port);
+  Logger.log(`ENMLegal API is running on: http://localhost:${port}`);
+  Logger.log(`Swagger docs: http://localhost:${port}/api/docs`);
+}
+
+if (!process.env.VERCEL && require.main === module) {
+  bootstrap();
 }
