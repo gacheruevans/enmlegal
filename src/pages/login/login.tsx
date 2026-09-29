@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { EnvelopeIcon, KeyIcon } from '@heroicons/react/24/outline';
-import { useNavigate } from "react-router";
+import { useState, useEffect } from 'react';
+import { EnvelopeIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { useNavigate, useSearchParams } from "react-router";
 import api from '../../lib/api';
+import { isTokenExpired } from '../../lib/auth';
 
 export const Login = () => {
     const [email, setEmail] = useState('');
@@ -9,13 +10,23 @@ export const Login = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const isExpired = searchParams.get('expired') === '1';
+
+    useEffect(() => {
+        // If the user already has a valid, non-expired token, send them to the admin dashboard
+        const token = localStorage.getItem('token');
+        if (token && !isTokenExpired(token)) {
+            navigate('/admin/blog-posts', { replace: true });
+        }
+    }, [navigate]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
         try {
-            const { data } = await api.post('/auth/login', {email, password});
+            const { data } = await api.post('/auth/login', { email, password });
             const token = data.accessToken || data.token;
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(data.user));
@@ -44,6 +55,13 @@ export const Login = () => {
                     <div className="relative z-10">
                         <h2 className="mb-2 text-xl font-bold font-mea-culpa text-royal">Welcome Back!</h2>
                         <p className="mb-8 text-sm text-slate-500">Sign in to your account to continue</p>
+
+                        {isExpired && !error && (
+                            <div className="flex items-center gap-3 p-4 mb-6 text-xs font-semibold text-amber-800 border border-amber-200 bg-amber-50 rounded-2xl">
+                                <ExclamationCircleIcon className="w-5 h-5 text-amber-600 shrink-0" />
+                                <span>Your session has expired. Please sign in again to continue.</span>
+                            </div>
+                        )}
 
                         <form onSubmit={handleLogin} className="space-y-6">
                             <div className="space-y-2">

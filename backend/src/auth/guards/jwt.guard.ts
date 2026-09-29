@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorators';
 
@@ -14,6 +15,7 @@ export class JwtAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
+    private configService: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -34,10 +36,20 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException('Access token missing');
     }
     try {
+      const secret =
+        this.configService.get<string>('JWT_SECRET') ||
+        this.configService.get<string>('SESSION_KEY') ||
+        process.env.JWT_SECRET ||
+        process.env.SESSION_KEY;
+
+      if (!secret) {
+        throw new UnauthorizedException('JWT_SECRET or SESSION_KEY is not configured in .env');
+      }
+
       const payload = await this.jwtService.verifyAsync<
         Record<string, unknown>
       >(token, {
-        secret: process.env.JWT_SECRET || 'enmlegal-blog-jwt-secret-key-2026!',
+        secret,
       });
       request.user = payload;
     } catch {
@@ -48,6 +60,21 @@ export class JwtAuthGuard implements CanActivate {
 
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    if (type === 'Bearer' && token) {
+      return token;
+    }
+
+    // Support extracting from session cookie if configured
+    const sessionCookieName =
+      this.configService.get<string>('SESSION_COOKIE') ||
+      process.env.SESSION_COOKIE ||
+      'session';
+
+    const cookies = (request as any).cookies;
+    if (cookies && cookies[sessionCookieName]) {
+      return cookies[sessionCookieName];
+    }
+
+    return undefined;
   }
 }

@@ -16,9 +16,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: (config: ConfigService): JwtModuleOptions => {
         const secret =
           config.get<string>('JWT_SECRET') ||
-          'enmlegal-blog-jwt-secret-key-2026!';
+          config.get<string>('SESSION_KEY') ||
+          process.env.JWT_SECRET ||
+          process.env.SESSION_KEY;
         if (!secret) {
-          throw new Error('JWT_SECRET environment variable is required');
+          throw new Error('JWT_SECRET or SESSION_KEY environment variable is required');
         }
         const expiresInValue = config.get<string>('JWT_EXPIRES_IN') || '7d';
         const signOptions: JwtSignOptions = {

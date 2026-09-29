@@ -1,7 +1,8 @@
 import { DataProvider } from "@refinedev/core";
 import axios from "axios";
 
-const API_URL = "http://localhost:3000";
+import { isTokenExpired, handleSessionExpired, clearAuth } from "../lib/auth";
+import { API_URL } from "../lib/config";
 
 export const axiosInstance = axios.create({
   baseURL: API_URL,
@@ -9,11 +10,29 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  if (token && config.headers) {
-    config.headers["Authorization"] = `Bearer ${token}`;
+  if (token) {
+    if (isTokenExpired(token)) {
+      clearAuth();
+      if (typeof window !== "undefined" && window.location.pathname.startsWith("/admin")) {
+        handleSessionExpired();
+        return Promise.reject(new axios.Cancel("Session expired. Please log in again."));
+      }
+    } else if (config.headers) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
   }
   return config;
 });
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      handleSessionExpired();
+    }
+    return Promise.reject(error);
+  }
+);
 
 const getEndpoint = (resource: string) => {
   if (resource === "blog_posts") return "/posts";

@@ -1,6 +1,7 @@
 import { useGetIdentity, useLogout } from "@refinedev/core";
 import { useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router";
+import { isTokenExpired, getTimeUntilExpiration, handleSessionExpired } from "../../lib/auth";
 
 export const AdminLayout = () => {
   const navigate = useNavigate();
@@ -10,12 +11,55 @@ export const AdminLayout = () => {
   const { mutate: logout } = useLogout();
 
   useEffect(() => {
-    if (!token) {
-      navigate("/login");
+    // 1. Initial check: If token is missing or expired, redirect immediately
+    if (!token || isTokenExpired(token)) {
+      handleSessionExpired();
+      navigate("/login?expired=1", { replace: true });
+      return;
     }
+
+    // 2. Set timer for remaining token lifetime
+    const msRemaining = getTimeUntilExpiration(token);
+    let timeoutId: NodeJS.Timeout | undefined;
+    if (msRemaining !== null && msRemaining > 0) {
+      timeoutId = setTimeout(() => {
+        handleSessionExpired();
+      }, msRemaining);
+    } else if (msRemaining === 0) {
+      handleSessionExpired();
+      return;
+    }
+
+    // 3. Periodic check every 10 seconds (handles system sleep / background tab throttling)
+    const intervalId = setInterval(() => {
+      const currentToken = localStorage.getItem("token");
+      if (!currentToken || isTokenExpired(currentToken)) {
+        handleSessionExpired();
+      }
+    }, 10000);
+
+    // 4. Multi-tab synchronization / manual logout events
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "token" && !e.newValue) {
+        handleSessionExpired();
+      }
+    };
+    const handleAuthLogout = () => {
+      navigate("/login?expired=1", { replace: true });
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("auth:logout", handleAuthLogout);
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      clearInterval(intervalId);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("auth:logout", handleAuthLogout);
+    };
   }, [token, navigate]);
 
-  if (!token) return null;
+  if (!token || isTokenExpired(token)) return null;
 
   const isBlogActive = location.pathname.startsWith("/admin/blog-posts");
   const isCategoryActive = location.pathname.startsWith("/admin/categories");

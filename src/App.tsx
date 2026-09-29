@@ -11,10 +11,22 @@ import { dataProvider } from "./providers/dataProvider";
 import { authProvider } from "./providers/authProvider";
 import { BlogPostList, BlogPostCreate, BlogPostEdit, BlogPostShow } from "./pages/blog-posts";
 import { CategoryList } from "./pages/categories/list";
+import { isTokenExpired, clearAuth } from "./lib/auth";
+
+const AdminRoute = () => {
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  if (!token || isTokenExpired(token)) {
+    if (token) {
+      clearAuth();
+      return <Navigate to="/login?expired=1" replace />;
+    }
+    return <Navigate to="/login" replace />;
+  }
+
+  return <AdminLayout />;
+};
 
 function App() {
-  const isAuthenticated = typeof window !== "undefined" && Boolean(localStorage.getItem("token"));
-
   return (
     <BrowserRouter>
       <Refine
@@ -55,10 +67,7 @@ function App() {
           <Route path="/login" element={<Login />} />
 
           {/* Admin Panel (Protected) */}
-          <Route
-            path="/admin"
-            element={isAuthenticated ? <AdminLayout /> : <Navigate to="/login" replace />}
-          >
+          <Route path="/admin" element={<AdminRoute />}>
             <Route index element={<Navigate to="/admin/blog-posts" replace />} />
             <Route path="blog-posts" element={<BlogPostList />} />
             <Route path="blog-posts/create" element={<BlogPostCreate />} />

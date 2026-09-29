@@ -1,7 +1,7 @@
 import { AuthProvider } from "@refinedev/core";
 import axios from "axios";
-
-const API_URL = "http://localhost:3000";
+import { isTokenExpired, clearAuth } from "../lib/auth";
+import { API_URL } from "../lib/config";
 
 export const authProvider: AuthProvider = {
   login: async ({ credential }) => {
@@ -27,8 +27,7 @@ export const authProvider: AuthProvider = {
     }
   },
   logout: async () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAuth();
     return {
       success: true,
       redirectTo: "/",
@@ -36,23 +35,26 @@ export const authProvider: AuthProvider = {
   },
   check: async () => {
     const token = localStorage.getItem("token");
-    if (token) {
+    if (token && !isTokenExpired(token)) {
       return {
         authenticated: true,
       };
     }
+    const hadToken = Boolean(token);
+    clearAuth();
     return {
       authenticated: false,
-      redirectTo: "/login",
+      redirectTo: hadToken ? "/login?expired=1" : "/login",
+      logout: true,
     };
   },
   onError: async (error) => {
     if (error.response?.status === 401 || error.response?.status === 403) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      clearAuth();
       return {
         logout: true,
-        redirectTo: "/login",
+        redirectTo: "/login?expired=1",
+        error: new Error("Session expired. Please log in again."),
       };
     }
     return {};
@@ -60,15 +62,23 @@ export const authProvider: AuthProvider = {
   getPermissions: async () => {
     const userStr = localStorage.getItem("user");
     if (userStr) {
-      const user = JSON.parse(userStr);
-      return user.role;
+      try {
+        const user = JSON.parse(userStr);
+        return user.role;
+      } catch {
+        return null;
+      }
     }
     return null;
   },
   getIdentity: async () => {
     const userStr = localStorage.getItem("user");
     if (userStr) {
-      return JSON.parse(userStr);
+      try {
+        return JSON.parse(userStr);
+      } catch {
+        return null;
+      }
     }
     return null;
   },

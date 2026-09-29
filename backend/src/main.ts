@@ -39,8 +39,13 @@ function configureSwagger(app: NestExpressApplication) {
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(createValidationPipe());
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  const configuredOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
+    : ['http://localhost:5174', 'http://localhost:5173', 'http://localhost:3000'];
+
   app.enableCors({
-    origin: ['http://localhost:5174', 'http://localhost:5173', 'http://localhost:3000'],
+    origin: configuredOrigins,
     credentials: true,
   });
 
@@ -50,10 +55,10 @@ async function bootstrap() {
 
   configureSwagger(app);
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(port);
 
   Logger.log(
-    `Application is running on: http://localhost:${process.env.PORT ?? 3000}`,
+    `Application is running on port: ${port}`,
   );
 }
 void bootstrap();
