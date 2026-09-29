@@ -42,7 +42,11 @@ async function bootstrap() {
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
   const configuredOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
-    : ['http://localhost:5174', 'http://localhost:5173', 'http://localhost:3000'];
+    : [
+      'http://localhost:5174',
+      'http://localhost:5173',
+      'https://https://enmlegal-bsgmawwwq-gacheruevans-projects.vercel.app/#home',
+      'http://localhost:3000'];
 
   app.enableCors({
     origin: configuredOrigins,
