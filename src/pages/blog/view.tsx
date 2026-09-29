@@ -28,6 +28,15 @@ type BlogPostDetail = {
   author?: { name?: string; role?: string; imageUrl?: string | null } | null;
 };
 
+const normalizeImageUrl = (url?: string | null, fallback = "/profile.png"): string => {
+  if (!url || typeof url !== "string" || !url.trim()) return fallback;
+  const trimmed = url.trim();
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("data:")) {
+    return trimmed;
+  }
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+};
+
 export const ViewPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -233,9 +242,13 @@ export const ViewPost = () => {
           <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-gray-100 text-sm">
             <div className="flex items-center gap-3">
               <img
-                src={post.author?.imageUrl || "/profile.png"}
+                src={normalizeImageUrl(post.author?.imageUrl, "/profile.png")}
                 alt={post.author?.name || "Eva Nduta Munene"}
                 className="w-11 h-11 rounded-full object-cover border border-gray-200"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "/profile.png";
+                }}
               />
               <div>
                 <p className="font-bold text-gray-900 leading-tight">
@@ -288,7 +301,7 @@ export const ViewPost = () => {
         {post.imageUrl && (
           <div className="mb-10 overflow-hidden rounded-3xl border border-gray-100 shadow-lg bg-gray-50">
             <img
-              src={post.imageUrl}
+              src={normalizeImageUrl(post.imageUrl, "")}
               alt={post.title}
               className="object-cover w-full max-h-[500px]"
               referrerPolicy="no-referrer"

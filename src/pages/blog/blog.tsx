@@ -515,6 +515,10 @@ const Blog = () => {
                             alt=""
                             src={post.author.imageUrl ? post.author.imageUrl : '/profile.png'}
                             className="rounded-full size-8 bg-gray-50 object-cover border border-gray-100"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = '/profile.png';
+                            }}
                           />
                           <div className="text-xs">
                             <p className="font-semibold text-gray-900 leading-tight">
@@ -662,6 +666,10 @@ const Blog = () => {
                         alt=""
                         src={post.author.imageUrl ? post.author.imageUrl : '/profile.png'}
                         className="rounded-full size-9 bg-gray-50 object-cover border border-gray-100"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = '/profile.png';
+                        }}
                       />
                       <div className="text-xs">
                         <p className="font-semibold text-gray-900 leading-tight">{post.author.name}</p>
