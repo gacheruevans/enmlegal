@@ -260,7 +260,7 @@ export class PostsService {
 
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-    posts.forEach((post) => {
+    posts.forEach((post: any) => {
       if (post.author) {
         const auth = post.author;
         const existing = authorMap.get(auth.id);
