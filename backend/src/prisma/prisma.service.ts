@@ -1,23 +1,26 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-import { resolve } from 'path';
-import { existsSync } from 'fs';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+dotenv.config({ path: path.resolve(process.cwd(), 'backend/.env') });
 
 @Injectable()
 export class PrismaService
   extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy
-{
+  implements OnModuleInit, OnModuleDestroy {
+  private pool?: Pool;
+
   constructor() {
-    const rawUrl = process.env.DATABASE_URL || 'file:./dev.db';
-    const filePath = rawUrl.replace(/^file:/, '').replace(/["']/g, '').trim();
-    let dbPath = resolve(process.cwd(), 'backend', filePath);
-    if (!existsSync(dbPath)) {
-      dbPath = resolve(process.cwd(), filePath);
-    }
-    const adapter = new PrismaBetterSqlite3({ url: dbPath });
+    const connectionString =
+      process.env.DATABASE_URL;
+    const pool = new Pool({ connectionString });
+    const adapter = new PrismaPg(pool);
     super({ adapter });
+    this.pool = pool;
   }
 
   async onModuleInit() {
@@ -26,6 +29,9 @@ export class PrismaService
 
   async onModuleDestroy() {
     await this.$disconnect();
+    if (this.pool) {
+      await this.pool.end();
+    }
   }
 }
 
