@@ -99,7 +99,7 @@ export class PostsService {
   }
 
   async findOne(id: string) {
-    const post = await this.prisma.post.findUnique({
+    let post = await this.prisma.post.findUnique({
       where: { id },
       include: {
         category: true,
@@ -114,8 +114,27 @@ export class PostsService {
         },
       },
     });
+
     if (!post) {
-      throw new NotFoundException(`Post with ID ${id} not found`);
+      post = await this.prisma.post.findUnique({
+        where: { slug: id },
+        include: {
+          category: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+              imageUrl: true,
+            },
+          },
+        },
+      });
+    }
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID or slug "${id}" not found`);
     }
     return post;
   }

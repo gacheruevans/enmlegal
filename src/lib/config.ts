@@ -6,7 +6,21 @@
 const getBaseApiUrl = (): string => {
   let url =
     (typeof import.meta !== "undefined" &&
-      (import.meta.env?.VITE_API_URL || import.meta.env?.API_URL));
+      (import.meta.env?.VITE_API_URL || import.meta.env?.API_URL)) ||
+    "";
+
+  const isBrowser = typeof window !== "undefined";
+  const isProduction =
+    isBrowser &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1";
+
+  // If in production and url is empty or pointing to localhost, use the live deployed API
+  if (isProduction && (!url || url.includes("localhost") || url.includes("127.0.0.1"))) {
+    url = "https://enmlegal-9jm9.vercel.app/api/v1";
+  } else if (!url) {
+    url = "http://localhost:3000/api/v1";
+  }
 
   // Clean trailing slashes
   url = url.replace(/\/+$/, "");

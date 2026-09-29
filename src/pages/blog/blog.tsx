@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { Link } from 'react-router';
 import {
   ShareIcon,
   LinkIcon,
@@ -497,10 +498,10 @@ const Blog = () => {
 
                       <div className="relative group mt-1 flex-1">
                         <h3 className="font-bold text-gray-900 text-base group-hover:text-royal transition leading-snug line-clamp-2">
-                          <a href={post.href}>
+                          <Link to={post.href}>
                             <span className="absolute inset-0" />
                             {post.title}
-                          </a>
+                          </Link>
                         </h3>
                         <p className="mt-2 text-gray-600 line-clamp-3 text-xs leading-relaxed">
                           {post.description}
@@ -644,10 +645,10 @@ const Blog = () => {
 
                   <div className="relative group w-full flex-1">
                     <h3 className="font-bold text-gray-900 text-lg group-hover:text-royal transition leading-snug line-clamp-2">
-                      <a href={post.href}>
+                      <Link to={post.href}>
                         <span className="absolute inset-0" />
                         {post.title}
-                      </a>
+                      </Link>
                     </h3>
                     <p className="mt-2.5 text-gray-600 line-clamp-3 text-sm leading-relaxed">
                       {post.description}
