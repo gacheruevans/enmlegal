@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorators';
 
@@ -15,7 +14,6 @@ export class JwtAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
-    private configService: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -37,8 +35,6 @@ export class JwtAuthGuard implements CanActivate {
     }
     try {
       const secret =
-        this.configService.get<string>('JWT_SECRET') ||
-        this.configService.get<string>('SESSION_KEY') ||
         process.env.JWT_SECRET ||
         process.env.SESSION_KEY;
 
@@ -66,7 +62,6 @@ export class JwtAuthGuard implements CanActivate {
 
     // Support extracting from session cookie if configured
     const sessionCookieName =
-      this.configService.get<string>('SESSION_COOKIE') ||
       process.env.SESSION_COOKIE ||
       'session';
 
