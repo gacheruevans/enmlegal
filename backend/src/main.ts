@@ -104,13 +104,15 @@ export async function bootstrapApp(): Promise<NestExpressApplication> {
 }
 
 // Handler for Vercel Serverless Functions
+let cachedServer: any;
 export default async function (req: any, res: any) {
   try {
     if (!cachedApp) {
       cachedApp = await bootstrapApp();
+      await cachedApp.init();
+      cachedServer = cachedApp.getHttpAdapter().getInstance();
     }
-    const server = cachedApp.getHttpAdapter().getInstance();
-    return server(req, res);
+    return cachedServer(req, res);
   } catch (err: any) {
     console.error('⚠️ Vercel serverless handler bootstrap error:', err);
     if (res && typeof res.status === 'function') {
@@ -125,15 +127,16 @@ export default async function (req: any, res: any) {
   }
 }
 
-// local standalone server
-async function bootstrap() {
+// Standalone listener for local development and Vercel zero-config framework runner
+export async function bootstrap() {
   const app = await bootstrapApp();
   const port = process.env.PORT ?? 3001;
   await app.listen(port);
   Logger.log(`ENMLegal API is running on: http://localhost:${port}`);
   Logger.log(`Swagger docs: http://localhost:${port}/api/docs`);
+  return app;
 }
 
-if (!process.env.VERCEL && require.main === module) {
-  bootstrap();
-}
+bootstrap().catch((err) => {
+  Logger.error('Failed to start NestJS application:', err);
+});

@@ -18,6 +18,18 @@
     "noImplicitAny": true,
     "strictBindCallApply": true,
     "noFallthroughCasesInSwitch": true
-  }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "neon.ts",
+    "test",
+    "dist",
+    "**/*spec.ts",
+    "prisma",
+    "prisma.config.ts"
+  ]
 }
 

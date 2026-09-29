@@ -23,12 +23,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           throw new Error('JWT_SECRET or SESSION_KEY environment variable is required');
         }
         const expiresInValue = config.get<string>('JWT_EXPIRES_IN') || '7d';
-        const signOptions: JwtSignOptions = {
-          expiresIn: expiresInValue as JwtSignOptions['expiresIn'],
-        };
         return {
           secret,
-          signOptions,
+          signOptions: {
+            expiresIn: expiresInValue,
+          } as any,
         };
       },
     }),
