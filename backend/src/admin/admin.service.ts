@@ -3,6 +3,7 @@ import {
   NotFoundException,
   Logger,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LogBufferService } from './log-buffer.service';
@@ -402,20 +403,36 @@ export class AdminService {
   }
 
   /**
-   * Updates user active status
+   * Updates user active status (activation / deactivation).
+   * Allowed for both Super Admin and Admin.
+   * STRICT SECURITY RULE: No admin can deactivate a Super Admin user account.
    */
   async updateUserStatus(
     userId: string,
     dto: UpdateUserStatusDto,
     actorEmail?: string,
+    actorRole?: Role,
   ) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
+    // STRICT RULE: No admin can deactivate a Super Admin user account
     if (user.role === Role.SUPERADMIN && !dto.isActive) {
-      throw new BadRequestException('Cannot deactivate a Super Admin account');
+      this.logger.warn(
+        `Blocked attempt by ${actorRole || 'ADMIN'} (${actorEmail || 'unknown'}) to deactivate Super Admin: ${user.email}`,
+      );
+      throw new ForbiddenException(
+        'Security Violation: No administrator is permitted to deactivate a Super Administrator account.',
+      );
+    }
+
+    // Strict Rule: Non-SuperAdmins cannot modify any attribute of a SuperAdmin account
+    if (user.role === Role.SUPERADMIN && actorRole !== Role.SUPERADMIN) {
+      throw new ForbiddenException(
+        'Security Violation: Administrators do not have authorization to modify Super Administrator accounts.',
+      );
     }
 
     const updated = await this.prisma.user.update({
@@ -423,12 +440,19 @@ export class AdminService {
       data: { isActive: dto.isActive },
     });
 
+    const actionTag = dto.isActive ? 'ACCOUNT_ACTIVATED' : 'ACCOUNT_DEACTIVATED';
     await this.recordActivity({
       userId,
       userEmail: actorEmail,
-      action: 'USER_STATUS_CHANGE',
-      details: `User status set to ${dto.isActive ? 'ACTIVE' : 'DEACTIVATED'} for ${user.email}`,
+      action: actionTag,
+      details: `User account ${dto.isActive ? 'ACTIVATED' : 'DEACTIVATED'} for ${user.email} (${user.name}) by ${actorRole || 'ADMIN'} ${actorEmail || ''}`,
     });
+
+    this.logBuffer.addLog(
+      'warn',
+      'Security',
+      `User ${user.email} account ${dto.isActive ? 'ACTIVATED' : 'DEACTIVATED'} by ${actorRole || 'ADMIN'} (${actorEmail || 'System'})`,
+    );
 
     return updated;
   }

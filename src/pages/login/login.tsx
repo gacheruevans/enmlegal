@@ -354,6 +354,12 @@ export const Login: React.FC = () => {
                 >
                   Password
                 </label>
+                <Link
+                  to="/reset-password"
+                  className="text-xs font-medium text-amber-400/90 hover:text-amber-300 transition hover:underline"
+                >
+                  Forgot password?
+                </Link>
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">

@@ -4,6 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Public } from './decorators/public.decorators';
 import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
+import { PublicResetPasswordDto } from './dto/reset-password.dto';
 import { Request } from 'express';
 
 @ApiTags('auth')
@@ -21,6 +22,12 @@ export class AuthController {
   @Get('captcha')
   getCaptcha() {
     return this.authService.generateCaptcha();
+  }
+
+  @Public()
+  @Post('reset-password')
+  publicResetPassword(@Body() dto: PublicResetPasswordDto) {
+    return this.authService.publicResetPassword(dto);
   }
 
   @Public()

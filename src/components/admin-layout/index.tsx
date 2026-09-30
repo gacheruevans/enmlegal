@@ -73,6 +73,7 @@ export const AdminLayout = () => {
   const isCategoryActive = location.pathname.startsWith("/admin/categories");
   const isSuperAdminActive = location.pathname.startsWith("/admin/super-admin");
   const isSuperAdmin = identity?.role === "SUPERADMIN";
+  const isAdmin = identity?.role === "ADMIN" || isSuperAdmin;
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans text-gray-800">
@@ -105,7 +106,7 @@ export const AdminLayout = () => {
               Categories
             </button>
 
-            {isSuperAdmin && (
+            {isAdmin && (
               <div className="pt-3 mt-3 border-t border-slate-800">
                 <button
                   onClick={() => navigate("/admin/super-admin")}
@@ -116,7 +117,7 @@ export const AdminLayout = () => {
                   }`}
                 >
                   <ShieldCheckIcon className="w-4 h-4 shrink-0" />
-                  <span>Super Admin Suite</span>
+                  <span>{isSuperAdmin ? "Super Admin Suite" : "User Management"}</span>
                 </button>
               </div>
             )}

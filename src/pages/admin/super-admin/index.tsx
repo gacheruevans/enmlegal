@@ -113,7 +113,13 @@ interface AdminUserItem {
 }
 
 export const SuperAdminDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabType>("health");
+  const userStorage = typeof window !== "undefined" ? localStorage.getItem("user") : null;
+  const currentUser = userStorage ? JSON.parse(userStorage) : null;
+  const isSuperAdmin = currentUser?.role === "SUPERADMIN";
+
+  const [activeTab, setActiveTab] = useState<TabType>(() => {
+    return isSuperAdmin ? "health" : "users";
+  });
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -206,15 +212,15 @@ export const SuperAdminDashboard: React.FC = () => {
     setRefreshing(true);
     setError(null);
     try {
-      if (activeTab === "health") await fetchHealth();
-      else if (activeTab === "logs") await fetchLogs();
-      else if (activeTab === "sessions") await fetchActiveSessions();
-      else if (activeTab === "activity") await fetchActivities();
+      if (activeTab === "health" && isSuperAdmin) await fetchHealth();
+      else if (activeTab === "logs" && isSuperAdmin) await fetchLogs();
+      else if (activeTab === "sessions" && isSuperAdmin) await fetchActiveSessions();
+      else if (activeTab === "activity" && isSuperAdmin) await fetchActivities();
       else if (activeTab === "users") await fetchUsers();
     } finally {
       setRefreshing(false);
     }
-  }, [activeTab, fetchHealth, fetchLogs, fetchActiveSessions, fetchActivities, fetchUsers]);
+  }, [activeTab, isSuperAdmin, fetchHealth, fetchLogs, fetchActiveSessions, fetchActivities, fetchUsers]);
 
   // Initial load and tab change
   useEffect(() => {
@@ -265,9 +271,13 @@ export const SuperAdminDashboard: React.FC = () => {
 
   // Toggle user account active status
   const handleToggleStatus = async (user: AdminUserItem) => {
+    if (user.role === "SUPERADMIN" && user.isActive) {
+      alert("Security Violation: Super Administrator accounts cannot be deactivated.");
+      return;
+    }
     const nextStatus = !user.isActive;
     const confirmMsg = nextStatus
-      ? `Activate user account for ${user.email}?`
+      ? `Reactivate user account for ${user.email}? They will be able to log in again.`
       : `Deactivate user account for ${user.email}? They will no longer be able to log in.`;
     if (!window.confirm(confirmMsg)) return;
 
@@ -297,13 +307,15 @@ export const SuperAdminDashboard: React.FC = () => {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold uppercase tracking-wider mb-2">
               <ShieldCheckIcon className="w-4 h-4" />
-              <span>Super Administrator Suite</span>
+              <span>{isSuperAdmin ? "Super Administrator Suite" : "Administrator Suite"}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Site Health & Telemetry Center
+              {isSuperAdmin ? "Site Health & Telemetry Center" : "User Management & Account Controls"}
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
-              Real-time system diagnostics, process logs, active user sessions, full audit trail, and security credentials control.
+              {isSuperAdmin
+                ? "Real-time system diagnostics, process logs, active user sessions, full audit trail, and security credentials control."
+                : "Manage advocate and staff accounts, activate or deactivate portal access, and oversee account statuses."}
             </p>
           </div>
 
@@ -339,8 +351,8 @@ export const SuperAdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick status bar */}
-        {health && (
+        {/* Quick status bar (Super Admin Only) */}
+        {health && isSuperAdmin && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-700/60 text-xs">
             <div>
               <span className="text-slate-400 block text-[11px] uppercase">Engine Status</span>
@@ -389,58 +401,62 @@ export const SuperAdminDashboard: React.FC = () => {
 
       {/* Tab Controls */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 text-sm">
-        <button
-          onClick={() => setActiveTab("health")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
-            activeTab === "health"
-              ? "bg-slate-900 text-white shadow-sm"
-              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-          }`}
-        >
-          <ServerStackIcon className="w-4 h-4" />
-          <span>Site Health & Vitals</span>
-        </button>
+        {isSuperAdmin && (
+          <>
+            <button
+              onClick={() => setActiveTab("health")}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
+                activeTab === "health"
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <ServerStackIcon className="w-4 h-4" />
+              <span>Site Health & Vitals</span>
+            </button>
 
-        <button
-          onClick={() => setActiveTab("logs")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
-            activeTab === "logs"
-              ? "bg-slate-900 text-white shadow-sm"
-              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-          }`}
-        >
-          <CommandLineIcon className="w-4 h-4" />
-          <span>Process Logs</span>
-        </button>
+            <button
+              onClick={() => setActiveTab("logs")}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
+                activeTab === "logs"
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <CommandLineIcon className="w-4 h-4" />
+              <span>Process Logs</span>
+            </button>
 
-        <button
-          onClick={() => setActiveTab("sessions")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
-            activeTab === "sessions"
-              ? "bg-slate-900 text-white shadow-sm"
-              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-          }`}
-        >
-          <UsersIcon className="w-4 h-4" />
-          <span>Logged-in Users</span>
-          {activeUsers.filter((u) => u.isOnline).length > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-emerald-500 text-white text-[10px]">
-              {activeUsers.filter((u) => u.isOnline).length}
-            </span>
-          )}
-        </button>
+            <button
+              onClick={() => setActiveTab("sessions")}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
+                activeTab === "sessions"
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <UsersIcon className="w-4 h-4" />
+              <span>Logged-in Users</span>
+              {activeUsers.filter((u) => u.isOnline).length > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-emerald-500 text-white text-[10px]">
+                  {activeUsers.filter((u) => u.isOnline).length}
+                </span>
+              )}
+            </button>
 
-        <button
-          onClick={() => setActiveTab("activity")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
-            activeTab === "activity"
-              ? "bg-slate-900 text-white shadow-sm"
-              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-          }`}
-        >
-          <ClockIcon className="w-4 h-4" />
-          <span>User Activity Trail</span>
-        </button>
+            <button
+              onClick={() => setActiveTab("activity")}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
+                activeTab === "activity"
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <ClockIcon className="w-4 h-4" />
+              <span>User Activity Trail</span>
+            </button>
+          </>
+        )}
 
         <button
           onClick={() => setActiveTab("users")}
@@ -451,7 +467,7 @@ export const SuperAdminDashboard: React.FC = () => {
           }`}
         >
           <KeyIcon className="w-4 h-4" />
-          <span>User & Password Controls</span>
+          <span>{isSuperAdmin ? "User & Password Controls" : "User Management & Status"}</span>
         </button>
       </div>
 
@@ -948,15 +964,21 @@ export const SuperAdminDashboard: React.FC = () => {
                           u.isActive
                             ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
                             : "bg-rose-100 text-rose-800 hover:bg-rose-200"
-                        }`}
-                        title="Click to toggle status"
+                        } ${u.role === "SUPERADMIN" ? "opacity-80" : ""}`}
+                        title={
+                          u.role === "SUPERADMIN"
+                            ? "Super Administrator accounts cannot be deactivated"
+                            : u.isActive
+                            ? "Click to deactivate account"
+                            : "Click to reactivate account"
+                        }
                       >
                         <span
                           className={`w-1.5 h-1.5 rounded-full ${
                             u.isActive ? "bg-emerald-600" : "bg-rose-600"
                           }`}
                         />
-                        {u.isActive ? "Active" : "Disabled"}
+                        {u.isActive ? "Active" : "Deactivated"}
                       </button>
                     </td>
 
@@ -965,17 +987,23 @@ export const SuperAdminDashboard: React.FC = () => {
                     </td>
 
                     <td className="px-6 py-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setResetModalUser(u);
-                          setResetSuccessData(null);
-                        }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition shadow-xs cursor-pointer"
-                      >
-                        <KeyIcon className="w-3.5 h-3.5" />
-                        <span>Reset Password</span>
-                      </button>
+                      {isSuperAdmin ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setResetModalUser(u);
+                            setResetSuccessData(null);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition shadow-xs cursor-pointer"
+                        >
+                          <KeyIcon className="w-3.5 h-3.5" />
+                          <span>Reset Password</span>
+                        </button>
+                      ) : (
+                        <span className="text-xs text-slate-400 font-medium">
+                          {u.isActive ? "Authorized" : "Deactivated"}
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}

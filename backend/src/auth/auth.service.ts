@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
+import { PublicResetPasswordDto } from './dto/reset-password.dto';
 import * as bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
 import { v4 as uuidv4 } from 'uuid';
@@ -98,7 +99,7 @@ export class AuthService {
       where: { email: dto.email.toLowerCase().trim() },
     });
 
-    if (!user || !user.isActive) {
+    if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -114,6 +115,22 @@ export class AuthService {
         })
         .catch(() => {});
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!user.isActive) {
+      await this.prisma.activityLog
+        .create({
+          data: {
+            userId: user.id,
+            userEmail: user.email,
+            action: 'LOGIN_DEACTIVATED_ACCOUNT',
+            details: 'Login attempted on deactivated user account',
+          },
+        })
+        .catch(() => {});
+      throw new UnauthorizedException(
+        'Your account has been deactivated (e.g. following a password reset). Please contact an Administrator or Super Administrator for reactivation.',
+      );
     }
 
     const token = this.jwtService.sign({
@@ -240,5 +257,79 @@ export class AuthService {
         createdAt: true,
       },
     });
+  }
+
+  /**
+   * Public password reset request:
+   * Resets the old password with the new one, and sets the user account to DEACTIVATED.
+   * Only an Administrator or Super Administrator can subsequently reactivate the account.
+   */
+  async publicResetPassword(dto: PublicResetPasswordDto) {
+    // 1. Bot Honeypot Check: trap headless automated scripts
+    if (dto.honeypot && dto.honeypot.trim().length > 0) {
+      this.logger.warn(`Bot detected on password reset honeypot: ${dto.email}`);
+      throw new UnauthorizedException('Security validation failed');
+    }
+
+    // 2. Server-side CAPTCHA verification if token provided
+    if (dto.captchaToken && dto.captchaAnswer) {
+      const isCaptchaValid = this.verifyCaptcha(dto.captchaToken, dto.captchaAnswer);
+      if (!isCaptchaValid) {
+        throw new UnauthorizedException(
+          'Security verification failed. Please enter the correct CAPTCHA code.',
+        );
+      }
+    }
+
+    const cleanEmail = dto.email.toLowerCase().trim();
+    const user = await this.prisma.user.findUnique({
+      where: { email: cleanEmail },
+    });
+
+    if (!user) {
+      this.logger.warn(`Password reset requested for unregistered email: ${cleanEmail}`);
+      // Generic message to prevent user enumeration
+      return {
+        success: true,
+        message:
+          'If this email is registered in our portal, your password has been updated and the account has been placed in DEACTIVATED status pending Administrator review.',
+        accountDeactivated: true,
+      };
+    }
+
+    // 3. Hash new password with 12 salt rounds
+    const hashedPassword = await bcrypt.hash(dto.newPassword, 12);
+
+    // 4. Update password and DEACTIVATE account
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        isActive: false, // Account is deactivated as required!
+      },
+    });
+
+    // 5. Audit record
+    await this.prisma.activityLog
+      .create({
+        data: {
+          userId: user.id,
+          userEmail: user.email,
+          action: 'PASSWORD_RESET_DEACTIVATED',
+          details: `User ${user.name} reset their password via portal. Account set to DEACTIVATED pending Administrator reactivation.`,
+        },
+      })
+      .catch(() => {});
+
+    this.logger.log(
+      `Password successfully reset for ${user.email}. Account DEACTIVATED pending Administrator/SuperAdmin reactivation.`,
+    );
+
+    return {
+      success: true,
+      message:
+        'Your password has been successfully updated. In accordance with ENM Legal security policy, your account has been placed in DEACTIVATED status. An Administrator or Super Administrator must reactivate your account before you can log in.',
+      accountDeactivated: true,
+    };
   }
 }

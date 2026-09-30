@@ -6,6 +6,7 @@ import "./App.css";
 import { Layout } from "./components/layout";
 import { AdminLayout } from "./components/admin-layout";
 import { Login } from "./pages/login/login";
+import { ResetPassword } from "./pages/login/reset-password";
 import { ViewPost } from "./pages/blog/view";
 import { dataProvider } from "./providers/dataProvider";
 import { authProvider } from "./providers/authProvider";
@@ -84,8 +85,10 @@ function App() {
           <Route path="/view/:id" element={<ViewPost />} />
           <Route path="/blog/:id" element={<ViewPost />} />
 
-          {/* Login Page */}
+          {/* Login & Credential Reset Pages */}
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/forgot-password" element={<ResetPassword />} />
 
           {/* Admin Panel (Protected) */}
           <Route path="/admin" element={<AdminRoute />}>
