@@ -1,6 +1,7 @@
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, Logger, Optional } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
+import { AdminService } from '../admin/admin.service';
 import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
 import { PublicResetPasswordDto } from './dto/reset-password.dto';
@@ -28,6 +29,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    @Optional() private adminService?: AdminService,
   ) {
     const googleClientId =
       process.env.GOOGLE_CLIENT_ID ||
@@ -171,6 +173,13 @@ export class AuthService {
       })
       .catch(() => {});
 
+    this.adminService?.touchSession({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    });
+
     return {
       token,
       accessToken: token,
@@ -237,6 +246,13 @@ export class AuthService {
         role: user.role,
       });
 
+      this.adminService?.touchSession({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      });
+
       return {
         token,
         accessToken: token,
@@ -254,6 +270,39 @@ export class AuthService {
       this.logger.error(`Google authentication error: ${msg}`);
       throw new UnauthorizedException('Google authentication failed');
     }
+  }
+
+  async logout(userId?: string) {
+    if (userId) {
+      this.adminService?.removeSession(userId);
+      await this.prisma.user
+        .update({
+          where: { id: userId },
+          data: {
+            lastActiveAt: new Date(0),
+          },
+        })
+        .catch(() => {});
+
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true, name: true },
+      });
+
+      if (user) {
+        await this.prisma.activityLog
+          .create({
+            data: {
+              userId,
+              userEmail: user.email,
+              action: 'USER_LOGOUT',
+              details: `User ${user.name} logged out`,
+            },
+          })
+          .catch(() => {});
+      }
+    }
+    return { success: true, message: 'Logged out successfully' };
   }
 
   async getProfile(userId: string) {

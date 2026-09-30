@@ -531,89 +531,89 @@ export const SuperAdminDashboard: React.FC = () => {
         />
       )}
 
-      {/* Executive Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-royal p-6 sm:p-8 rounded-3xl text-white shadow-xl border border-slate-700/50 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-        
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold uppercase tracking-wider mb-2">
-              <ShieldCheckIcon className="w-4 h-4" />
-              <span>{isSuperAdmin ? "Super Administrator Suite" : "Administrator Suite"}</span>
+      {/* Executive Header Banner - Exclusively visible on Site Health & Vitals */}
+      {activeTab === "health" && (
+        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-royal p-6 sm:p-8 rounded-3xl text-white shadow-xl border border-slate-700/50 relative overflow-hidden animate-in fade-in duration-200">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+          
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold uppercase tracking-wider mb-2">
+                <ShieldCheckIcon className="w-4 h-4" />
+                <span>{isSuperAdmin ? "Super Administrator Suite" : "Administrator Suite"}</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                Site Health & Telemetry Center
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
+                Real-time system diagnostics, engine vitals, database latency, process logs, active user sessions, and telemetry controls.
+              </p>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              {isSuperAdmin ? "Site Health & Telemetry Center" : "User Management & Account Controls"}
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
-              {isSuperAdmin
-                ? "Real-time system diagnostics, process logs, active user sessions, full audit trail, and security credentials control."
-                : "Manage advocate and staff accounts, activate or deactivate portal access, and oversee account statuses."}
-            </p>
-          </div>
 
-          <div className="flex items-center gap-3 self-start md:self-auto">
-            {/* Auto refresh toggle */}
-            <button
-              type="button"
-              onClick={() => setAutoRefresh(!autoRefresh)}
-              className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border transition ${
-                autoRefresh
-                  ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                  : "bg-slate-800 text-slate-400 border-slate-700"
-              }`}
-            >
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  autoRefresh ? "bg-emerald-400 animate-ping" : "bg-slate-500"
+            <div className="flex items-center gap-3 self-start md:self-auto">
+              {/* Auto refresh toggle */}
+              <button
+                type="button"
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border transition ${
+                  autoRefresh
+                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                    : "bg-slate-800 text-slate-400 border-slate-700"
                 }`}
-              />
-              <span>{autoRefresh ? "Live Telemetry" : "Paused"}</span>
-            </button>
+              >
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    autoRefresh ? "bg-emerald-400 animate-ping" : "bg-slate-500"
+                  }`}
+                />
+                <span>{autoRefresh ? "Live Telemetry" : "Paused"}</span>
+              </button>
 
-            {/* Manual refresh button */}
-            <button
-              type="button"
-              onClick={refreshAll}
-              disabled={refreshing}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white font-semibold text-xs border border-white/10 transition cursor-pointer disabled:opacity-50"
-            >
-              <ArrowPathIcon className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-              <span>Refresh</span>
-            </button>
+              {/* Manual refresh button */}
+              <button
+                type="button"
+                onClick={refreshAll}
+                disabled={refreshing}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white font-semibold text-xs border border-white/10 transition cursor-pointer disabled:opacity-50"
+              >
+                <ArrowPathIcon className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+                <span>Refresh</span>
+              </button>
+            </div>
           </div>
+
+          {/* Quick status bar (Super Admin Only) */}
+          {health && isSuperAdmin && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-700/60 text-xs">
+              <div>
+                <span className="text-slate-400 block text-[11px] uppercase">Engine Status</span>
+                <span className="font-bold text-emerald-400 inline-flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  {health.status.toUpperCase()}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[11px] uppercase">DB Latency</span>
+                <span className="font-bold text-white mt-0.5 block">
+                  {health.database.latencyMs >= 0 ? `${health.database.latencyMs} ms` : "Offline"}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[11px] uppercase">Active Sessions</span>
+                <span className="font-bold text-amber-300 mt-0.5 block">
+                  {health.system.activeSessionsCount} Online
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[11px] uppercase">System Uptime</span>
+                <span className="font-bold text-white mt-0.5 block">
+                  {health.system.uptimeFormatted}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
-
-        {/* Quick status bar (Super Admin Only) */}
-        {health && isSuperAdmin && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-700/60 text-xs">
-            <div>
-              <span className="text-slate-400 block text-[11px] uppercase">Engine Status</span>
-              <span className="font-bold text-emerald-400 inline-flex items-center gap-1.5 mt-0.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                {health.status.toUpperCase()}
-              </span>
-            </div>
-            <div>
-              <span className="text-slate-400 block text-[11px] uppercase">DB Latency</span>
-              <span className="font-bold text-white mt-0.5 block">
-                {health.database.latencyMs >= 0 ? `${health.database.latencyMs} ms` : "Offline"}
-              </span>
-            </div>
-            <div>
-              <span className="text-slate-400 block text-[11px] uppercase">Active Sessions</span>
-              <span className="font-bold text-amber-300 mt-0.5 block">
-                {health.system.activeSessionsCount} Online
-              </span>
-            </div>
-            <div>
-              <span className="text-slate-400 block text-[11px] uppercase">System Uptime</span>
-              <span className="font-bold text-white mt-0.5 block">
-                {health.system.uptimeFormatted}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Error alert if any */}
       {error && (
@@ -666,6 +666,18 @@ export const SuperAdminDashboard: React.FC = () => {
 
         {/* Section Quick Action Buttons */}
         <div className="flex items-center gap-2">
+          {activeTab !== "health" && (
+            <button
+              type="button"
+              onClick={refreshAll}
+              disabled={refreshing}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-50 active:scale-95 text-slate-700 font-semibold text-xs border border-slate-200 transition cursor-pointer disabled:opacity-50 shadow-2xs"
+              title="Refresh current section"
+            >
+              <ArrowPathIcon className={`w-3.5 h-3.5 ${refreshing ? "animate-spin text-royal" : "text-slate-500"}`} />
+              <span>Refresh</span>
+            </button>
+          )}
           {activeTab === "users" && isSuperAdmin && (
             <button
               type="button"

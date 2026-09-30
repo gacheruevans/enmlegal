@@ -2,6 +2,7 @@ import { useGetIdentity, useLogout } from "@refinedev/core";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation, useSearchParams } from "react-router";
 import { isTokenExpired, getTimeUntilExpiration, handleSessionExpired } from "../../lib/auth";
+import api from "../../lib/api";
 import { usePageSEO } from "../../hooks/usePageSEO";
 import {
   ShieldCheckIcon,
@@ -93,7 +94,15 @@ export const AdminLayout = () => {
       }
     }, 10000);
 
-    // 4. Multi-tab synchronization / manual logout events
+    // 4. Session heartbeat to keep active status current on backend
+    const heartbeatId = setInterval(() => {
+      const currentToken = localStorage.getItem("token");
+      if (currentToken && !isTokenExpired(currentToken)) {
+        api.get("/auth/me").catch(() => {});
+      }
+    }, 30000);
+
+    // 5. Multi-tab synchronization / manual logout events
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "token" && !e.newValue) {
         handleSessionExpired();
@@ -109,6 +118,7 @@ export const AdminLayout = () => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
       clearInterval(intervalId);
+      clearInterval(heartbeatId);
       window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("auth:logout", handleAuthLogout);
     };

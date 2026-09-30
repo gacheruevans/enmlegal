@@ -27,6 +27,18 @@ export const authProvider: AuthProvider = {
     }
   },
   logout: async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        await axios.post(
+          `${API_URL}/auth/logout`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
+    } catch {
+      // Ignore network or authentication errors on logout
+    }
     clearAuth();
     return {
       success: true,

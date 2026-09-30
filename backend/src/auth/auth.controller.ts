@@ -48,6 +48,12 @@ export class AuthController {
     const userId = req.user?.id || req.user?.sub;
     return this.authService.updateProfile(userId, dto);
   }
+
+  @Post('logout')
+  logout(@Req() req: any) {
+    const userId = req.user?.id || req.user?.sub;
+    return this.authService.logout(userId);
+  }
 }
 
 

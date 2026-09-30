@@ -85,6 +85,10 @@ export class AdminService {
     }
   }
 
+  removeSession(userId: string) {
+    this.activeSessions.delete(userId);
+  }
+
   /**
    * Comprehensive site health check: Database connection latency, metrics, and memory
    */
@@ -211,7 +215,7 @@ export class AdminService {
 
     const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
 
-    return users.map((u) => {
+    const sessionUsers = users.map((u) => {
       const memSession = this.activeSessions.get(u.id);
       const isOnline =
         (memSession && memSession.lastActive.getTime() > fiveMinutesAgo) ||
@@ -230,6 +234,15 @@ export class AdminService {
         ipAddress: memSession?.ipAddress || null,
         userAgent: memSession?.userAgent || null,
       };
+    });
+
+    // Sort online users first, then by last active timestamp descending
+    return sessionUsers.sort((a, b) => {
+      if (a.isOnline && !b.isOnline) return -1;
+      if (!a.isOnline && b.isOnline) return 1;
+      const timeA = a.lastActiveAt ? new Date(a.lastActiveAt).getTime() : 0;
+      const timeB = b.lastActiveAt ? new Date(b.lastActiveAt).getTime() : 0;
+      return timeB - timeA;
     });
   }
 

@@ -2,6 +2,7 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
+  Optional,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -9,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorators';
 import { PrismaService } from '../../prisma/prisma.service';
+import { AdminService } from '../../admin/admin.service';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -16,6 +18,7 @@ export class JwtAuthGuard implements CanActivate {
     private jwtService: JwtService,
     private reflector: Reflector,
     private prisma: PrismaService,
+    @Optional() private adminService?: AdminService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -54,7 +57,7 @@ export class JwtAuthGuard implements CanActivate {
       if (payload.sub && typeof payload.sub === 'string') {
         const dbUser = await this.prisma.user.findUnique({
           where: { id: payload.sub },
-          select: { id: true, email: true, role: true, isActive: true },
+          select: { id: true, name: true, email: true, role: true, isActive: true, lastActiveAt: true },
         });
 
         if (!dbUser || !dbUser.isActive) {
@@ -65,6 +68,35 @@ export class JwtAuthGuard implements CanActivate {
           ...payload,
           ...dbUser,
         };
+
+        // Touch active session in memory and keep lastActiveAt fresh
+        if (this.adminService) {
+          const rawIp =
+            (request.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+            request.socket?.remoteAddress ||
+            request.ip;
+          const userAgent = (request.headers['user-agent'] as string) || undefined;
+
+          this.adminService.touchSession({
+            id: dbUser.id,
+            email: dbUser.email,
+            name: dbUser.name,
+            role: dbUser.role as any,
+            ipAddress: rawIp || undefined,
+            userAgent,
+          });
+
+          // Throttle database update to at most once per 60 seconds
+          const now = Date.now();
+          if (!dbUser.lastActiveAt || now - dbUser.lastActiveAt.getTime() > 60000) {
+            this.prisma.user
+              .update({
+                where: { id: dbUser.id },
+                data: { lastActiveAt: new Date() },
+              })
+              .catch(() => {});
+          }
+        }
       } else {
         request.user = payload;
       }
