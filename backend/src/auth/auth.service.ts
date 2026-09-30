@@ -33,6 +33,15 @@ export class AuthService {
 
     const passwordMatch = await bcrypt.compare(dto.password, user.password);
     if (!passwordMatch) {
+      await this.prisma.activityLog
+        .create({
+          data: {
+            userEmail: dto.email,
+            action: 'LOGIN_FAILED',
+            details: 'Failed login attempt: incorrect password',
+          },
+        })
+        .catch(() => {});
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -41,6 +50,28 @@ export class AuthService {
       email: user.email,
       role: user.role,
     });
+
+    // Update login timestamps & audit log
+    await this.prisma.user
+      .update({
+        where: { id: user.id },
+        data: {
+          lastLoginAt: new Date(),
+          lastActiveAt: new Date(),
+        },
+      })
+      .catch(() => {});
+
+    await this.prisma.activityLog
+      .create({
+        data: {
+          userId: user.id,
+          userEmail: user.email,
+          action: 'USER_LOGIN',
+          details: `User ${user.name} logged in successfully`,
+        },
+      })
+      .catch(() => {});
 
     return {
       token,

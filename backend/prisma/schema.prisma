@@ -29,7 +29,10 @@ model User {
   imageUrl  String?
   password  String
   isActive  Boolean  @default(true)
+  lastLoginAt  DateTime?
+  lastActiveAt DateTime?
   posts     Post[]
+  activityLogs ActivityLog[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -82,5 +85,22 @@ model Consultation {
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  userEmail String?
+  action    String
+  details   String?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([action])
+  @@index([userEmail])
 }
 

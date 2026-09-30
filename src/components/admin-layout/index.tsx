@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router";
 import { isTokenExpired, getTimeUntilExpiration, handleSessionExpired } from "../../lib/auth";
 import { usePageSEO } from "../../hooks/usePageSEO";
+import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 
 export const AdminLayout = () => {
   usePageSEO({
@@ -70,6 +71,8 @@ export const AdminLayout = () => {
 
   const isBlogActive = location.pathname.startsWith("/admin/blog-posts");
   const isCategoryActive = location.pathname.startsWith("/admin/categories");
+  const isSuperAdminActive = location.pathname.startsWith("/admin/super-admin");
+  const isSuperAdmin = identity?.role === "SUPERADMIN";
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans text-gray-800">
@@ -101,6 +104,22 @@ export const AdminLayout = () => {
             >
               Categories
             </button>
+
+            {isSuperAdmin && (
+              <div className="pt-3 mt-3 border-t border-slate-800">
+                <button
+                  onClick={() => navigate("/admin/super-admin")}
+                  className={`w-full flex items-center gap-2.5 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
+                    isSuperAdminActive
+                      ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold shadow-md shadow-amber-500/20"
+                      : "text-amber-300 hover:bg-slate-800 hover:text-white"
+                  }`}
+                >
+                  <ShieldCheckIcon className="w-4 h-4 shrink-0" />
+                  <span>Super Admin Suite</span>
+                </button>
+              </div>
+            )}
           </nav>
         </div>
         <div className="p-6 border-t border-slate-800 flex items-center justify-between">

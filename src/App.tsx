@@ -11,6 +11,7 @@ import { dataProvider } from "./providers/dataProvider";
 import { authProvider } from "./providers/authProvider";
 import { BlogPostList, BlogPostCreate, BlogPostEdit, BlogPostShow } from "./pages/blog-posts";
 import { CategoryList } from "./pages/categories/list";
+import { SuperAdminDashboard } from "./pages/admin/super-admin";
 import { isTokenExpired, clearAuth } from "./lib/auth";
 
 import { TermsOfService } from "./pages/legal/TermsOfService";
@@ -94,6 +95,7 @@ function App() {
             <Route path="blog-posts/edit/:id" element={<BlogPostEdit />} />
             <Route path="blog-posts/show/:id" element={<BlogPostShow />} />
             <Route path="categories" element={<CategoryList />} />
+            <Route path="super-admin" element={<SuperAdminDashboard />} />
           </Route>
 
           {/* Fallback */}
