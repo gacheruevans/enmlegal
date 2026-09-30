@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router';
 import api from '../../../lib/api';
 import { useSiteContent } from '../../../context/SiteContentContext';
 import {
@@ -108,7 +109,31 @@ const DEFAULT_TEMPLATES: Record<SectionKey, any> = {
 
 export const ContentManagement: React.FC<{ isSuperAdmin: boolean }> = ({ isSuperAdmin }) => {
   const { refetch: refetchPublicContent } = useSiteContent();
-  const [activeSection, setActiveSection] = useState<SectionKey>('home');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const validSections: SectionKey[] = ['home', 'about', 'services', 'blog', 'contact'];
+  const rawSection = searchParams.get('section') as SectionKey | null;
+  const activeSection: SectionKey = rawSection && validSections.includes(rawSection) ? rawSection : 'home';
+
+  const setActiveSection = (sec: SectionKey) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('tab', 'content');
+      next.set('section', sec);
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    if (searchParams.get('tab') === 'content' && !searchParams.get('section')) {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('section', 'home');
+        return next;
+      }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
   const [sectionsData, setSectionsData] = useState<Record<string, SectionData>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

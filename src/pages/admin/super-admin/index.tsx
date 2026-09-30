@@ -31,6 +31,7 @@ import { ContentManagement } from "./ContentManagement";
 import { UserAvatar } from "../../../components/common/UserAvatar";
 import { NotificationBar, NotificationState } from "../../../components/common/NotificationBar";
 import { StatusConfirmModal, StatusModalUser } from "./StatusConfirmModal";
+import { TablePagination } from "../../../components/common/TablePagination";
 
 type TabType = "health" | "logs" | "sessions" | "activity" | "users" | "content";
 
@@ -163,6 +164,49 @@ export const SuperAdminDashboard: React.FC = () => {
   const [activityAction, setActivityAction] = useState("ALL");
   const [users, setUsers] = useState<AdminUserItem[]>([]);
 
+  // Pagination states for tables
+  const [sessionsPage, setSessionsPage] = useState<number>(1);
+  const [sessionsPageSize, setSessionsPageSize] = useState<number>(10);
+
+  const [activityPage, setActivityPage] = useState<number>(1);
+  const [activityPageSize, setActivityPageSize] = useState<number>(10);
+
+  const [usersPage, setUsersPage] = useState<number>(1);
+  const [usersPageSize, setUsersPageSize] = useState<number>(10);
+
+  // Reset activity page on search or action filter changes
+  useEffect(() => {
+    setActivityPage(1);
+  }, [activitySearch, activityAction]);
+
+  // Derived paginated slices
+  const safeSessionsPage = Math.min(
+    Math.max(1, sessionsPage),
+    Math.max(1, Math.ceil(activeUsers.length / sessionsPageSize))
+  );
+  const paginatedActiveUsers = activeUsers.slice(
+    (safeSessionsPage - 1) * sessionsPageSize,
+    safeSessionsPage * sessionsPageSize
+  );
+
+  const safeActivityPage = Math.min(
+    Math.max(1, activityPage),
+    Math.max(1, Math.ceil(activities.length / activityPageSize))
+  );
+  const paginatedActivities = activities.slice(
+    (safeActivityPage - 1) * activityPageSize,
+    safeActivityPage * activityPageSize
+  );
+
+  const safeUsersPage = Math.min(
+    Math.max(1, usersPage),
+    Math.max(1, Math.ceil(users.length / usersPageSize))
+  );
+  const paginatedUsers = users.slice(
+    (safeUsersPage - 1) * usersPageSize,
+    safeUsersPage * usersPageSize
+  );
+
   // Tailwind CSS notification bar state
   const [notification, setNotification] = useState<NotificationState | null>(null);
 
@@ -242,7 +286,7 @@ export const SuperAdminDashboard: React.FC = () => {
         params: {
           action: activityAction !== "ALL" ? activityAction : undefined,
           search: activitySearch || undefined,
-          limit: 50,
+          limit: 250,
         },
       });
       setActivities(data.activities || []);
@@ -605,7 +649,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 {activeTab === "logs" && "Process Logs"}
                 {activeTab === "sessions" && "Logged-in Users"}
                 {activeTab === "activity" && "User Activity Trail"}
-                {activeTab === "content" && "Content Studio (CMS)"}
+                {activeTab === "content" && "Custom Studio (CMS)"}
                 {activeTab === "users" && (isSuperAdmin ? "User & Password Controls" : "User Management & Status")}
               </h2>
               {activeTab === "sessions" && activeUsers.filter((u) => u.isOnline).length > 0 && (
@@ -920,7 +964,7 @@ export const SuperAdminDashboard: React.FC = () => {
                     </td>
                   </tr>
                 ) : (
-                  activeUsers.map((u) => (
+                  paginatedActiveUsers.map((u) => (
                     <tr key={u.id} className="hover:bg-slate-50/70 transition">
                       <td className="px-6 py-4 flex items-center gap-3">
                         <UserAvatar
@@ -975,6 +1019,19 @@ export const SuperAdminDashboard: React.FC = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Table Pagination */}
+          {activeUsers.length > 0 && (
+            <TablePagination
+              currentPage={safeSessionsPage}
+              totalItems={activeUsers.length}
+              pageSize={sessionsPageSize}
+              onPageChange={setSessionsPage}
+              onPageSizeChange={setSessionsPageSize}
+              pageSizeOptions={[10, 20, 50, 100]}
+              itemName="logged-in users"
+            />
+          )}
         </div>
       )}
 
@@ -1032,7 +1089,7 @@ export const SuperAdminDashboard: React.FC = () => {
                       </td>
                     </tr>
                   ) : (
-                    activities.map((item) => (
+                    paginatedActivities.map((item) => (
                       <tr key={item.id} className="hover:bg-slate-50/70 transition">
                         <td className="px-6 py-4 text-xs text-slate-500 whitespace-nowrap">
                           {new Date(item.createdAt).toLocaleString()}
@@ -1067,6 +1124,19 @@ export const SuperAdminDashboard: React.FC = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Table Pagination */}
+            {activities.length > 0 && (
+              <TablePagination
+                currentPage={safeActivityPage}
+                totalItems={activities.length}
+                pageSize={activityPageSize}
+                onPageChange={setActivityPage}
+                onPageSizeChange={setActivityPageSize}
+                pageSizeOptions={[10, 20, 50, 100]}
+                itemName="activity logs"
+              />
+            )}
           </div>
         </div>
       )}
@@ -1112,7 +1182,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {users.map((u) => (
+                {paginatedUsers.map((u) => (
                   <tr key={u.id} className="hover:bg-slate-50/70 transition">
                     <td className="px-6 py-4 flex items-center gap-3">
                       <UserAvatar
@@ -1195,6 +1265,19 @@ export const SuperAdminDashboard: React.FC = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Table Pagination */}
+          {users.length > 0 && (
+            <TablePagination
+              currentPage={safeUsersPage}
+              totalItems={users.length}
+              pageSize={usersPageSize}
+              onPageChange={setUsersPage}
+              onPageSizeChange={setUsersPageSize}
+              pageSizeOptions={[10, 20, 50, 100]}
+              itemName="user accounts"
+            />
+          )}
         </div>
       )}
 

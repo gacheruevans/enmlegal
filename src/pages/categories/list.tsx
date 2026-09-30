@@ -10,6 +10,7 @@ import {
   DocumentTextIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
+import { TablePagination } from "../../components/common/TablePagination";
 
 interface Category {
   id: string;
@@ -113,10 +114,26 @@ export const CategoryList: React.FC = () => {
     }
   };
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+
+  // Reset page to 1 when search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const filteredCategories = categories.filter((cat) =>
     cat.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     cat.slug.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const totalItems = filteredCategories.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+  const startIndex = (safeCurrentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalItems);
+  const paginatedCategories = filteredCategories.slice(startIndex, endIndex);
 
   const totalPostsAcrossCategories = categories.reduce(
     (acc, curr) => acc + (curr._count?.posts || 0),
@@ -239,7 +256,7 @@ export const CategoryList: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm">
-                {filteredCategories.map((cat) => {
+                {paginatedCategories.map((cat) => {
                   const postCount = cat._count?.posts ?? 0;
                   return (
                     <tr
@@ -289,6 +306,19 @@ export const CategoryList: React.FC = () => {
               </tbody>
             </table>
           </div>
+        )}
+
+        {/* Table Pagination Bar */}
+        {!loading && filteredCategories.length > 0 && (
+          <TablePagination
+            currentPage={safeCurrentPage}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={setPageSize}
+            pageSizeOptions={[10, 20, 50, 100]}
+            itemName="categories"
+          />
         )}
       </div>
 

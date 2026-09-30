@@ -14,6 +14,11 @@ import {
   KeyIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  HomeIcon,
+  ScaleIcon,
+  BriefcaseIcon,
+  NewspaperIcon,
+  MapPinIcon,
 } from "@heroicons/react/24/outline";
 import { UserAvatar } from "../common/UserAvatar";
 import { ProfileModal } from "./ProfileModal";
@@ -119,14 +124,47 @@ export const AdminLayout = () => {
 
   const [searchParams] = useSearchParams();
   const currentTab = searchParams.get("tab") || (isSuperAdmin ? "health" : "users");
+  const currentSection = searchParams.get("section") || "home";
   const [isSuperAdminMenuOpen, setIsSuperAdminMenuOpen] = useState(true);
+  const [isContentStudioMenuOpen, setIsContentStudioMenuOpen] = useState(true);
 
-  // Auto-expand Super Admin menu when on the super admin route
+  // Auto-expand Super Admin menu and Content Studio menu when on the corresponding route
   useEffect(() => {
     if (isSuperAdminActive) {
       setIsSuperAdminMenuOpen(true);
+      if (currentTab === "content") {
+        setIsContentStudioMenuOpen(true);
+      }
     }
-  }, [isSuperAdminActive]);
+  }, [isSuperAdminActive, currentTab]);
+
+  const contentStudioSections = [
+    {
+      name: "Home Hero",
+      section: "home",
+      icon: HomeIcon,
+    },
+    {
+      name: "About Us",
+      section: "about",
+      icon: ScaleIcon,
+    },
+    {
+      name: "Practice Areas",
+      section: "services",
+      icon: BriefcaseIcon,
+    },
+    {
+      name: "Blog header",
+      section: "blog",
+      icon: NewspaperIcon,
+    },
+    {
+      name: "Contact & Footer",
+      section: "contact",
+      icon: MapPinIcon,
+    },
+  ];
 
   const superAdminSubmenu = [
     {
@@ -154,10 +192,11 @@ export const AdminLayout = () => {
       superAdminOnly: true,
     },
     {
-      name: "Content Studio (CMS)",
+      name: "Custom Studio (CMS)",
       tab: "content",
       icon: DocumentTextIcon,
       superAdminOnly: true,
+      hasSubmenu: true,
     },
     {
       name: "User & Password Controls",
@@ -248,26 +287,100 @@ export const AdminLayout = () => {
                       .map((item) => {
                         const isSelected = isSuperAdminActive && currentTab === item.tab;
                         const IconComp = item.icon;
+                        const hasSubmenu = Boolean(item.hasSubmenu);
+
                         return (
-                          <button
-                            key={item.tab}
-                            role="menuitem"
-                            type="button"
-                            onClick={() => navigate(`/admin/super-admin?tab=${item.tab}`)}
-                            aria-current={isSelected ? "page" : undefined}
-                            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
-                              isSelected
-                                ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold shadow-xs shadow-amber-500/20"
-                                : "text-slate-400 hover:bg-slate-800/80 hover:text-slate-100"
-                            }`}
-                          >
-                            <IconComp
-                              className={`w-3.5 h-3.5 shrink-0 ${
-                                isSelected ? "text-slate-950" : "text-slate-400"
+                          <div key={item.tab} className="space-y-1">
+                            <button
+                              role="menuitem"
+                              type="button"
+                              onClick={() => {
+                                if (hasSubmenu) {
+                                  if (!isSuperAdminActive || currentTab !== item.tab) {
+                                    navigate(`/admin/super-admin?tab=${item.tab}&section=${currentSection || "home"}`);
+                                    setIsContentStudioMenuOpen(true);
+                                  } else {
+                                    setIsContentStudioMenuOpen((prev) => !prev);
+                                  }
+                                } else {
+                                  navigate(`/admin/super-admin?tab=${item.tab}`);
+                                }
+                              }}
+                              aria-current={isSelected ? "page" : undefined}
+                              aria-expanded={hasSubmenu ? isContentStudioMenuOpen : undefined}
+                              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+                                isSelected
+                                  ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold shadow-xs shadow-amber-500/20"
+                                  : "text-slate-400 hover:bg-slate-800/80 hover:text-slate-100"
                               }`}
-                            />
-                            <span className="truncate">{item.name}</span>
-                          </button>
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <IconComp
+                                  className={`w-3.5 h-3.5 shrink-0 ${
+                                    isSelected ? "text-slate-950" : "text-slate-400"
+                                  }`}
+                                />
+                                <span className="truncate">{item.name}</span>
+                              </div>
+                              {hasSubmenu && (
+                                isContentStudioMenuOpen ? (
+                                  <ChevronDownIcon
+                                    className={`w-3 h-3 shrink-0 transition-transform ${
+                                      isSelected ? "text-slate-950" : "text-slate-400"
+                                    }`}
+                                  />
+                                ) : (
+                                  <ChevronRightIcon
+                                    className={`w-3 h-3 shrink-0 transition-transform ${
+                                      isSelected ? "text-slate-950" : "text-slate-400"
+                                    }`}
+                                  />
+                                )
+                              )}
+                            </button>
+
+                            {/* Nested Submenu for Custom Studio (CMS) */}
+                            {hasSubmenu && isContentStudioMenuOpen && (
+                              <div
+                                role="menu"
+                                aria-label="Custom Studio CMS Sections"
+                                className="ml-3 pl-2.5 border-l border-slate-700/60 space-y-1 pt-1 pb-1 animate-in fade-in duration-150"
+                              >
+                                {contentStudioSections.map((sec) => {
+                                  const isSecActive =
+                                    isSuperAdminActive &&
+                                    currentTab === "content" &&
+                                    currentSection === sec.section;
+                                  const SecIcon = sec.icon;
+
+                                  return (
+                                    <button
+                                      key={sec.section}
+                                      role="menuitem"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/admin/super-admin?tab=content&section=${sec.section}`);
+                                      }}
+                                      aria-current={isSecActive ? "page" : undefined}
+                                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition cursor-pointer text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-400 ${
+                                        isSecActive
+                                          ? "bg-amber-400/20 text-amber-300 font-bold border-l-2 border-amber-400"
+                                          : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+                                      }`}
+                                    >
+                                      <SecIcon
+                                        className={`w-3.5 h-3.5 shrink-0 ${
+                                          isSecActive ? "text-amber-400" : "text-slate-500"
+                                        }`}
+                                      />
+                                      <span className="truncate">{sec.name}</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
                         );
                       })}
                   </div>
