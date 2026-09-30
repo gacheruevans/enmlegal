@@ -13,11 +13,8 @@ import {
   TrashIcon,
   PlusIcon,
   EyeIcon,
-  HomeIcon,
   ScaleIcon,
   BriefcaseIcon,
-  NewspaperIcon,
-  MapPinIcon,
   SparklesIcon,
   CheckIcon,
   XMarkIcon,
@@ -114,15 +111,6 @@ export const ContentManagement: React.FC<{ isSuperAdmin: boolean }> = ({ isSuper
   const validSections: SectionKey[] = ['home', 'about', 'services', 'blog', 'contact'];
   const rawSection = searchParams.get('section') as SectionKey | null;
   const activeSection: SectionKey = rawSection && validSections.includes(rawSection) ? rawSection : 'home';
-
-  const setActiveSection = (sec: SectionKey) => {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev);
-      next.set('tab', 'content');
-      next.set('section', sec);
-      return next;
-    });
-  };
 
   useEffect(() => {
     if (searchParams.get('tab') === 'content' && !searchParams.get('section')) {
@@ -344,14 +332,6 @@ export const ContentManagement: React.FC<{ isSuperAdmin: boolean }> = ({ isSuper
   const currentSec = sectionsData[activeSection];
   const isDraftStatus = currentSec?.status === 'DRAFT' || currentSec?.hasDraft;
 
-  const sectionPills: { key: SectionKey; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-    { key: 'home', label: 'Home Hero', icon: HomeIcon },
-    { key: 'about', label: 'About Us', icon: ScaleIcon },
-    { key: 'services', label: 'Practice Areas', icon: BriefcaseIcon },
-    { key: 'blog', label: 'Blog Header', icon: NewspaperIcon },
-    { key: 'contact', label: 'Contact & Footer', icon: MapPinIcon },
-  ];
-
   return (
     <div className="space-y-6">
       {/* CMS Header & Breadcrumb */}
@@ -422,41 +402,7 @@ export const ContentManagement: React.FC<{ isSuperAdmin: boolean }> = ({ isSuper
         </div>
       )}
 
-      {/* Section Navigation Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 text-sm">
-        {sectionPills.map((pill) => {
-          const Icon = pill.icon;
-          const sec = sectionsData[pill.key];
-          const hasStagedDraft = sec?.status === 'DRAFT' || sec?.hasDraft;
-          const isActive = activeSection === pill.key;
 
-          return (
-            <button
-              key={pill.key}
-              type="button"
-              onClick={() => setActiveSection(pill.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
-                isActive
-                  ? 'bg-royal text-white shadow-md shadow-royal/20'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 bg-white border border-slate-200/60'
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{pill.label}</span>
-              {hasStagedDraft && (
-                <span
-                  className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
-                    isActive ? 'bg-amber-400 text-slate-950' : 'bg-amber-100 text-amber-800 border border-amber-300'
-                  }`}
-                  title="Unpublished staged draft"
-                >
-                  Draft
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
 
       {/* Main Content Grid: Form Editor (Left) & Real-time Live Preview (Right) */}
       <div className={`grid grid-cols-1 ${showPreview ? 'lg:grid-cols-12' : ''} gap-6`}>
@@ -467,9 +413,15 @@ export const ContentManagement: React.FC<{ isSuperAdmin: boolean }> = ({ isSuper
             <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-6 border-b border-slate-100 gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-bold text-slate-900 capitalize">
-                    {activeSection === 'services'
-                      ? 'Practice Areas / Services'
+                  <h3 className="text-lg font-bold text-slate-900">
+                    {activeSection === 'home'
+                      ? 'Home Hero'
+                      : activeSection === 'about'
+                      ? 'About Us'
+                      : activeSection === 'services'
+                      ? 'Practice Areas'
+                      : activeSection === 'blog'
+                      ? 'Blog Header'
                       : activeSection === 'contact'
                       ? 'Contact & Footer'
                       : `${activeSection} Section`}
