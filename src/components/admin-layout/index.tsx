@@ -98,7 +98,7 @@ export const AdminLayout = () => {
     const heartbeatId = setInterval(() => {
       const currentToken = localStorage.getItem("token");
       if (currentToken && !isTokenExpired(currentToken)) {
-        api.get("/auth/me").catch(() => {});
+        api.get("/auth/me").catch(() => { });
       }
     }, 30000);
 
@@ -224,28 +224,26 @@ export const AdminLayout = () => {
         <div>
           <div className="p-6 text-xl font-bold border-b border-slate-800 flex items-center space-x-2">
             <span className="bg-royal text-white px-2.5 py-1 rounded text-sm font-black">ENM</span>
-            <span className="tracking-wide">Blog Admin</span>
+            <span className="tracking-wide">Admin Dashboard</span>
           </div>
           <nav aria-label="Admin Navigation" className="mt-6 px-4 space-y-2">
             <button
               onClick={() => navigate("/admin/blog-posts")}
               aria-current={isBlogActive ? "page" : undefined}
-              className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
-                isBlogActive
+              className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${isBlogActive
                   ? "bg-royal text-white shadow-md shadow-royal/20"
                   : "text-slate-400 hover:bg-slate-800 hover:text-white"
-              }`}
+                }`}
             >
               Blog Posts
             </button>
             <button
               onClick={() => navigate("/admin/categories")}
               aria-current={isCategoryActive ? "page" : undefined}
-              className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
-                isCategoryActive
+              className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${isCategoryActive
                   ? "bg-royal text-white shadow-md shadow-royal/20"
                   : "text-slate-400 hover:bg-slate-800 hover:text-white"
-              }`}
+                }`}
             >
               Categories
             </button>
@@ -265,11 +263,10 @@ export const AdminLayout = () => {
                   }}
                   aria-expanded={isSuperAdminMenuOpen}
                   aria-controls="super-admin-submenu"
-                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
-                    isSuperAdminActive
+                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${isSuperAdminActive
                       ? "bg-slate-800 text-amber-300 font-bold border border-amber-500/20 shadow-sm"
                       : "text-amber-300 hover:bg-slate-800 hover:text-white"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <ShieldCheckIcon className="w-4 h-4 shrink-0 text-amber-400" />
@@ -318,32 +315,28 @@ export const AdminLayout = () => {
                               }}
                               aria-current={isSelected ? "page" : undefined}
                               aria-expanded={hasSubmenu ? isContentStudioMenuOpen : undefined}
-                              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
-                                isSelected
+                              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${isSelected
                                   ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold shadow-xs shadow-amber-500/20"
                                   : "text-slate-400 hover:bg-slate-800/80 hover:text-slate-100"
-                              }`}
+                                }`}
                             >
                               <div className="flex items-center gap-2 min-w-0">
                                 <IconComp
-                                  className={`w-3.5 h-3.5 shrink-0 ${
-                                    isSelected ? "text-slate-950" : "text-slate-400"
-                                  }`}
+                                  className={`w-3.5 h-3.5 shrink-0 ${isSelected ? "text-slate-950" : "text-slate-400"
+                                    }`}
                                 />
                                 <span className="truncate">{item.name}</span>
                               </div>
                               {hasSubmenu && (
                                 isContentStudioMenuOpen ? (
                                   <ChevronDownIcon
-                                    className={`w-3 h-3 shrink-0 transition-transform ${
-                                      isSelected ? "text-slate-950" : "text-slate-400"
-                                    }`}
+                                    className={`w-3 h-3 shrink-0 transition-transform ${isSelected ? "text-slate-950" : "text-slate-400"
+                                      }`}
                                   />
                                 ) : (
                                   <ChevronRightIcon
-                                    className={`w-3 h-3 shrink-0 transition-transform ${
-                                      isSelected ? "text-slate-950" : "text-slate-400"
-                                    }`}
+                                    className={`w-3 h-3 shrink-0 transition-transform ${isSelected ? "text-slate-950" : "text-slate-400"
+                                      }`}
                                   />
                                 )
                               )}
@@ -373,16 +366,14 @@ export const AdminLayout = () => {
                                         navigate(`/admin/super-admin?tab=content&section=${sec.section}`);
                                       }}
                                       aria-current={isSecActive ? "page" : undefined}
-                                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition cursor-pointer text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-400 ${
-                                        isSecActive
+                                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition cursor-pointer text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-400 ${isSecActive
                                           ? "bg-amber-400/20 text-amber-300 font-bold border-l-2 border-amber-400"
                                           : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
-                                      }`}
+                                        }`}
                                     >
                                       <SecIcon
-                                        className={`w-3.5 h-3.5 shrink-0 ${
-                                          isSecActive ? "text-amber-400" : "text-slate-500"
-                                        }`}
+                                        className={`w-3.5 h-3.5 shrink-0 ${isSecActive ? "text-amber-400" : "text-slate-500"
+                                          }`}
                                       />
                                       <span className="truncate">{sec.name}</span>
                                     </button>

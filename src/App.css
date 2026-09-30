@@ -143,6 +143,10 @@ html.text-size-xlarge {
   font-size: 130% !important;
 }
 
+html.text-size-max {
+  font-size: 150% !important;
+}
+
 /* Dyslexia-Friendly Readable Typography */
 html.dyslexic-font,
 html.dyslexic-font body,
@@ -157,16 +161,17 @@ html.dyslexic-font button,
 html.dyslexic-font input,
 html.dyslexic-font textarea,
 html.dyslexic-font select {
-  font-family: 'OpenDyslexic', 'Comic Sans MS', 'Trebuchet MS', 'Arial Rounded MT Bold', -apple-system, sans-serif !important;
+  font-family: 'Atkinson Hyperlegible', 'OpenDyslexic', 'Comic Sans MS', 'Trebuchet MS', 'Arial Rounded MT Bold', -apple-system, sans-serif !important;
   letter-spacing: 0.05em !important;
   word-spacing: 0.12em !important;
-  line-height: 1.8 !important;
+  line-height: 1.85 !important;
 }
 
 /* Explicit Link Underlines */
-html.underline-links a {
-  text-decoration: underline !important;
-  text-underline-offset: 3px !important;
+html.underline-links a:not(.a11y-widget-root *) {
+  text-decoration: underline 2.5px !important;
+  text-underline-offset: 4px !important;
+  font-weight: 600 !important;
 }
 
 /* Reduced Motion Override */
@@ -180,59 +185,94 @@ html.reduce-motion *::after {
 }
 
 /* High Contrast Mode (WCAG AAA >= 7:1) */
-html.high-contrast {
-  filter: contrast(120%);
-}
-
-html.high-contrast body {
-  background-color: #0b0f19 !important;
+html.high-contrast body:not(.a11y-widget-root) {
+  background-color: #030712 !important;
   color: #ffffff !important;
 }
 
-html.high-contrast .bg-white,
-html.high-contrast .bg-slate-50,
-html.high-contrast .bg-gray-50 {
+html.high-contrast header:not(.a11y-widget-root *),
+html.high-contrast nav:not(.a11y-widget-root *),
+html.high-contrast main:not(.a11y-widget-root *),
+html.high-contrast footer:not(.a11y-widget-root *),
+html.high-contrast section:not(.a11y-widget-root *) {
+  background-color: #030712 !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+html.high-contrast .bg-white:not(.a11y-widget-root *),
+html.high-contrast .bg-slate-50:not(.a11y-widget-root *),
+html.high-contrast .bg-gray-50:not(.a11y-widget-root *) {
   background-color: #0f172a !important;
   color: #f8fafc !important;
   border-color: #475569 !important;
 }
 
-html.high-contrast .text-gray-900,
-html.high-contrast .text-slate-900,
-html.high-contrast .text-slate-800,
-html.high-contrast .text-gray-800,
-html.high-contrast .text-gray-700,
-html.high-contrast .text-slate-700 {
+html.high-contrast .text-gray-900:not(.a11y-widget-root *),
+html.high-contrast .text-slate-900:not(.a11y-widget-root *),
+html.high-contrast .text-slate-800:not(.a11y-widget-root *),
+html.high-contrast .text-gray-800:not(.a11y-widget-root *),
+html.high-contrast .text-gray-700:not(.a11y-widget-root *),
+html.high-contrast .text-slate-700:not(.a11y-widget-root *) {
   color: #ffffff !important;
 }
 
-html.high-contrast .text-gray-600,
-html.high-contrast .text-slate-600,
-html.high-contrast .text-gray-500,
-html.high-contrast .text-slate-500 {
-  color: #cbd5e1 !important;
+html.high-contrast .text-gray-600:not(.a11y-widget-root *),
+html.high-contrast .text-slate-600:not(.a11y-widget-root *),
+html.high-contrast .text-gray-500:not(.a11y-widget-root *),
+html.high-contrast .text-slate-500:not(.a11y-widget-root *) {
+  color: #e2e8f0 !important;
 }
 
-html.high-contrast a {
+html.high-contrast a:not(.a11y-widget-root *) {
   color: #38bdf8 !important;
   text-decoration: underline !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
 }
 
-html.high-contrast button {
-  border-color: #ffffff !important;
+html.high-contrast button:not(.a11y-widget-root *) {
+  border: 2px solid #ffffff !important;
 }
 
-html.high-contrast input,
-html.high-contrast textarea,
-html.high-contrast select {
-  border-color: #94a3b8 !important;
+html.high-contrast input:not(.a11y-widget-root *),
+html.high-contrast textarea:not(.a11y-widget-root *),
+html.high-contrast select:not(.a11y-widget-root *) {
+  border-color: #38bdf8 !important;
   background-color: #020617 !important;
   color: #ffffff !important;
 }
 
-html.high-contrast input::placeholder,
-html.high-contrast textarea::placeholder {
-  color: #94a3b8 !important;
+/* Grayscale Mode for Sensory / Color-Blind Support */
+html.grayscale-mode {
+  filter: grayscale(100%) !important;
 }
+
+/* Big High-Visibility Cursor */
+html.big-cursor,
+html.big-cursor *:not(.a11y-widget-root *) {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cpath fill='%23000000' d='M0 0l16 32 4-11 11-4z'/%3E%3Cpath fill='%23ffffff' d='M2 4l12 24 3-8 8-3z'/%3E%3C/svg%3E"), auto !important;
+}
+
+/* Headings Highlight Mode */
+html.highlight-headings h1,
+html.highlight-headings h2,
+html.highlight-headings h3 {
+  border-left: 4px solid #f59e0b !important;
+  padding-left: 0.5rem !important;
+}
+
+/* Reading Guide (Ruler & Focus Mask) */
+.a11y-reading-guide-ruler {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 42px;
+  background: rgba(251, 191, 36, 0.16);
+  border-top: 2px solid #d97706;
+  border-bottom: 2px solid #d97706;
+  pointer-events: none;
+  z-index: 9998;
+  box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.28);
+}
+
    
