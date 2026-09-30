@@ -20,6 +20,10 @@ import {
   CpuChipIcon,
   SignalIcon,
   LockClosedIcon,
+  UserPlusIcon,
+  EnvelopeIcon,
+  EyeIcon,
+  EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 
 type TabType = "health" | "logs" | "sessions" | "activity" | "users";
@@ -144,6 +148,25 @@ export const SuperAdminDashboard: React.FC = () => {
     message: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Create user modal state
+  const [showCreateUserModal, setShowCreateUserModal] = useState(false);
+  const [createName, setCreateName] = useState("");
+  const [createEmail, setCreateEmail] = useState("");
+  const [createPassword, setCreatePassword] = useState("");
+  const [createRole, setCreateRole] = useState("ADMIN");
+  const [createPhone, setCreatePhone] = useState("");
+  const [createIsActive, setCreateIsActive] = useState(true);
+  const [showCreatePassword, setShowCreatePassword] = useState(false);
+  const [creatingUser, setCreatingUser] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [createdUserData, setCreatedUserData] = useState<{
+    name: string;
+    email: string;
+    role: string;
+    password: string;
+  } | null>(null);
+  const [createdCopied, setCreatedCopied] = useState(false);
 
   // Fetch health data
   const fetchHealth = useCallback(async () => {
@@ -295,6 +318,85 @@ export const SuperAdminDashboard: React.FC = () => {
     navigator.clipboard.writeText(resetSuccessData.temporaryPassword);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  // Generate strong random password for new user
+  const handleGeneratePassword = () => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%";
+    let pwd = "ENM#";
+    for (let i = 0; i < 8; i++) {
+      pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setCreatePassword(pwd);
+    setShowCreatePassword(true);
+  };
+
+  // Create user account submit handler
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreateError(null);
+
+    if (!createName.trim()) {
+      setCreateError("Full name is required.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(createEmail.trim())) {
+      setCreateError("Please enter a valid email address.");
+      return;
+    }
+
+    if (createPassword.length < 6) {
+      setCreateError("Password must be at least 6 characters.");
+      return;
+    }
+
+    setCreatingUser(true);
+    try {
+      await api.post("/admin/users", {
+        name: createName.trim(),
+        email: createEmail.trim().toLowerCase(),
+        password: createPassword,
+        role: createRole,
+        phone: createPhone.trim() || undefined,
+        isActive: createIsActive,
+      });
+
+      setCreatedUserData({
+        name: createName.trim(),
+        email: createEmail.trim().toLowerCase(),
+        role: createRole,
+        password: createPassword,
+      });
+
+      // Clear input fields
+      setCreateName("");
+      setCreateEmail("");
+      setCreatePassword("");
+      setCreatePhone("");
+      setCreateRole("ADMIN");
+      setCreateIsActive(true);
+
+      // Refresh user list
+      fetchUsers();
+    } catch (err: any) {
+      setCreateError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to create user account. Please check the inputs.",
+      );
+    } finally {
+      setCreatingUser(false);
+    }
+  };
+
+  // Copy newly created user credentials
+  const handleCopyCreatedCredentials = () => {
+    if (!createdUserData) return;
+    const text = `ENM Legal Portal Credentials:\nEmail: ${createdUserData.email}\nPassword: ${createdUserData.password}\nRole: ${createdUserData.role}`;
+    navigator.clipboard.writeText(text);
+    setCreatedCopied(true);
+    setTimeout(() => setCreatedCopied(false), 2500);
   };
 
   return (
@@ -906,11 +1008,26 @@ export const SuperAdminDashboard: React.FC = () => {
         <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
           <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-lg font-bold text-slate-900">User Administration & Credential Resets</h3>
+              <h3 className="text-lg font-bold text-slate-900">User Administration & Accounts</h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Super Admins can reset credentials, manage roles, and toggle access permissions.
+                {isSuperAdmin
+                  ? "Manage counsel and staff accounts, create users, reset credentials, and toggle access permissions."
+                  : "Manage advocate accounts, create new users, and toggle access permissions."}
               </p>
             </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowCreateUserModal(true);
+                setCreateError(null);
+                setCreatedUserData(null);
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-royal hover:bg-royal/90 active:scale-95 text-white font-bold text-xs shadow-md shadow-royal/20 transition cursor-pointer self-start sm:self-auto"
+            >
+              <UserPlusIcon className="w-4 h-4" />
+              <span>Create New User</span>
+            </button>
           </div>
 
           <div className="overflow-x-auto">
@@ -1131,6 +1248,266 @@ export const SuperAdminDashboard: React.FC = () => {
                       className="px-5 py-2 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition shadow-sm cursor-pointer disabled:opacity-50"
                     >
                       {resetting ? "Resetting..." : "Confirm & Reset"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {/* ─────────────────────────────────────────────────────────────
+          CREATE NEW USER MODAL
+          ───────────────────────────────────────────────────────────── */}
+      {showCreateUserModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative animate-in fade-in zoom-in-95 duration-200">
+            <button
+              type="button"
+              onClick={() => {
+                setShowCreateUserModal(false);
+                setCreatedUserData(null);
+                setCreateError(null);
+              }}
+              className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition cursor-pointer"
+            >
+              <XMarkIcon className="w-5 h-5" />
+            </button>
+
+            {createdUserData ? (
+              /* Success Screen */
+              <div className="text-center">
+                <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-100">
+                  <CheckCircleIcon className="w-8 h-8" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-1">User Account Created!</h3>
+                <p className="text-xs text-slate-600 mb-5">
+                  Account has been registered successfully for <strong>{createdUserData.name}</strong>.
+                </p>
+
+                {/* Credentials Card */}
+                <div className="bg-slate-900 text-white p-4 rounded-2xl text-left text-xs space-y-2 mb-6 shadow-inner font-mono">
+                  <div className="flex justify-between items-center pb-2 border-b border-slate-800">
+                    <span className="text-slate-400">Assigned Role:</span>
+                    <span className="font-bold text-amber-300">{createdUserData.role}</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2 border-b border-slate-800">
+                    <span className="text-slate-400">Email:</span>
+                    <span className="text-slate-200 font-semibold">{createdUserData.email}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-1">
+                    <span className="text-slate-400">Initial Password:</span>
+                    <span className="text-amber-400 font-bold tracking-wider select-all">
+                      {createdUserData.password}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleCopyCreatedCredentials}
+                    className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition cursor-pointer"
+                  >
+                    {createdCopied ? (
+                      <>
+                        <ClipboardDocumentCheckIcon className="w-4 h-4 text-emerald-600" />
+                        <span className="text-emerald-700">Credentials Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <ClipboardDocumentIcon className="w-4 h-4 text-slate-600" />
+                        <span>Copy Credentials</span>
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCreateUserModal(false);
+                      setCreatedUserData(null);
+                    }}
+                    className="flex-1 py-2.5 rounded-xl bg-royal hover:bg-royal/90 text-white font-bold text-xs transition cursor-pointer shadow-sm"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Create User Form */
+              <div>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-2xl bg-royal/10 text-royal flex items-center justify-center border border-royal/20 shrink-0">
+                    <UserPlusIcon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900">Create New User Account</h3>
+                    <p className="text-xs text-slate-500">
+                      Authorized by {isSuperAdmin ? "Super Administrator" : "Administrator"}
+                    </p>
+                  </div>
+                </div>
+
+                {createError && (
+                  <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2">
+                    <XCircleIcon className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                    <span>{createError}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleCreateUser} className="space-y-3.5">
+                  {/* Full Name */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Adv. Jane Mwangi"
+                      value={createName}
+                      onChange={(e) => setCreateName(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-royal/20"
+                    />
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                      Email Address *
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <EnvelopeIcon className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="email"
+                        required
+                        placeholder="counsel@enmlegal.com"
+                        value={createEmail}
+                        onChange={(e) => setCreateEmail(e.target.value)}
+                        className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-royal/20"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Role Select */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                      System Role *
+                    </label>
+                    <select
+                      value={createRole}
+                      onChange={(e) => setCreateRole(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-royal/20 bg-white"
+                    >
+                      <option value="ADMIN">Administrator (ADMIN)</option>
+                      <option value="AUTHOR">Author / Counsel (AUTHOR)</option>
+                      <option value="ASSISTANT">Legal Assistant (ASSISTANT)</option>
+                      {isSuperAdmin && (
+                        <option value="SUPERADMIN">Super Administrator (SUPERADMIN)</option>
+                      )}
+                    </select>
+                    {!isSuperAdmin && (
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        * Super Administrator accounts can only be created by an existing Super Admin.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Password & Generator */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                        Initial Password *
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleGeneratePassword}
+                        className="text-[11px] font-bold text-royal hover:underline cursor-pointer"
+                      >
+                        ⚡ Generate Strong Password
+                      </button>
+                    </div>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <LockClosedIcon className="w-4 h-4" />
+                      </div>
+                      <input
+                        type={showCreatePassword ? "text" : "password"}
+                        required
+                        minLength={6}
+                        placeholder="At least 6 characters"
+                        value={createPassword}
+                        onChange={(e) => setCreatePassword(e.target.value)}
+                        className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-royal/20"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowCreatePassword(!showCreatePassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                      >
+                        {showCreatePassword ? (
+                          <EyeSlashIcon className="w-4 h-4" />
+                        ) : (
+                          <EyeIcon className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Phone (Optional) */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                      Phone Number <span className="text-slate-400 font-normal lowercase">(optional)</span>
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="+254 701 857 030"
+                      value={createPhone}
+                      onChange={(e) => setCreatePhone(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-royal/20"
+                    />
+                  </div>
+
+                  {/* Active Status Checkbox */}
+                  <div className="pt-1">
+                    <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-slate-700">
+                      <input
+                        type="checkbox"
+                        checked={createIsActive}
+                        onChange={(e) => setCreateIsActive(e.target.checked)}
+                        className="w-4 h-4 rounded border-slate-300 text-royal focus:ring-royal/30 cursor-pointer"
+                      />
+                      <span>Activate account immediately upon creation</span>
+                    </label>
+                  </div>
+
+                  {/* Submit / Cancel Buttons */}
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => setShowCreateUserModal(false)}
+                      className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={creatingUser}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-royal hover:bg-royal/90 active:scale-95 rounded-xl transition shadow-sm cursor-pointer disabled:opacity-50"
+                    >
+                      {creatingUser ? (
+                        <>
+                          <ArrowPathIcon className="w-4 h-4 animate-spin" />
+                          <span>Creating User...</span>
+                        </>
+                      ) : (
+                        <>
+                          <UserPlusIcon className="w-4 h-4" />
+                          <span>Create Account</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </form>

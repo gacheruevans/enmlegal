@@ -21,6 +21,7 @@ import {
   ResetPasswordDto,
   UpdateUserRoleDto,
   UpdateUserStatusDto,
+  CreateUserDto,
 } from './admin.dto';
 
 @ApiTags('admin')
@@ -83,6 +84,19 @@ export class AdminController {
   @Roles(Role.SUPERADMIN, Role.ADMIN)
   async findAllUsers() {
     return this.adminService.findAllUsers();
+  }
+
+  /**
+   * Create New User Account (Super Admin and Admin)
+   */
+  @Post('users')
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  async createUser(@Body() dto: CreateUserDto, @Req() req: any) {
+    return this.adminService.createUser(
+      dto,
+      req.user?.email,
+      req.user?.role,
+    );
   }
 
   /**

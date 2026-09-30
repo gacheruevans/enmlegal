@@ -13,6 +13,7 @@ import {
   ResetPasswordDto,
   UpdateUserRoleDto,
   UpdateUserStatusDto,
+  CreateUserDto,
 } from './admin.dto';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -346,6 +347,83 @@ export class AdminService {
       },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  /**
+   * Creates a new user account.
+   * Accessible by both Super Admin and Admin.
+   * STRICT SECURITY RULE: Non-SuperAdmins cannot create SuperAdmin accounts.
+   */
+  async createUser(
+    dto: CreateUserDto,
+    actorEmail?: string,
+    actorRole?: Role,
+  ) {
+    const cleanEmail = dto.email.toLowerCase().trim();
+
+    // Check if email is already taken
+    const existing = await this.prisma.user.findUnique({
+      where: { email: cleanEmail },
+    });
+    if (existing) {
+      throw new BadRequestException(`A user with email ${cleanEmail} already exists.`);
+    }
+
+    const assignedRole = dto.role || Role.ADMIN;
+
+    // Strict Rule: Non-SuperAdmins cannot create SuperAdmin accounts
+    if (assignedRole === Role.SUPERADMIN && actorRole !== Role.SUPERADMIN) {
+      throw new ForbiddenException(
+        'Security Violation: Administrators do not have authorization to create Super Administrator accounts.',
+      );
+    }
+
+    // Hash password with bcrypt (12 rounds)
+    const hashedPassword = await bcrypt.hash(dto.password, 12);
+
+    const newUser = await this.prisma.user.create({
+      data: {
+        name: dto.name.trim(),
+        email: cleanEmail,
+        password: hashedPassword,
+        role: assignedRole,
+        phone: dto.phone?.trim() || null,
+        imageUrl: dto.imageUrl?.trim() || null,
+        isActive: dto.isActive !== undefined ? dto.isActive : true,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        imageUrl: true,
+        isActive: true,
+        lastLoginAt: true,
+        lastActiveAt: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    await this.recordActivity({
+      userId: newUser.id,
+      userEmail: actorEmail,
+      action: 'USER_CREATED',
+      details: `New ${newUser.role} user created: ${newUser.email} (${newUser.name}) by ${actorRole || 'ADMIN'} ${actorEmail || ''}`,
+    });
+
+    this.logBuffer.addLog(
+      'info',
+      'Security',
+      `New user account ${newUser.email} (${newUser.role}) created by ${actorRole || 'ADMIN'} (${actorEmail || 'System'})`,
+    );
+
+    return {
+      success: true,
+      message: `User account for ${newUser.name} (${newUser.email}) has been created successfully.`,
+      user: newUser,
+    };
   }
 
   /**
