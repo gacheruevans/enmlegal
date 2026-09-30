@@ -47,6 +47,71 @@ interface Category {
   slug: string;
 }
 
+interface ActionTooltipProps {
+  label: string;
+  roleHint?: string;
+  description?: string;
+  children: React.ReactNode;
+  position?: "top" | "bottom";
+  align?: "center" | "right" | "left";
+}
+
+const ActionTooltip: React.FC<ActionTooltipProps> = ({
+  label,
+  roleHint,
+  description,
+  children,
+  position = "top",
+  align = "center",
+}) => {
+  const isTop = position === "top";
+
+  return (
+    <div className="relative inline-flex group/tip">
+      {children}
+      <div
+        role="tooltip"
+        className={`pointer-events-none absolute z-50 invisible opacity-0 scale-95 transition-all duration-150 ease-out group-hover/tip:visible group-hover/tip:opacity-100 group-hover/tip:scale-100 group-focus-within/tip:visible group-focus-within/tip:opacity-100 group-focus-within/tip:scale-100 flex flex-col ${
+          isTop ? "bottom-full mb-2" : "top-full mt-2"
+        } ${
+          align === "right"
+            ? "right-0 items-end"
+            : align === "left"
+            ? "left-0 items-start"
+            : "left-1/2 -translate-x-1/2 items-center"
+        }`}
+      >
+        <div className="bg-slate-900/95 backdrop-blur-md text-white px-3 py-2 rounded-xl shadow-xl border border-slate-700/80 min-w-[150px] max-w-[220px] text-left">
+          <div className="flex items-center gap-1.5 font-bold text-[11px] leading-tight text-white">
+            {roleHint && (
+              <span className="px-1.5 py-0.5 rounded text-[9px] uppercase font-bold tracking-wider bg-slate-800 text-amber-300 border border-slate-700 shrink-0">
+                {roleHint}
+              </span>
+            )}
+            <span className="truncate">{label}</span>
+          </div>
+          {description && (
+            <p className="text-[10.5px] text-slate-300 font-normal mt-1 leading-snug whitespace-normal">
+              {description}
+            </p>
+          )}
+        </div>
+        {/* Crisp SVG Arrow */}
+        <svg
+          className={`w-2.5 h-1 text-slate-900 fill-current drop-shadow-xs shrink-0 ${
+            isTop ? "order-last -mt-[1px]" : "order-first -mb-[1px] rotate-180"
+          } ${
+            align === "right" ? "mr-3" : align === "left" ? "ml-3" : ""
+          }`}
+          viewBox="0 0 10 4"
+        >
+          <path d="M0 0 L5 4 L10 0 Z" />
+        </svg>
+      </div>
+    </div>
+  );
+};
+
 export const BlogPostList: React.FC = () => {
   const { edit, create } = useNavigation();
 
@@ -173,13 +238,21 @@ export const BlogPostList: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={fetchPostsAndCategories}
-            title="Refresh articles"
-            className="p-2.5 text-gray-500 hover:text-royal hover:bg-gray-100 rounded-xl transition cursor-pointer"
+          <ActionTooltip
+            label="Refresh Articles"
+            roleHint="Live Sync"
+            description="Reload latest blog posts and metrics from database."
+            position="bottom"
+            align="right"
           >
-            <ArrowPathIcon className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
-          </button>
+            <button
+              onClick={fetchPostsAndCategories}
+              aria-label="Refresh articles"
+              className="p-2.5 text-gray-500 hover:text-royal hover:bg-gray-100 rounded-xl transition cursor-pointer"
+            >
+              <ArrowPathIcon className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
+            </button>
+          </ActionTooltip>
           <button
             onClick={() => create("blog_posts")}
             className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-royal hover:bg-royal/90 rounded-xl shadow-sm transition transform active:scale-95 cursor-pointer"
@@ -355,14 +428,16 @@ export const BlogPostList: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm">
-                {filteredPosts.map((post) => {
+                {filteredPosts.map((post, index) => {
                   const scheduledFuture =
                     post.status === "PUBLISHED" && isFutureScheduled(post.datetime);
+                  const isFirstRow = index === 0;
+                  const tipPosition = isFirstRow ? "bottom" : "top";
 
                   return (
                     <tr
                       key={post.id}
-                      className="hover:bg-gray-50/70 transition-colors"
+                      className="hover:bg-gray-50/70 transition-colors relative hover:z-20"
                     >
                       {/* Title & Cover Thumbnail */}
                       <td className="py-4 px-6 max-w-md">
@@ -454,73 +529,129 @@ export const BlogPostList: React.FC = () => {
                         <div className="flex items-center justify-end gap-1.5">
                           {/* Quick Publish / Draft Toggle */}
                           {post.status === "DRAFT" && (
-                            <button
-                              onClick={() => handleUpdateStatus(post.id, "PUBLISHED")}
-                              disabled={actionLoadingId === post.id}
-                              title="Publish article immediately"
-                              className="px-2.5 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition cursor-pointer"
+                            <ActionTooltip
+                              label="Publish Article"
+                              roleHint="Status"
+                              description="Make this article immediately live and visible to all visitors."
+                              position={tipPosition}
+                              align="right"
                             >
-                              Publish
-                            </button>
+                              <button
+                                onClick={() => handleUpdateStatus(post.id, "PUBLISHED")}
+                                disabled={actionLoadingId === post.id}
+                                aria-label="Publish article immediately"
+                                className="px-2.5 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition cursor-pointer"
+                              >
+                                Publish
+                              </button>
+                            </ActionTooltip>
                           )}
                           {post.status === "PUBLISHED" && (
-                            <button
-                              onClick={() => handleUpdateStatus(post.id, "DRAFT")}
-                              disabled={actionLoadingId === post.id}
-                              title="Revert to draft"
-                              className="px-2.5 py-1 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition cursor-pointer"
+                            <ActionTooltip
+                              label="Revert to Draft"
+                              roleHint="Status"
+                              description="Unpublish article from public site. Accessible to administrators only."
+                              position={tipPosition}
+                              align="right"
                             >
-                              Draft
-                            </button>
+                              <button
+                                onClick={() => handleUpdateStatus(post.id, "DRAFT")}
+                                disabled={actionLoadingId === post.id}
+                                aria-label="Revert to draft"
+                                className="px-2.5 py-1 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition cursor-pointer"
+                              >
+                                Draft
+                              </button>
+                            </ActionTooltip>
                           )}
                           {post.status !== "ARCHIVED" ? (
-                            <button
-                              onClick={() => handleUpdateStatus(post.id, "ARCHIVED")}
-                              disabled={actionLoadingId === post.id}
-                              title="Archive article"
-                              className="p-1.5 text-gray-400 hover:text-slate-700 hover:bg-gray-100 rounded-lg transition cursor-pointer"
+                            <ActionTooltip
+                              label="Archive Article"
+                              roleHint="Archive"
+                              description="Retire article from live listings while retaining post records."
+                              position={tipPosition}
+                              align="right"
                             >
-                              <ArchiveBoxIcon className="w-4 h-4" />
-                            </button>
+                              <button
+                                onClick={() => handleUpdateStatus(post.id, "ARCHIVED")}
+                                disabled={actionLoadingId === post.id}
+                                aria-label="Archive article"
+                                className="p-1.5 text-gray-400 hover:text-slate-700 hover:bg-gray-100 rounded-lg transition cursor-pointer"
+                              >
+                                <ArchiveBoxIcon className="w-4 h-4" />
+                              </button>
+                            </ActionTooltip>
                           ) : (
-                            <button
-                              onClick={() => handleUpdateStatus(post.id, "DRAFT")}
-                              disabled={actionLoadingId === post.id}
-                              title="Restore to Draft"
-                              className="px-2.5 py-1 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition cursor-pointer"
+                            <ActionTooltip
+                              label="Restore to Draft"
+                              roleHint="Restore"
+                              description="Restore archived article back to draft status for editing or republishing."
+                              position={tipPosition}
+                              align="right"
                             >
-                              Restore
-                            </button>
+                              <button
+                                onClick={() => handleUpdateStatus(post.id, "DRAFT")}
+                                disabled={actionLoadingId === post.id}
+                                aria-label="Restore to Draft"
+                                className="px-2.5 py-1 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition cursor-pointer"
+                              >
+                                Restore
+                              </button>
+                            </ActionTooltip>
                           )}
 
                           {/* Public View Link */}
-                          <a
-                            href={`/blog/${post.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="View Public Article"
-                            className="p-1.5 text-gray-400 hover:text-royal hover:bg-blue-50 rounded-lg transition cursor-pointer inline-flex items-center"
+                          <ActionTooltip
+                            label="Preview Article"
+                            roleHint="Public View"
+                            description="Open live public article page in a new browser tab as readers see it."
+                            position={tipPosition}
+                            align="right"
                           >
-                            <EyeIcon className="w-4 h-4" />
-                          </a>
+                            <a
+                              href={`/blog/${post.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label="View Public Article"
+                              className="p-1.5 text-gray-400 hover:text-royal hover:bg-blue-50 rounded-lg transition cursor-pointer inline-flex items-center"
+                            >
+                              <EyeIcon className="w-4 h-4" />
+                            </a>
+                          </ActionTooltip>
 
                           {/* Edit Button */}
-                          <button
-                            onClick={() => edit("blog_posts", post.id)}
-                            title="Edit Article"
-                            className="p-1.5 text-gray-500 hover:text-royal hover:bg-blue-50 rounded-lg transition cursor-pointer"
+                          <ActionTooltip
+                            label="Edit Article"
+                            roleHint="Content Editor"
+                            description="Modify title, content, cover image, category, and publication date."
+                            position={tipPosition}
+                            align="right"
                           >
-                            <PencilSquareIcon className="w-4 h-4" />
-                          </button>
+                            <button
+                              onClick={() => edit("blog_posts", post.id)}
+                              aria-label="Edit Article"
+                              className="p-1.5 text-gray-500 hover:text-royal hover:bg-blue-50 rounded-lg transition cursor-pointer"
+                            >
+                              <PencilSquareIcon className="w-4 h-4" />
+                            </button>
+                          </ActionTooltip>
 
                           {/* Delete Button */}
-                          <button
-                            onClick={() => setDeleteModalPost(post)}
-                            title="Delete Article"
-                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
+                          <ActionTooltip
+                            label="Delete Article"
+                            roleHint="Destructive"
+                            description="Permanently delete this article from the database. Cannot be undone."
+                            position={tipPosition}
+                            align="right"
                           >
-                            <TrashIcon className="w-4 h-4" />
-                          </button>
+                            <button
+                              onClick={() => setDeleteModalPost(post)}
+                              aria-label="Delete Article"
+                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
+                            >
+                              <TrashIcon className="w-4 h-4" />
+                            </button>
+                          </ActionTooltip>
                         </div>
                       </td>
                     </tr>
