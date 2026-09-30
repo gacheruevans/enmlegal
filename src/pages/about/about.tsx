@@ -1,7 +1,11 @@
 import { motion } from 'framer-motion';
+import { useSiteContent } from '../../context/SiteContentContext';
 
 // eslint-disable-next-line react-refresh/only-export-components
 const About = () => {
+  const { content } = useSiteContent();
+  const about = content.about;
+
   return (
     <div id="about" className="overflow-hidden bg-white border-b-4 border-secondary elative isolate sm:py-32">
       <div className="px-6 mx-auto max-w-7xl lg:px-8">
@@ -21,18 +25,21 @@ const About = () => {
               className="relative z-10 flex flex-col justify-center h-full px-4 py-8 text-white bg-black/40"
             >
               <div className="max-w-lg mx-auto text-center text-wrap">
-                <p className="mb-4 text-3xl font-semibold tracking-tight font-mea-culpa drop-shadow-lg text-royal">
-                  Who we are
-                </p>
-                <p className="mb-3 text-base drop-shadow-lg">
-                  <span className="font-bold text-royal">E. Nduta Munene &amp; Company Advocates</span> is a boutique law firm specializing in delivering tailored
-                  legal solutions with a personal touch.
-                </p>
-                <p className="mb-3 text-base drop-shadow-lg">
-                  Led by <span className="font-bold text-royal">Eva Nduta Munene</span>, an accomplished Advocate of the High Court of Kenya with over 14
-                  years of dedicated legal practice, the firm is committed to providing personalized, reliable, and
-                  strategic legal solutions to individuals, businesses, and institutions across Kenya and beyond.
-                </p>
+                {about?.title && (
+                  <p className="mb-4 text-3xl font-semibold tracking-tight font-mea-culpa drop-shadow-lg text-royal">
+                    {about.title}
+                  </p>
+                )}
+                {about?.subtitle && (
+                  <p className="mb-3 text-base drop-shadow-lg">
+                    {about.subtitle}
+                  </p>
+                )}
+                {about?.subtext && (
+                  <p className="mb-3 text-base drop-shadow-lg">
+                    {about.subtext}
+                  </p>
+                )}
               </div>
             </motion.div>
           </div>
@@ -45,26 +52,21 @@ const About = () => {
               transition={{ duration: 0.5, ease: "easeIn" }}
               className="max-w-lg"
             >
-              <p className="mb-6 text-5xl font-semibold tracking-tight font-mea-culpa text-secondary">
-                Who we are
-              </p>
-              <p className="mb-4 text-lg text-primary">
-                <span className="text-3xl font-bold text-slate-800 font-mea-culpa">E. Nduta Munene &amp; Company Advocates</span> is a boutique law firm specializing in delivering tailored
-                legal solutions with a personal touch. Our team of dedicated legal consultants brings extensive
-                experience and a deep understanding of various practice areas, ensuring our clients receive expert
-                guidance and representation.
-              </p>
-              <p className="mb-4 text-lg text-primary">
-                Led by <span className="text-3xl font-bold text-slate-800 font-mea-culpa">Eva Nduta Munene</span>, an accomplished Advocate of the High Court of Kenya with over 14
-                years of dedicated legal practice, the firm is committed to providing personalized, reliable, and
-                strategic legal solutions to individuals, businesses, and institutions across Kenya and beyond.
-              </p>
-              <p className="text-lg text-primary">
-                With a strong foundation in real estate and conveyancing, corporate and commercial law, and
-                banking securities and finance, the firm brings a practical, results-oriented approach to every
-                matter we handle. Our legal acumen is grounded in years of experience working with diverse
-                clients, from individual property buyers to multinational corporations.
-              </p>
+              {about?.title && (
+                <p className="mb-6 text-5xl font-semibold tracking-tight font-mea-culpa text-secondary">
+                  {about.title}
+                </p>
+              )}
+              {about?.subtitle && (
+                <p className="mb-4 text-lg text-primary">
+                  {about.subtitle}
+                </p>
+              )}
+              {about?.subtext && (
+                <p className="mb-4 text-lg text-primary">
+                  {about.subtext}
+                </p>
+              )}
             </motion.div>
             <motion.div
               initial={{ opacity: 0 }}

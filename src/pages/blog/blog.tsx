@@ -34,7 +34,7 @@ type BlogPostSummary = {
   likes?: number;
 };
 import { useLayoutContext } from '../../components/layout/LayoutContext';
-
+import { useSiteContent } from '../../context/SiteContentContext';
 
 interface CategoryItem {
   id: string;
@@ -44,6 +44,8 @@ interface CategoryItem {
 
 const Blog = () => {
   const { setHasBlogPosts } = useLayoutContext();
+  const { content: siteContent } = useSiteContent();
+  const blogContent = siteContent?.blog;
   const scrollRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -375,12 +377,16 @@ const Blog = () => {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-royal text-xs font-bold tracking-wider uppercase mb-3">
             <span>Insights & Legal Analysis</span>
           </div>
-          <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl font-display">
-            From the Blog
-          </h2>
-          <p className="mt-3 text-gray-600 text-lg">
-            Authoritative legal perspectives, regulatory updates, and commercial guides for Kenya and East Africa.
-          </p>
+          {blogContent?.title && (
+            <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl font-display">
+              {blogContent.title}
+            </h2>
+          )}
+          {blogContent?.subtitle && (
+            <p className="mt-3 text-gray-600 text-lg">
+              {blogContent.subtitle}
+            </p>
+          )}
         </div>
 
         {/* Category Grouping Tabs */}

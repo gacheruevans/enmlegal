@@ -3,9 +3,12 @@ import { motion } from 'motion/react';
 import { useState } from "react";
 import ConsultationModal from "../../components/consultationmodal";
 import { NavBar } from '../../components/navbar';
+import { useSiteContent } from '../../context/SiteContentContext';
 
 const Hero = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const { content } = useSiteContent();
+  const home = content.home;
 
   return (
   <div id="home" className="relative py-24 overflow-hidden border-b isolate sm:py-32 bg-slate-900 border-b-royal">
@@ -22,12 +25,16 @@ const Hero = () => {
           transition={{ duration: 1.8, ease: 'easeIn' }}
           className="py-20 mx-auto text-center max-w-8xl sm:py-48 lg:py-56"
         >
-          <h1 className="text-5xl font-semibold tracking-tight text-white text-shadow-lg text-shadow-sky-300 text-balance sm:text-7xl">
-            A Personal Legal Practice You Can Trust- In Kenya and from Abroad!
-          </h1>
-          <p className="mt-8 text-lg font-medium text-royal text-pretty sm:text-xl/8">
-            Providing high-quality legal services with a focus on exceptional client care.
-          </p>
+          {home?.title && (
+            <h1 className="text-5xl font-semibold tracking-tight text-white text-shadow-lg text-shadow-sky-300 text-balance sm:text-7xl">
+              {home.title}
+            </h1>
+          )}
+          {home?.subtitle && (
+            <p className="mt-8 text-lg font-medium text-royal text-pretty sm:text-xl/8">
+              {home.subtitle}
+            </p>
+          )}
           <div className="flex items-center justify-center mt-10 gap-x-6">
             <a
               onClick={() => setModalOpen(true)}

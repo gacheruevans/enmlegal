@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useLayoutContext } from '../layout/LayoutContext';
 
+import { useSiteContent } from '../../context/SiteContentContext';
+
 const Footer: React.FC = () => {
   const { hasBlogPosts, setManualSelected } = useLayoutContext();
+  const { content } = useSiteContent();
+  const contact = content.contact;
   const navigate = useNavigate();
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -34,26 +38,16 @@ const Footer: React.FC = () => {
       <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
         {/* Office Address */}
         <div>
-          <h2 className="mb-4 text-lg font-semibold tracking-wide text-white">Office Address</h2>
-          <div className="space-y-1.5 text-sm text-gray-300 font-light">
-            <p className="font-medium text-gray-200">Advocate Eva Nduta Munene</p>
-            <p>Block B, 3rd Floor, Suite 3.2</p>
-            <p>KMA Center, Chyulu Road</p>
-            <p>Upper Hill, Nairobi, Kenya</p>
-            <p>P.O. Box 40964-00100</p>
-            <p className="pt-2">
-              <span className="text-gray-400">Phone: </span>
-              <a href="tel:+254701857030" className="hover:text-amber-400 transition-colors">
-                +254 701-857-030
-              </a>
-            </p>
-            <p>
-              <span className="text-gray-400">Email: </span>
-              <a href="mailto:info@enmlegal.com" className="hover:text-amber-400 transition-colors">
-                info@enmlegal.com
-              </a>
-            </p>
-          </div>
+          {contact?.title && (
+            <h2 className="mb-4 text-lg font-semibold tracking-wide text-white">
+              {contact.title}
+            </h2>
+          )}
+          {contact?.subtext && (
+            <div className="whitespace-pre-line text-sm text-gray-300 font-light leading-relaxed">
+              {contact.subtext}
+            </div>
+          )}
         </div>
 
         {/* Quick Links */}

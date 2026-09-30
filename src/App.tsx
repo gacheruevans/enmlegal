@@ -32,10 +32,13 @@ const AdminRoute = () => {
   return <AdminLayout />;
 };
 
+import { SiteContentProvider } from "./context/SiteContentContext";
+
 function App() {
   return (
     <BrowserRouter>
-      <Refine
+      <SiteContentProvider>
+        <Refine
         dataProvider={dataProvider}
         authProvider={authProvider}
         routerProvider={routerProvider}
@@ -105,6 +108,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Refine>
+      </SiteContentProvider>
     </BrowserRouter>
   );
 }

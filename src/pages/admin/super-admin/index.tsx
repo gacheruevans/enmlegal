@@ -24,9 +24,11 @@ import {
   EnvelopeIcon,
   EyeIcon,
   EyeSlashIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/24/outline";
+import { ContentManagement } from "./ContentManagement";
 
-type TabType = "health" | "logs" | "sessions" | "activity" | "users";
+type TabType = "health" | "logs" | "sessions" | "activity" | "users" | "content";
 
 interface HealthData {
   status: "healthy" | "degraded" | "unhealthy";
@@ -556,6 +558,18 @@ export const SuperAdminDashboard: React.FC = () => {
             >
               <ClockIcon className="w-4 h-4" />
               <span>User Activity Trail</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("content")}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
+                activeTab === "content"
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <DocumentTextIcon className="w-4 h-4" />
+              <span>Content Studio (CMS)</span>
             </button>
           </>
         )}
@@ -1515,6 +1529,13 @@ export const SuperAdminDashboard: React.FC = () => {
             )}
           </div>
         </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          TAB 6: CONTENT STUDIO (CMS)
+          ───────────────────────────────────────────────────────────── */}
+      {activeTab === "content" && isSuperAdmin && (
+        <ContentManagement isSuperAdmin={isSuperAdmin} />
       )}
     </div>
   );
