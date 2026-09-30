@@ -15,7 +15,12 @@ import {
   ClockIcon,
   ArrowPathIcon,
   ExclamationTriangleIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronDoubleLeftIcon,
+  ChevronDoubleRightIcon,
 } from "@heroicons/react/24/outline";
+import { NotificationBar, NotificationState } from "../../components/common/NotificationBar";
 
 interface PostItem {
   id: string;
@@ -124,12 +129,24 @@ export const BlogPostList: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Pagination State (Default 10 items per page)
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+
+  // Notification state
+  const [notification, setNotification] = useState<NotificationState | null>(null);
+
   // Delete modal state
   const [deleteModalPost, setDeleteModalPost] = useState<PostItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Quick action loading state
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+
+  // Reset pagination when filter criteria change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, selectedCategory, pageSize]);
 
   const fetchPostsAndCategories = async () => {
     setLoading(true);
@@ -173,8 +190,19 @@ export const BlogPostList: React.FC = () => {
       setPosts((prev) =>
         prev.map((p) => (p.id === postId ? { ...p, status: newStatus } : p))
       );
+      setNotification({
+        type: "success",
+        title: "Article Updated",
+        message: `Article status updated to ${newStatus}.`,
+        duration: 4000,
+      });
     } catch (err: any) {
-      alert("Failed to update status: " + (err.response?.data?.message || err.message));
+      setNotification({
+        type: "error",
+        title: "Update Failed",
+        message: err.response?.data?.message || err.message || "Failed to update status.",
+        duration: 5000,
+      });
     } finally {
       setActionLoadingId(null);
     }
@@ -182,13 +210,25 @@ export const BlogPostList: React.FC = () => {
 
   const handleConfirmDelete = async () => {
     if (!deleteModalPost) return;
+    const targetTitle = deleteModalPost.title;
     setIsDeleting(true);
     try {
       await api.delete(`/posts/${deleteModalPost.id}`);
       setPosts((prev) => prev.filter((p) => p.id !== deleteModalPost.id));
       setDeleteModalPost(null);
+      setNotification({
+        type: "success",
+        title: "Article Deleted",
+        message: `"${targetTitle}" has been permanently removed.`,
+        duration: 4000,
+      });
     } catch (err: any) {
-      alert("Failed to delete post: " + (err.response?.data?.message || err.message));
+      setNotification({
+        type: "error",
+        title: "Deletion Failed",
+        message: err.response?.data?.message || err.message || "Failed to delete post.",
+        duration: 5000,
+      });
     } finally {
       setIsDeleting(false);
     }
@@ -208,6 +248,28 @@ export const BlogPostList: React.FC = () => {
     return matchesStatus && matchesCategory && matchesSearch;
   });
 
+  // Pagination calculations (Default 10 items per page)
+  const totalItems = filteredPosts.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+  const startIndex = (safeCurrentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalItems);
+  const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+
+  // Helper for generating page numbers with windowing & ellipsis
+  const getPageNumbers = (current: number, total: number): (number | string)[] => {
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    if (current <= 4) {
+      return [1, 2, 3, 4, 5, "...", total];
+    }
+    if (current >= total - 3) {
+      return [1, "...", total - 4, total - 3, total - 2, total - 1, total];
+    }
+    return [1, "...", current - 1, current, current + 1, "...", total];
+  };
+
   const countAll = posts.length;
   const countPublished = posts.filter((p) => p.status === "PUBLISHED").length;
   const countDrafts = posts.filter((p) => p.status === "DRAFT").length;
@@ -221,6 +283,15 @@ export const BlogPostList: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Tailwind CSS Notification Bar */}
+      {notification && (
+        <NotificationBar
+          notification={notification}
+          onClose={() => setNotification(null)}
+          className="sticky top-2 z-40"
+        />
+      )}
+
       {/* Top Header */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -428,7 +499,7 @@ export const BlogPostList: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm">
-                {filteredPosts.map((post, index) => {
+                {paginatedPosts.map((post, index) => {
                   const scheduledFuture =
                     post.status === "PUBLISHED" && isFutureScheduled(post.datetime);
                   const isFirstRow = index === 0;
@@ -659,6 +730,121 @@ export const BlogPostList: React.FC = () => {
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* Pagination Controls Bar (Default: 10 articles per page) */}
+        {filteredPosts.length > 0 && (
+          <div className="px-6 py-4 border-t border-gray-200 bg-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* Left: Summary Count */}
+            <div className="text-xs text-gray-500">
+              Showing{" "}
+              <span className="font-semibold text-gray-900">
+                {totalItems === 0 ? 0 : startIndex + 1}
+              </span>{" "}
+              to{" "}
+              <span className="font-semibold text-gray-900">{endIndex}</span> of{" "}
+              <span className="font-semibold text-gray-900">{totalItems}</span>{" "}
+              articles
+              {filteredPosts.length !== posts.length && (
+                <span className="text-gray-400 ml-1">
+                  (filtered from {posts.length} total)
+                </span>
+              )}
+            </div>
+
+            {/* Middle: Rows Per Page Selector */}
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <span>Articles per page:</span>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="bg-gray-50 border border-gray-300 rounded-lg px-2.5 py-1 text-xs font-semibold text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-1 focus:ring-royal cursor-pointer"
+              >
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+
+            {/* Right: Page Navigation Buttons */}
+            <div className="flex items-center gap-1.5">
+              {/* First Page */}
+              <button
+                type="button"
+                onClick={() => setCurrentPage(1)}
+                disabled={safeCurrentPage <= 1}
+                aria-label="First page"
+                className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
+                title="First page"
+              >
+                <ChevronDoubleLeftIcon className="w-4 h-4" />
+              </button>
+
+              {/* Previous Page */}
+              <button
+                type="button"
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={safeCurrentPage <= 1}
+                aria-label="Previous page"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
+              >
+                <ChevronLeftIcon className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Prev</span>
+              </button>
+
+              {/* Page Numbered Buttons */}
+              <div className="flex items-center gap-1">
+                {getPageNumbers(safeCurrentPage, totalPages).map((p, idx) =>
+                  p === "..." ? (
+                    <span key={`ellipsis-${idx}`} className="px-1.5 py-1 text-xs text-gray-400 select-none">
+                      ...
+                    </span>
+                  ) : (
+                    <button
+                      key={`page-${p}`}
+                      type="button"
+                      onClick={() => setCurrentPage(Number(p))}
+                      className={`min-w-[32px] h-8 px-2 rounded-lg text-xs font-bold transition cursor-pointer ${
+                        safeCurrentPage === p
+                          ? "bg-royal text-white shadow-sm"
+                          : "text-gray-700 hover:bg-gray-100 border border-gray-200"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  )
+                )}
+              </div>
+
+              {/* Next Page */}
+              <button
+                type="button"
+                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={safeCurrentPage >= totalPages}
+                aria-label="Next page"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRightIcon className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Last Page */}
+              <button
+                type="button"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={safeCurrentPage >= totalPages}
+                aria-label="Last page"
+                className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
+                title="Last page"
+              >
+                <ChevronDoubleRightIcon className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )}
       </div>

@@ -28,6 +28,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { ContentManagement } from "./ContentManagement";
 import { UserAvatar } from "../../../components/common/UserAvatar";
+import { NotificationBar, NotificationState } from "../../../components/common/NotificationBar";
+import { StatusConfirmModal, StatusModalUser } from "./StatusConfirmModal";
 
 type TabType = "health" | "logs" | "sessions" | "activity" | "users" | "content";
 
@@ -141,6 +143,13 @@ export const SuperAdminDashboard: React.FC = () => {
   const [activitySearch, setActivitySearch] = useState("");
   const [activityAction, setActivityAction] = useState("ALL");
   const [users, setUsers] = useState<AdminUserItem[]>([]);
+
+  // Tailwind CSS notification bar state
+  const [notification, setNotification] = useState<NotificationState | null>(null);
+
+  // User status confirm modal state
+  const [statusModalUser, setStatusModalUser] = useState<StatusModalUser | null>(null);
+  const [statusUpdating, setStatusUpdating] = useState<boolean>(false);
 
   // Password reset modal state
   const [resetModalUser, setResetModalUser] = useState<AdminUserItem | null>(null);
@@ -264,12 +273,22 @@ export const SuperAdminDashboard: React.FC = () => {
 
   // Clear process logs
   const handleClearLogs = async () => {
-    if (!window.confirm("Are you sure you want to clear the process logs buffer?")) return;
     try {
       await api.post("/admin/logs/clear");
       await fetchLogs();
+      setNotification({
+        type: "success",
+        title: "Logs Cleared",
+        message: "Process logs buffer has been cleared successfully.",
+        duration: 4000,
+      });
     } catch (err: any) {
-      alert("Failed to clear logs: " + (err.response?.data?.message || err.message));
+      setNotification({
+        type: "error",
+        title: "Log Clearance Failed",
+        message: err.response?.data?.message || err.message || "Failed to clear logs.",
+        duration: 5000,
+      });
     }
   };
 
@@ -288,30 +307,66 @@ export const SuperAdminDashboard: React.FC = () => {
       });
       setCustomPassword("");
       fetchUsers();
+      setNotification({
+        type: "success",
+        title: "Password Reset Generated",
+        message: `Temporary password created for ${resetModalUser.email}.`,
+        duration: 5000,
+      });
     } catch (err: any) {
-      alert("Failed to reset password: " + (err.response?.data?.message || err.message));
+      setNotification({
+        type: "error",
+        title: "Password Reset Failed",
+        message: err.response?.data?.message || err.message || "Failed to reset password.",
+        duration: 5000,
+      });
     } finally {
       setResetting(false);
     }
   };
 
-  // Toggle user account active status
-  const handleToggleStatus = async (user: AdminUserItem) => {
+  // Trigger user account active status confirmation or policy check
+  const handleToggleStatus = (user: AdminUserItem) => {
     if (user.role === "SUPERADMIN" && user.isActive) {
-      alert("Security Violation: Super Administrator accounts cannot be deactivated.");
+      setNotification({
+        type: "warning",
+        title: "Security Policy Restriction",
+        message: "Super Administrator accounts are permanently protected and cannot be deactivated.",
+        duration: 6000,
+      });
       return;
     }
-    const nextStatus = !user.isActive;
-    const confirmMsg = nextStatus
-      ? `Reactivate user account for ${user.email}? They will be able to log in again.`
-      : `Deactivate user account for ${user.email}? They will no longer be able to log in.`;
-    if (!window.confirm(confirmMsg)) return;
+    setStatusModalUser(user);
+  };
+
+  // Execute user account status activation/deactivation
+  const executeToggleStatus = async () => {
+    if (!statusModalUser) return;
+    setStatusUpdating(true);
+    const nextStatus = !statusModalUser.isActive;
+    const targetEmail = statusModalUser.email;
 
     try {
-      await api.patch(`/admin/users/${user.id}/status`, { isActive: nextStatus });
-      fetchUsers();
+      await api.patch(`/admin/users/${statusModalUser.id}/status`, { isActive: nextStatus });
+      setStatusModalUser(null);
+      await fetchUsers();
+      setNotification({
+        type: "success",
+        title: nextStatus ? "User Account Reactivated" : "User Account Deactivated",
+        message: nextStatus
+          ? `User account for ${targetEmail} has been reactivated. Portal access has been restored.`
+          : `User account for ${targetEmail} has been deactivated. Login sessions have been terminated.`,
+        duration: 6000,
+      });
     } catch (err: any) {
-      alert("Status update failed: " + (err.response?.data?.message || err.message));
+      setNotification({
+        type: "error",
+        title: "Status Update Failed",
+        message: err.response?.data?.message || err.message || "Failed to update user account status.",
+        duration: 6000,
+      });
+    } finally {
+      setStatusUpdating(false);
     }
   };
 
@@ -404,6 +459,15 @@ export const SuperAdminDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Dynamic Tailwind CSS Notification Bar */}
+      {notification && (
+        <NotificationBar
+          notification={notification}
+          onClose={() => setNotification(null)}
+          className="sticky top-2 z-40"
+        />
+      )}
+
       {/* Executive Header Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-royal p-6 sm:p-8 rounded-3xl text-white shadow-xl border border-slate-700/50 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
@@ -1534,6 +1598,15 @@ export const SuperAdminDashboard: React.FC = () => {
       {activeTab === "content" && isSuperAdmin && (
         <ContentManagement isSuperAdmin={isSuperAdmin} />
       )}
+
+      {/* Tailwind CSS User Status Confirmation Modal */}
+      <StatusConfirmModal
+        isOpen={Boolean(statusModalUser)}
+        onClose={() => setStatusModalUser(null)}
+        user={statusModalUser}
+        onConfirm={executeToggleStatus}
+        loading={statusUpdating}
+      />
     </div>
   );
 };

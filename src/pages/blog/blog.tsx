@@ -62,7 +62,7 @@ const Blog = () => {
   const [activeShareId, setActiveShareId] = useState<string | null>(null);
   const [copiedShareId, setCopiedShareId] = useState<string | null>(null);
 
-  const pageSize = 6;
+  const pageSize = 10;
 
   const mapPostSummary = (post: any): BlogPostSummary => ({
     id: post.id,
