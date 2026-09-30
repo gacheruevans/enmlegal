@@ -1,9 +1,20 @@
 import { useGetIdentity, useLogout } from "@refinedev/core";
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router";
+import { Outlet, useNavigate, useLocation, useSearchParams } from "react-router";
 import { isTokenExpired, getTimeUntilExpiration, handleSessionExpired } from "../../lib/auth";
 import { usePageSEO } from "../../hooks/usePageSEO";
-import { ShieldCheckIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import {
+  ShieldCheckIcon,
+  PencilSquareIcon,
+  ServerStackIcon,
+  CommandLineIcon,
+  UsersIcon,
+  ClockIcon,
+  DocumentTextIcon,
+  KeyIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/outline";
 import { UserAvatar } from "../common/UserAvatar";
 import { ProfileModal } from "./ProfileModal";
 import { SkipToContent } from "../common/SkipToContent";
@@ -106,11 +117,61 @@ export const AdminLayout = () => {
   const isSuperAdmin = currentUser?.role === "SUPERADMIN" || identity?.role === "SUPERADMIN";
   const isAdmin = currentUser?.role === "ADMIN" || identity?.role === "ADMIN" || isSuperAdmin;
 
+  const [searchParams] = useSearchParams();
+  const currentTab = searchParams.get("tab") || (isSuperAdmin ? "health" : "users");
+  const [isSuperAdminMenuOpen, setIsSuperAdminMenuOpen] = useState(true);
+
+  // Auto-expand Super Admin menu when on the super admin route
+  useEffect(() => {
+    if (isSuperAdminActive) {
+      setIsSuperAdminMenuOpen(true);
+    }
+  }, [isSuperAdminActive]);
+
+  const superAdminSubmenu = [
+    {
+      name: "Site Health & Vitals",
+      tab: "health",
+      icon: ServerStackIcon,
+      superAdminOnly: true,
+    },
+    {
+      name: "Process Logs",
+      tab: "logs",
+      icon: CommandLineIcon,
+      superAdminOnly: true,
+    },
+    {
+      name: "Logged-in Users",
+      tab: "sessions",
+      icon: UsersIcon,
+      superAdminOnly: true,
+    },
+    {
+      name: "User Activity Trail",
+      tab: "activity",
+      icon: ClockIcon,
+      superAdminOnly: true,
+    },
+    {
+      name: "Content Studio (CMS)",
+      tab: "content",
+      icon: DocumentTextIcon,
+      superAdminOnly: true,
+    },
+    {
+      name: "User & Password Controls",
+      tab: "users",
+      icon: KeyIcon,
+      superAdminOnly: false,
+    },
+  ];
+
   return (
     <div className="flex h-screen bg-gray-50 font-sans text-gray-800">
       <SkipToContent contentId="admin-main-content" label="Skip to admin workspace" />
       {/* Sidebar */}
-      <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between shadow-lg">
+      <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between shadow-lg overflow-y-auto shrink-0">
         <div>
           <div className="p-6 text-xl font-bold border-b border-slate-800 flex items-center space-x-2">
             <span className="bg-royal text-white px-2.5 py-1 rounded text-sm font-black">ENM</span>
@@ -141,19 +202,76 @@ export const AdminLayout = () => {
             </button>
 
             {isAdmin && (
-              <div className="pt-3 mt-3 border-t border-slate-800">
+              <div className="pt-3 mt-3 border-t border-slate-800 space-y-1">
+                {/* Super Admin Menu Header */}
                 <button
-                  onClick={() => navigate("/admin/super-admin")}
-                  aria-current={isSuperAdminActive ? "page" : undefined}
-                  className={`w-full flex items-center gap-2.5 px-4 py-3 rounded-lg text-sm font-semibold transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+                  type="button"
+                  onClick={() => {
+                    if (!isSuperAdminActive) {
+                      navigate(`/admin/super-admin?tab=${currentTab}`);
+                      setIsSuperAdminMenuOpen(true);
+                    } else {
+                      setIsSuperAdminMenuOpen((prev) => !prev);
+                    }
+                  }}
+                  aria-expanded={isSuperAdminMenuOpen}
+                  aria-controls="super-admin-submenu"
+                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
                     isSuperAdminActive
-                      ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold shadow-md shadow-amber-500/20"
+                      ? "bg-slate-800 text-amber-300 font-bold border border-amber-500/20 shadow-sm"
                       : "text-amber-300 hover:bg-slate-800 hover:text-white"
                   }`}
                 >
-                  <ShieldCheckIcon className="w-4 h-4 shrink-0" />
-                  <span>{isSuperAdmin ? "Super Admin Suite" : "User Management"}</span>
+                  <div className="flex items-center gap-2.5">
+                    <ShieldCheckIcon className="w-4 h-4 shrink-0 text-amber-400" />
+                    <span>{isSuperAdmin ? "Super Admin Suite" : "User Management"}</span>
+                  </div>
+                  {isSuperAdmin && (
+                    isSuperAdminMenuOpen ? (
+                      <ChevronDownIcon className="w-3.5 h-3.5 text-amber-400/80 transition-transform" />
+                    ) : (
+                      <ChevronRightIcon className="w-3.5 h-3.5 text-amber-400/80 transition-transform" />
+                    )
+                  )}
                 </button>
+
+                {/* Submenu of Super Admin Suite */}
+                {isSuperAdminMenuOpen && (
+                  <div
+                    id="super-admin-submenu"
+                    role="menu"
+                    aria-label="Super Admin Suite Submenu"
+                    className="ml-3 pl-2.5 border-l-2 border-slate-800 space-y-1 pt-1 animate-in fade-in slide-in-from-top-1 duration-150"
+                  >
+                    {superAdminSubmenu
+                      .filter((item) => isSuperAdmin || !item.superAdminOnly)
+                      .map((item) => {
+                        const isSelected = isSuperAdminActive && currentTab === item.tab;
+                        const IconComp = item.icon;
+                        return (
+                          <button
+                            key={item.tab}
+                            role="menuitem"
+                            type="button"
+                            onClick={() => navigate(`/admin/super-admin?tab=${item.tab}`)}
+                            aria-current={isSelected ? "page" : undefined}
+                            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+                              isSelected
+                                ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold shadow-xs shadow-amber-500/20"
+                                : "text-slate-400 hover:bg-slate-800/80 hover:text-slate-100"
+                            }`}
+                          >
+                            <IconComp
+                              className={`w-3.5 h-3.5 shrink-0 ${
+                                isSelected ? "text-slate-950" : "text-slate-400"
+                              }`}
+                            />
+                            <span className="truncate">{item.name}</span>
+                          </button>
+                        );
+                      })}
+                  </div>
+                )}
               </div>
             )}
           </nav>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router";
 import api from "../../../lib/api";
 import {
   ShieldCheckIcon,
@@ -126,9 +127,27 @@ export const SuperAdminDashboard: React.FC = () => {
   const currentUser = userStorage ? JSON.parse(userStorage) : null;
   const isSuperAdmin = currentUser?.role === "SUPERADMIN";
 
-  const [activeTab, setActiveTab] = useState<TabType>(() => {
-    return isSuperAdmin ? "health" : "users";
-  });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rawTab = searchParams.get("tab") as TabType | null;
+  const validTabs: TabType[] = ["health", "logs", "sessions", "activity", "content", "users"];
+  const activeTab: TabType = rawTab && validTabs.includes(rawTab)
+    ? isSuperAdmin || rawTab === "users"
+      ? rawTab
+      : "users"
+    : isSuperAdmin
+    ? "health"
+    : "users";
+
+  const setActiveTab = (tab: TabType) => {
+    setSearchParams({ tab });
+  };
+
+  useEffect(() => {
+    if (!rawTab || !validTabs.includes(rawTab)) {
+      setSearchParams({ tab: isSuperAdmin ? "health" : "users" }, { replace: true });
+    }
+  }, [rawTab, isSuperAdmin, setSearchParams]);
+
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -568,88 +587,62 @@ export const SuperAdminDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Tab Controls */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 text-sm">
-        {isSuperAdmin && (
-          <>
-            <button
-              onClick={() => setActiveTab("health")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
-                activeTab === "health"
-                  ? "bg-slate-900 text-white shadow-sm"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <ServerStackIcon className="w-4 h-4" />
-              <span>Site Health & Vitals</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("logs")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
-                activeTab === "logs"
-                  ? "bg-slate-900 text-white shadow-sm"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <CommandLineIcon className="w-4 h-4" />
-              <span>Process Logs</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("sessions")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
-                activeTab === "sessions"
-                  ? "bg-slate-900 text-white shadow-sm"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <UsersIcon className="w-4 h-4" />
-              <span>Logged-in Users</span>
-              {activeUsers.filter((u) => u.isOnline).length > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full bg-emerald-500 text-white text-[10px]">
-                  {activeUsers.filter((u) => u.isOnline).length}
+      {/* Current Active Section Module Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-slate-200">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-slate-900 text-amber-400 flex items-center justify-center shadow-sm">
+            {activeTab === "health" && <ServerStackIcon className="w-5 h-5" />}
+            {activeTab === "logs" && <CommandLineIcon className="w-5 h-5" />}
+            {activeTab === "sessions" && <UsersIcon className="w-5 h-5" />}
+            {activeTab === "activity" && <ClockIcon className="w-5 h-5" />}
+            {activeTab === "content" && <DocumentTextIcon className="w-5 h-5" />}
+            {activeTab === "users" && <KeyIcon className="w-5 h-5" />}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">
+                {activeTab === "health" && "Site Health & Vitals"}
+                {activeTab === "logs" && "Process Logs"}
+                {activeTab === "sessions" && "Logged-in Users"}
+                {activeTab === "activity" && "User Activity Trail"}
+                {activeTab === "content" && "Content Studio (CMS)"}
+                {activeTab === "users" && (isSuperAdmin ? "User & Password Controls" : "User Management & Status")}
+              </h2>
+              {activeTab === "sessions" && activeUsers.filter((u) => u.isOnline).length > 0 && (
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[11px] font-bold">
+                  {activeUsers.filter((u) => u.isOnline).length} Active Online
                 </span>
               )}
-            </button>
+            </div>
+            <p className="text-xs text-slate-500">
+              Module active • Navigated via Super Admin main menu on the left sidebar
+            </p>
+          </div>
+        </div>
 
+        {/* Section Quick Action Buttons */}
+        <div className="flex items-center gap-2">
+          {activeTab === "users" && isSuperAdmin && (
             <button
-              onClick={() => setActiveTab("activity")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
-                activeTab === "activity"
-                  ? "bg-slate-900 text-white shadow-sm"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
+              type="button"
+              onClick={() => setShowCreateUserModal(true)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition cursor-pointer shadow-xs"
             >
-              <ClockIcon className="w-4 h-4" />
-              <span>User Activity Trail</span>
+              <UserPlusIcon className="w-3.5 h-3.5 text-amber-400" />
+              <span>Create Account</span>
             </button>
-
+          )}
+          {activeTab === "logs" && isSuperAdmin && (
             <button
-              onClick={() => setActiveTab("content")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
-                activeTab === "content"
-                  ? "bg-slate-900 text-white shadow-sm"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
+              type="button"
+              onClick={handleClearLogs}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs border border-rose-200 transition cursor-pointer"
             >
-              <DocumentTextIcon className="w-4 h-4" />
-              <span>Content Studio (CMS)</span>
+              <TrashIcon className="w-3.5 h-3.5" />
+              <span>Clear Logs</span>
             </button>
-          </>
-        )}
-
-        <button
-          onClick={() => setActiveTab("users")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
-            activeTab === "users"
-              ? "bg-slate-900 text-white shadow-sm"
-              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-          }`}
-        >
-          <KeyIcon className="w-4 h-4" />
-          <span>{isSuperAdmin ? "User & Password Controls" : "User Management & Status"}</span>
-        </button>
+          )}
+        </div>
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
