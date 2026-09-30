@@ -7,6 +7,8 @@ import { LayoutProvider } from "./LayoutContext";
 import { ScrollProgressBar } from "./ScrollProgressBar";
 
 
+import { SkipToContent } from "../common/SkipToContent";
+
 export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("");
@@ -130,15 +132,18 @@ export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <LayoutProvider value={{ activeSection, manualSelected, setManualSelected, hasBlogPosts, setHasBlogPosts }}>
       <div className="layout">
+        <SkipToContent contentId="main-content" />
         <div className="content">
           <ScrollProgressBar />
           <Breadcrumb />
-          <Hero />
-          <About />
-          <Services />
-          {hasBlogPosts && <Blog />}
+          <main id="main-content" role="main" tabIndex={-1} className="focus:outline-none">
+            <Hero />
+            <About />
+            <Services />
+            {hasBlogPosts && <Blog />}
+            <div>{children}</div>
+          </main>
           <Footer />
-          <div>{children}</div>
           <ScrollToTopButton show={showScrollTop} onClick={handleScrollToTop} />
           {/* <ChatBot /> */}
         </div>

@@ -33,6 +33,7 @@ const AdminRoute = () => {
 };
 
 import { SiteContentProvider } from "./context/SiteContentContext";
+import { AccessibilityWidget } from "./components/common/AccessibilityWidget";
 
 function App() {
   return (
@@ -108,6 +109,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Refine>
+      <AccessibilityWidget />
       </SiteContentProvider>
     </BrowserRouter>
   );

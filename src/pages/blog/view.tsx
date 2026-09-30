@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa6";
 import api from "../../lib/api";
 import { usePageSEO } from "../../hooks/usePageSEO";
+import { SkipToContent } from "../../components/common/SkipToContent";
 
 type BlogPostDetail = {
   id: string;
@@ -216,12 +217,14 @@ export const ViewPost = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-28 bg-white selection:bg-royal/10 selection:text-royal">
-      <div className="max-w-4xl px-6 mx-auto">
+      <SkipToContent contentId="main-content" />
+      <main id="main-content" tabIndex={-1} role="main" className="max-w-4xl px-6 mx-auto focus:outline-none">
         {/* Navigation & Breadcrumb */}
         <div className="flex items-center justify-between gap-4 mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-royal hover:text-royal/80 transition-colors group cursor-pointer"
+            aria-label="Back to all articles"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-royal hover:text-royal/80 transition-colors group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-lg"
           >
             <ChevronRightIcon className="h-4 w-4 rotate-180 transition-transform group-hover:-translate-x-1" />
             Back to all articles
@@ -268,7 +271,8 @@ export const ViewPost = () => {
                 onClick={handleLikeToggle}
                 disabled={isLiking}
                 title={hasLiked ? "Unlike article" : "Like this article"}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all transform active:scale-95 cursor-pointer border ${
+                aria-label={hasLiked ? "Unlike article" : "Like this article"}
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all transform active:scale-95 cursor-pointer border focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
                   hasLiked
                     ? "bg-rose-50 text-rose-700 border-rose-200 shadow-xs"
                     : "bg-gray-50 text-gray-700 hover:bg-rose-50 hover:text-rose-600 border-gray-200"
@@ -288,7 +292,8 @@ export const ViewPost = () => {
                   type="button"
                   onClick={() => handleShare("native")}
                   title="Share article"
-                  className="p-2 text-gray-600 hover:text-royal hover:bg-gray-100 rounded-full border border-gray-200 transition cursor-pointer"
+                  aria-label="Share article via device share dialog"
+                  className="p-2 text-gray-600 hover:text-royal hover:bg-gray-100 rounded-full border border-gray-200 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                 >
                   <ShareIcon className="w-4 h-4" />
                 </button>
@@ -382,7 +387,8 @@ export const ViewPost = () => {
                   type="button"
                   onClick={() => handleShare("whatsapp")}
                   title="Share on WhatsApp"
-                  className="p-2.5 text-gray-600 hover:text-[#25D366] hover:bg-emerald-50 rounded-full transition cursor-pointer"
+                  aria-label="Share this legal article on WhatsApp (opens in a new window)"
+                  className="p-2.5 text-gray-600 hover:text-[#25D366] hover:bg-emerald-50 rounded-full transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                 >
                   <FaWhatsapp className="w-4 h-4" />
                 </button>
@@ -392,7 +398,8 @@ export const ViewPost = () => {
                   type="button"
                   onClick={() => handleShare("linkedin")}
                   title="Share on LinkedIn"
-                  className="p-2.5 text-gray-600 hover:text-[#0A66C2] hover:bg-blue-50 rounded-full transition cursor-pointer"
+                  aria-label="Share this legal article on LinkedIn (opens in a new window)"
+                  className="p-2.5 text-gray-600 hover:text-[#0A66C2] hover:bg-blue-50 rounded-full transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                 >
                   <FaLinkedinIn className="w-4 h-4" />
                 </button>
@@ -402,7 +409,8 @@ export const ViewPost = () => {
                   type="button"
                   onClick={() => handleShare("twitter")}
                   title="Share on X"
-                  className="p-2.5 text-gray-600 hover:text-black hover:bg-gray-100 rounded-full transition cursor-pointer"
+                  aria-label="Share this legal article on Twitter / X (opens in a new window)"
+                  className="p-2.5 text-gray-600 hover:text-black hover:bg-gray-100 rounded-full transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                 >
                   <FaXTwitter className="w-4 h-4" />
                 </button>
@@ -412,7 +420,8 @@ export const ViewPost = () => {
                   type="button"
                   onClick={() => handleShare("facebook")}
                   title="Share on Facebook"
-                  className="p-2.5 text-gray-600 hover:text-[#1877F2] hover:bg-blue-50 rounded-full transition cursor-pointer"
+                  aria-label="Share this legal article on Facebook (opens in a new window)"
+                  className="p-2.5 text-gray-600 hover:text-[#1877F2] hover:bg-blue-50 rounded-full transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                 >
                   <FaFacebookF className="w-3.5 h-3.5" />
                 </button>
@@ -422,7 +431,8 @@ export const ViewPost = () => {
                   type="button"
                   onClick={handleCopyLink}
                   title="Copy article link"
-                  className="p-2.5 text-gray-600 hover:text-royal hover:bg-blue-50 rounded-full transition relative cursor-pointer"
+                  aria-label="Copy link to this article to clipboard"
+                  className="p-2.5 text-gray-600 hover:text-royal hover:bg-blue-50 rounded-full transition relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                 >
                   {copiedLink ? (
                     <CheckIcon className="w-4 h-4 text-emerald-600" />
@@ -441,7 +451,7 @@ export const ViewPost = () => {
             </div>
           </div>
         </section>
-      </div>
+      </main>
 
       {/* Floating Bottom Social & Like Bar for mobile & smooth reading */}
       <aside
@@ -452,7 +462,8 @@ export const ViewPost = () => {
           type="button"
           onClick={handleLikeToggle}
           title={hasLiked ? "Unlike article" : "Like this article"}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer ${
+          aria-label={hasLiked ? "Unlike article" : "Like this article"}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
             hasLiked
               ? "bg-rose-100 text-rose-700"
               : "text-gray-700 hover:bg-rose-50 hover:text-rose-600"
@@ -473,7 +484,8 @@ export const ViewPost = () => {
             type="button"
             onClick={() => handleShare("whatsapp")}
             title="Share on WhatsApp"
-            className="p-1.5 text-gray-600 hover:text-[#25D366] hover:bg-emerald-50 rounded-full transition cursor-pointer"
+            aria-label="Share on WhatsApp"
+            className="p-1.5 text-gray-600 hover:text-[#25D366] hover:bg-emerald-50 rounded-full transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
           >
             <FaWhatsapp className="w-3.5 h-3.5" />
           </button>
@@ -481,7 +493,8 @@ export const ViewPost = () => {
             type="button"
             onClick={() => handleShare("linkedin")}
             title="Share on LinkedIn"
-            className="p-1.5 text-gray-600 hover:text-[#0A66C2] hover:bg-blue-50 rounded-full transition cursor-pointer"
+            aria-label="Share on LinkedIn"
+            className="p-1.5 text-gray-600 hover:text-[#0A66C2] hover:bg-blue-50 rounded-full transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
           >
             <FaLinkedinIn className="w-3.5 h-3.5" />
           </button>
@@ -489,7 +502,8 @@ export const ViewPost = () => {
             type="button"
             onClick={() => handleShare("twitter")}
             title="Share on X"
-            className="p-1.5 text-gray-600 hover:text-black hover:bg-gray-100 rounded-full transition cursor-pointer"
+            aria-label="Share on X (Twitter)"
+            className="p-1.5 text-gray-600 hover:text-black hover:bg-gray-100 rounded-full transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
           >
             <FaXTwitter className="w-3.5 h-3.5" />
           </button>
@@ -497,7 +511,8 @@ export const ViewPost = () => {
             type="button"
             onClick={handleCopyLink}
             title="Copy link"
-            className="p-1.5 text-gray-600 hover:text-royal hover:bg-blue-50 rounded-full transition cursor-pointer"
+            aria-label="Copy link to clipboard"
+            className="p-1.5 text-gray-600 hover:text-royal hover:bg-blue-50 rounded-full transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
           >
             {copiedLink ? (
               <CheckIcon className="w-3.5 h-3.5 text-emerald-600" />

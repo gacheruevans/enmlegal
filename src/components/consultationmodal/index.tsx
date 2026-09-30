@@ -234,7 +234,8 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
         type="button"
         onClick={handleClose}
         title="Close dialog"
-        className="absolute top-5 right-5 z-20 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition cursor-pointer"
+        aria-label="Close consultation dialog"
+        className="absolute top-5 right-5 z-20 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
       >
         <XMarkIcon className="w-5 h-5" />
       </button>

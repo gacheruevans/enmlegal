@@ -13,7 +13,8 @@ const Hero = () => {
   return (
   <div id="home" className="relative py-24 overflow-hidden border-b isolate sm:py-32 bg-slate-900 border-b-royal">
       <img
-        alt="Office lobby"
+        alt=""
+        aria-hidden="true"
         src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/office-lobby.jpg?raw=true`}
         className="absolute inset-0 object-cover object-right opacity-40 -z-10 size-full md:object-center saturation-200"
       />
@@ -36,13 +37,15 @@ const Hero = () => {
             </p>
           )}
           <div className="flex items-center justify-center mt-10 gap-x-6">
-            <a
+            <button
+              type="button"
               onClick={() => setModalOpen(true)}
-              href="#"
-              className="text-white rounded-md bg-secondary px-3.5 py-2.5 text-sm font-semibold text-g shadow-xs hover:bg-royal hover:text-greenroyal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral"
+              aria-haspopup="dialog"
+              aria-label="Book a legal consultation with Advocate Eva Nduta Munene"
+              className="text-white rounded-md bg-secondary px-5 py-3 text-sm font-semibold shadow-xs hover:bg-royal hover:text-greenroyal focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-amber-400 transition cursor-pointer"
             >
               Book a Consultation
-            </a>
+            </button>
           </div>
         </motion.div>
       </div>

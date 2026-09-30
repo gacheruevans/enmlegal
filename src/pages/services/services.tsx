@@ -50,14 +50,16 @@ const Services = () => {
     <div id="services" className="relative py-24 overflow-hidden bg-white border border-b-1 border-b-light sm:py-32 isolate">
       {/* Mobile */}
       <img
-        alt="./gavel_background.jpg"
+        alt=""
+        aria-hidden="true"
         src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/gavel_background.jpg?raw=true`}
         className="absolute inset-0 object-cover blur-90 -z-10 size-full md:object-center brightness-75"
       />
       
       {/* Desktop */}
       <img
-        alt="./gavel_background.jpg"
+        alt=""
+        aria-hidden="true"
         src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/gavel_background.jpg?raw=true`}
         className="absolute inset-0 hidden object-cover object-right lg:display-block blur-90 -z-10 size-full md:object-center"
       />

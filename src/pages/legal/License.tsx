@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { ArrowLeftIcon, CheckBadgeIcon, CodeBracketIcon, BuildingLibraryIcon } from '@heroicons/react/24/outline';
 import Footer from '../../components/footer';
 import { usePageSEO } from '../../hooks/usePageSEO';
+import { SkipToContent } from '../../components/common/SkipToContent';
 
 export const License: React.FC = () => {
   usePageSEO({
@@ -19,6 +20,7 @@ export const License: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col justify-between">
+      <SkipToContent contentId="main-content" />
       {/* Top Navigation Bar */}
       <header className="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -44,7 +46,7 @@ export const License: React.FC = () => {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <main id="main-content" tabIndex={-1} role="main" className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 focus:outline-none">
         {/* Header Banner */}
         <div className="mb-10 text-center sm:text-left border-b border-slate-200 pb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-royal text-xs font-semibold uppercase tracking-wider mb-4">

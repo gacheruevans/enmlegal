@@ -539,7 +539,8 @@ const Blog = () => {
                           <button
                             type="button"
                             onClick={(e) => handleLikePost(e, post)}
-                            title="Like article"
+                            title={isPostLiked ? "Unlike article" : "Like article"}
+                            aria-label={isPostLiked ? `Unlike article: ${post.title}` : `Like article: ${post.title}`}
                             className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition cursor-pointer border ${
                               isPostLiked
                                 ? "bg-rose-50 text-rose-700 border-rose-200"
@@ -558,6 +559,7 @@ const Blog = () => {
                             type="button"
                             onClick={(e) => handleShareClick(e, post.id)}
                             title="Share article"
+                            aria-label={`Share options for article: ${post.title}`}
                             className="p-1.5 rounded-full text-gray-500 hover:text-royal hover:bg-gray-100 border border-gray-200 transition cursor-pointer"
                           >
                             <ShareIcon className="w-3.5 h-3.5" />
@@ -575,6 +577,7 @@ const Blog = () => {
                             type="button"
                             onClick={(e) => handleShareToPlatform(e, "whatsapp", post)}
                             title="WhatsApp"
+                            aria-label="Share on WhatsApp"
                             className="p-2 text-gray-600 hover:text-[#25D366] hover:bg-emerald-50 rounded-xl transition"
                           >
                             <FaWhatsapp className="w-3.5 h-3.5" />
@@ -583,6 +586,7 @@ const Blog = () => {
                             type="button"
                             onClick={(e) => handleShareToPlatform(e, "linkedin", post)}
                             title="LinkedIn"
+                            aria-label="Share on LinkedIn"
                             className="p-2 text-gray-600 hover:text-[#0A66C2] hover:bg-blue-50 rounded-xl transition"
                           >
                             <FaLinkedinIn className="w-3.5 h-3.5" />
@@ -591,6 +595,7 @@ const Blog = () => {
                             type="button"
                             onClick={(e) => handleShareToPlatform(e, "twitter", post)}
                             title="X (Twitter)"
+                            aria-label="Share on X (Twitter)"
                             className="p-2 text-gray-600 hover:text-black hover:bg-gray-100 rounded-xl transition"
                           >
                             <FaXTwitter className="w-3.5 h-3.5" />
@@ -599,6 +604,7 @@ const Blog = () => {
                             type="button"
                             onClick={(e) => handleShareToPlatform(e, "copy", post)}
                             title="Copy link"
+                            aria-label="Copy link to article"
                             className="p-2 text-gray-600 hover:text-royal hover:bg-blue-50 rounded-xl transition"
                           >
                             {copiedShareId === post.id ? (
@@ -690,6 +696,7 @@ const Blog = () => {
                         type="button"
                         onClick={(e) => handleLikePost(e, post)}
                         title={isPostLiked ? "Unlike article" : "Like article"}
+                        aria-label={isPostLiked ? `Unlike article: ${post.title}` : `Like article: ${post.title}`}
                         className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer border ${
                           isPostLiked
                             ? "bg-rose-50 text-rose-700 border-rose-200"
@@ -709,6 +716,7 @@ const Blog = () => {
                         type="button"
                         onClick={(e) => handleShareClick(e, post.id)}
                         title="Share article"
+                        aria-label={`Share options for article: ${post.title}`}
                         className="p-1.5 text-gray-500 hover:text-royal hover:bg-gray-100 rounded-full border border-gray-200 transition cursor-pointer"
                       >
                         <ShareIcon className="w-4 h-4" />
@@ -726,6 +734,7 @@ const Blog = () => {
                         type="button"
                         onClick={(e) => handleShareToPlatform(e, "whatsapp", post)}
                         title="Share on WhatsApp"
+                        aria-label="Share on WhatsApp"
                         className="p-2 text-gray-600 hover:text-[#25D366] hover:bg-emerald-50 rounded-xl transition cursor-pointer"
                       >
                         <FaWhatsapp className="w-4 h-4" />
@@ -734,6 +743,7 @@ const Blog = () => {
                         type="button"
                         onClick={(e) => handleShareToPlatform(e, "linkedin", post)}
                         title="Share on LinkedIn"
+                        aria-label="Share on LinkedIn"
                         className="p-2 text-gray-600 hover:text-[#0A66C2] hover:bg-blue-50 rounded-xl transition cursor-pointer"
                       >
                         <FaLinkedinIn className="w-4 h-4" />
@@ -742,6 +752,7 @@ const Blog = () => {
                         type="button"
                         onClick={(e) => handleShareToPlatform(e, "twitter", post)}
                         title="Share on X"
+                        aria-label="Share on X (Twitter)"
                         className="p-2 text-gray-600 hover:text-black hover:bg-gray-100 rounded-xl transition cursor-pointer"
                       >
                         <FaXTwitter className="w-4 h-4" />
@@ -750,6 +761,7 @@ const Blog = () => {
                         type="button"
                         onClick={(e) => handleShareToPlatform(e, "facebook", post)}
                         title="Share on Facebook"
+                        aria-label="Share on Facebook"
                         className="p-2 text-gray-600 hover:text-[#1877F2] hover:bg-blue-50 rounded-xl transition cursor-pointer"
                       >
                         <FaFacebookF className="w-3.5 h-3.5" />
@@ -758,6 +770,7 @@ const Blog = () => {
                         type="button"
                         onClick={(e) => handleShareToPlatform(e, "copy", post)}
                         title="Copy article link"
+                        aria-label="Copy link to article"
                         className="p-2 text-gray-600 hover:text-royal hover:bg-blue-50 rounded-xl transition cursor-pointer"
                       >
                         {copiedShareId === post.id ? (

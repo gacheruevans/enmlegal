@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useLayoutContext } from '../layout/LayoutContext';
 
@@ -74,10 +74,13 @@ const HighlightBar: React.FC<{ activeSection: string }> = ({ activeSection }) =>
   );
 };
 
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+
 export const NavBar = () => {
   const { activeSection, manualSelected, setManualSelected, hasBlogPosts } = useLayoutContext();
   const navigate = useNavigate();
   const liveRegionRef = useRef<HTMLDivElement | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const visibleNavItems = navigation.filter(item => item.name !== 'blog' || hasBlogPosts);
 
@@ -90,10 +93,22 @@ export const NavBar = () => {
       navigate(item.path);
     }
     setManualSelected(item.name);
+    setMobileMenuOpen(false);
     if (liveRegionRef.current) {
       liveRegionRef.current.textContent = `Navigated to ${item.name}`;
     }
   };
+
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
   
   return (
     <header className="absolute inset-x-0 top-0 z-50">
@@ -101,20 +116,40 @@ export const NavBar = () => {
         <div className="flex lg:flex-1">
           <a
             href="/home"
-            className="-m-1.5 p-1.5"
+            className="-m-1.5 p-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-lg"
             onClick={(e) => {
               e.preventDefault();
               handleNavClick(navigation[0]);
             }}
           >
-            <span className="sr-only">ENM LEGAL</span>
+            <span className="sr-only">ENM Legal Advocates - Advocate Eva Nduta Munene</span>
             <img
-              alt="./logo_white_text.png"
+              alt="ENM Legal Advocates Logo"
               src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/logo_white_text.png?raw=true`}
               className="w-auto h-10 transition-all duration-300 md:h-14 lg:h-16"
             />
           </a>
         </div>
+
+        {/* Mobile menu button */}
+        <div className="flex lg:hidden">
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            className="p-2.5 rounded-xl text-white bg-slate-900/80 border border-slate-700 backdrop-blur-md transition-colors hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer"
+          >
+            {mobileMenuOpen ? (
+              <XMarkIcon className="w-6 h-6" aria-hidden="true" />
+            ) : (
+              <Bars3Icon className="w-6 h-6" aria-hidden="true" />
+            )}
+          </button>
+        </div>
+
+        {/* Desktop Navigation */}
         <div
           className="relative hidden lg:flex lg:gap-x-12"
           onKeyDown={(e) => {
@@ -147,7 +182,7 @@ export const NavBar = () => {
                   data-nav-link
                   data-name={item.name}
                   href={item.href}
-                  className={`relative capitalize text-lg text-royal font-weight-200 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-royal transition-colors ${isActive ? 'text-white' : 'no-underline'}`}
+                  className={`relative capitalize text-lg text-royal font-weight-200 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-royal transition-colors ${isActive ? 'text-white font-semibold' : 'no-underline'}`}
                   aria-current={isActive ? 'page' : undefined}
                   onClick={(e) => {
                     e.preventDefault();
@@ -164,6 +199,42 @@ export const NavBar = () => {
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end" />
       </nav>
+
+      {/* Accessible Mobile Navigation Drawer */}
+      {mobileMenuOpen && (
+        <div
+          id="mobile-navigation"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile Navigation"
+          className="lg:hidden fixed inset-x-4 top-20 z-50 bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
+        >
+          <div className="flex flex-col space-y-3">
+            {visibleNavItems.map((item) => {
+              const observedActive = activeSection === item.name || (item.name === 'practice Areas' && activeSection === 'services') || (item.name === 'contacts' && activeSection === 'contacts');
+              const isActive = manualSelected ? manualSelected === item.name : observedActive;
+              return (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick(item);
+                  }}
+                  className={`capitalize px-4 py-3 rounded-2xl text-base font-semibold transition-all ${
+                    isActive
+                      ? 'bg-royal text-white shadow-md'
+                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                  }`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {item.name}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </header>
   );
 };

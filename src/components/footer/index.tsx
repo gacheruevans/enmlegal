@@ -150,6 +150,7 @@ const Footer: React.FC = () => {
               <input
                 type="text"
                 required
+                aria-label="Your Name"
                 placeholder="Your Name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -158,6 +159,7 @@ const Footer: React.FC = () => {
               <input
                 type="email"
                 required
+                aria-label="Your Email"
                 placeholder="Your Email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -166,6 +168,7 @@ const Footer: React.FC = () => {
               <textarea
                 required
                 rows={3}
+                aria-label="Your Legal Inquiry"
                 placeholder="Your Legal Inquiry"
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -173,7 +176,8 @@ const Footer: React.FC = () => {
               />
               <button
                 type="submit"
-                className="w-full px-4 py-2 text-sm font-medium text-white bg-royal hover:bg-royal/80 rounded-lg transition-colors cursor-pointer"
+                aria-label="Send contact message to ENM Legal"
+                className="w-full px-4 py-2 text-sm font-medium text-white bg-royal hover:bg-royal/80 rounded-lg transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
               >
                 Send Message
               </button>
@@ -190,7 +194,8 @@ const Footer: React.FC = () => {
             href="https://facebook.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-white transition-colors"
+            aria-label="Visit ENM Legal on Facebook (opens in a new tab)"
+            className="hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-sm"
           >
             Facebook
           </a>
@@ -198,7 +203,8 @@ const Footer: React.FC = () => {
             href="https://twitter.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-white transition-colors"
+            aria-label="Visit ENM Legal on Twitter / X (opens in a new tab)"
+            className="hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-sm"
           >
             Twitter / X
           </a>
@@ -206,7 +212,8 @@ const Footer: React.FC = () => {
             href="https://linkedin.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-white transition-colors"
+            aria-label="Visit ENM Legal on LinkedIn (opens in a new tab)"
+            className="hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-sm"
           >
             LinkedIn
           </a>
@@ -214,7 +221,8 @@ const Footer: React.FC = () => {
             href="https://instagram.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-white transition-colors"
+            aria-label="Visit ENM Legal on Instagram (opens in a new tab)"
+            className="hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-sm"
           >
             Instagram
           </a>

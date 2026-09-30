@@ -98,4 +98,141 @@
   background-color: #033f53 !important;
   color: #ffffff !important;
   font-weight: 600 !important;
-}   
+}
+
+/* ─────────────────────────────────────────────────────────────
+   WCAG 2.1 AA Accessibility Features & User Preference Overrides
+   ───────────────────────────────────────────────────────────── */
+
+/* Accessible Focus Ring */
+:focus-visible {
+  outline: 3px solid #0284c7 !important;
+  outline-offset: 2px !important;
+}
+
+/* Screen Reader Only Utility */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border-width: 0 !important;
+}
+
+.focus\:not-sr-only:focus {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  padding: inherit !important;
+  margin: inherit !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
+}
+
+/* Text Scaling */
+html.text-size-large {
+  font-size: 115% !important;
+}
+
+html.text-size-xlarge {
+  font-size: 130% !important;
+}
+
+/* Dyslexia-Friendly Readable Typography */
+html.dyslexic-font,
+html.dyslexic-font body,
+html.dyslexic-font h1,
+html.dyslexic-font h2,
+html.dyslexic-font h3,
+html.dyslexic-font h4,
+html.dyslexic-font p,
+html.dyslexic-font span,
+html.dyslexic-font a,
+html.dyslexic-font button,
+html.dyslexic-font input,
+html.dyslexic-font textarea,
+html.dyslexic-font select {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', 'Trebuchet MS', 'Arial Rounded MT Bold', -apple-system, sans-serif !important;
+  letter-spacing: 0.05em !important;
+  word-spacing: 0.12em !important;
+  line-height: 1.8 !important;
+}
+
+/* Explicit Link Underlines */
+html.underline-links a {
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+}
+
+/* Reduced Motion Override */
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* High Contrast Mode (WCAG AAA >= 7:1) */
+html.high-contrast {
+  filter: contrast(120%);
+}
+
+html.high-contrast body {
+  background-color: #0b0f19 !important;
+  color: #ffffff !important;
+}
+
+html.high-contrast .bg-white,
+html.high-contrast .bg-slate-50,
+html.high-contrast .bg-gray-50 {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+html.high-contrast .text-gray-900,
+html.high-contrast .text-slate-900,
+html.high-contrast .text-slate-800,
+html.high-contrast .text-gray-800,
+html.high-contrast .text-gray-700,
+html.high-contrast .text-slate-700 {
+  color: #ffffff !important;
+}
+
+html.high-contrast .text-gray-600,
+html.high-contrast .text-slate-600,
+html.high-contrast .text-gray-500,
+html.high-contrast .text-slate-500 {
+  color: #cbd5e1 !important;
+}
+
+html.high-contrast a {
+  color: #38bdf8 !important;
+  text-decoration: underline !important;
+  font-weight: 600 !important;
+}
+
+html.high-contrast button {
+  border-color: #ffffff !important;
+}
+
+html.high-contrast input,
+html.high-contrast textarea,
+html.high-contrast select {
+  border-color: #94a3b8 !important;
+  background-color: #020617 !important;
+  color: #ffffff !important;
+}
+
+html.high-contrast input::placeholder,
+html.high-contrast textarea::placeholder {
+  color: #94a3b8 !important;
+}
+   

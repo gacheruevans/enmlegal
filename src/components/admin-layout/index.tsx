@@ -6,6 +6,7 @@ import { usePageSEO } from "../../hooks/usePageSEO";
 import { ShieldCheckIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { UserAvatar } from "../common/UserAvatar";
 import { ProfileModal } from "./ProfileModal";
+import { SkipToContent } from "../common/SkipToContent";
 
 export const AdminLayout = () => {
   usePageSEO({
@@ -107,6 +108,7 @@ export const AdminLayout = () => {
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans text-gray-800">
+      <SkipToContent contentId="admin-main-content" label="Skip to admin workspace" />
       {/* Sidebar */}
       <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between shadow-lg">
         <div>
@@ -114,10 +116,11 @@ export const AdminLayout = () => {
             <span className="bg-royal text-white px-2.5 py-1 rounded text-sm font-black">ENM</span>
             <span className="tracking-wide">Blog Admin</span>
           </div>
-          <nav className="mt-6 px-4 space-y-2">
+          <nav aria-label="Admin Navigation" className="mt-6 px-4 space-y-2">
             <button
               onClick={() => navigate("/admin/blog-posts")}
-              className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+              aria-current={isBlogActive ? "page" : undefined}
+              className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
                 isBlogActive
                   ? "bg-royal text-white shadow-md shadow-royal/20"
                   : "text-slate-400 hover:bg-slate-800 hover:text-white"
@@ -127,7 +130,8 @@ export const AdminLayout = () => {
             </button>
             <button
               onClick={() => navigate("/admin/categories")}
-              className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+              aria-current={isCategoryActive ? "page" : undefined}
+              className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
                 isCategoryActive
                   ? "bg-royal text-white shadow-md shadow-royal/20"
                   : "text-slate-400 hover:bg-slate-800 hover:text-white"
@@ -140,7 +144,8 @@ export const AdminLayout = () => {
               <div className="pt-3 mt-3 border-t border-slate-800">
                 <button
                   onClick={() => navigate("/admin/super-admin")}
-                  className={`w-full flex items-center gap-2.5 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
+                  aria-current={isSuperAdminActive ? "page" : undefined}
+                  className={`w-full flex items-center gap-2.5 px-4 py-3 rounded-lg text-sm font-semibold transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
                     isSuperAdminActive
                       ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold shadow-md shadow-amber-500/20"
                       : "text-amber-300 hover:bg-slate-800 hover:text-white"
@@ -159,8 +164,9 @@ export const AdminLayout = () => {
           <button
             type="button"
             onClick={() => setIsProfileModalOpen(true)}
-            className="flex-1 flex items-center space-x-3 overflow-hidden text-left p-1.5 rounded-xl hover:bg-slate-800/80 transition group cursor-pointer"
+            className="flex-1 flex items-center space-x-3 overflow-hidden text-left p-1.5 rounded-xl hover:bg-slate-800/80 transition group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
             title="Edit Profile Details"
+            aria-label={`Profile settings for ${currentUser?.name || "Author"}`}
           >
             <UserAvatar
               src={currentUser?.imageUrl}
@@ -182,8 +188,9 @@ export const AdminLayout = () => {
           <button
             type="button"
             onClick={() => logout()}
-            className="text-xs text-red-400 hover:text-red-300 border border-slate-800 hover:border-red-900 bg-slate-900/60 hover:bg-red-950/40 p-2 rounded-lg transition-all cursor-pointer shrink-0"
+            className="text-xs text-red-400 hover:text-red-300 border border-slate-800 hover:border-red-900 bg-slate-900/60 hover:bg-red-950/40 p-2 rounded-lg transition-all cursor-pointer shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
             title="Log Out"
+            aria-label="Log Out of Admin Portal"
           >
             Exit
           </button>
@@ -191,7 +198,7 @@ export const AdminLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-slate-50">
+      <main id="admin-main-content" tabIndex={-1} role="main" className="flex-1 overflow-y-auto bg-slate-50 focus:outline-none">
         <div className="p-8 max-w-6xl mx-auto">
           <Outlet />
         </div>

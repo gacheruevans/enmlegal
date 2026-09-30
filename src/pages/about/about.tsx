@@ -76,12 +76,12 @@ const About = () => {
             >
               <img
                 src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/books-background2.jpg?raw=true`}
-                alt="Books"
+                alt="Law library and legal jurisprudence collection"
                 className="object-cover w-full h-full col-span-2 row-span-2 rounded-md bg-secondary blur-0"
               />
               <img
                 src={`https://github.com/gacheruevans/enmlegal/blob/main/dist/profile2.png?raw=true`}
-                alt="Profile"
+                alt="Advocate Eva Nduta Munene, Managing Partner"
                 className="absolute object-cover w-64 -translate-x-1/2 -translate-y-1/2 border-4 border-white rounded-md shadow-lg h-68 top-1/2 left-2/3 bg-slate-900"
                 style={{ zIndex: 2 }}
               />
