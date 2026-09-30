@@ -7,6 +7,8 @@ import * as bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
 import { v4 as uuidv4 } from 'uuid';
 
+import * as crypto from 'crypto';
+
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -22,7 +24,76 @@ export class AuthService {
     this.googleClient = new OAuth2Client(googleClientId);
   }
 
+  /**
+   * Generates a signed cryptographic CAPTCHA challenge
+   */
+  generateCaptcha() {
+    const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    let code = '';
+    for (let i = 0; i < 5; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    const timestamp = Date.now();
+    const secret = process.env.JWT_SECRET || 'enmlegal-captcha-secret';
+    const hash = crypto
+      .createHmac('sha256', secret)
+      .update(`${code.toUpperCase()}:${timestamp}`)
+      .digest('hex');
+
+    return {
+      token: `${timestamp}:${hash}`,
+      code,
+      expiresIn: 300,
+    };
+  }
+
+  /**
+   * Cryptographically verifies CAPTCHA token and answer
+   */
+  verifyCaptcha(token: string, answer: string): boolean {
+    if (!token || !answer) return false;
+    const parts = token.split(':');
+    if (parts.length !== 2) return false;
+
+    const timestamp = parseInt(parts[0], 10);
+    const expectedHash = parts[1];
+
+    if (Date.now() - timestamp > 300000) {
+      return false; // Expired after 5 minutes
+    }
+
+    const secret = process.env.JWT_SECRET || 'enmlegal-captcha-secret';
+    const computedHash = crypto
+      .createHmac('sha256', secret)
+      .update(`${answer.trim().toUpperCase()}:${timestamp}`)
+      .digest('hex');
+
+    return computedHash === expectedHash;
+  }
+
   async login(dto: LoginDto) {
+    // 1. Bot Honeypot Check: trap headless automated scripts
+    if (dto.honeypot && dto.honeypot.trim().length > 0) {
+      this.logger.warn(`Bot detected via honeypot trap: ${dto.email}`);
+      await this.prisma.activityLog
+        .create({
+          data: {
+            userEmail: dto.email,
+            action: 'BOT_TRAP_TRIGGERED',
+            details: 'Automated login blocked via hidden honeypot trap',
+          },
+        })
+        .catch(() => {});
+      throw new UnauthorizedException('Security validation failed');
+    }
+
+    // 2. Server-side CAPTCHA verification if token provided
+    if (dto.captchaToken && dto.captchaAnswer) {
+      const isCaptchaValid = this.verifyCaptcha(dto.captchaToken, dto.captchaAnswer);
+      if (!isCaptchaValid) {
+        throw new UnauthorizedException('Security verification failed. Please enter the correct CAPTCHA code.');
+      }
+    }
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email.toLowerCase().trim() },
     });

@@ -18,6 +18,12 @@ export class AuthController {
   }
 
   @Public()
+  @Get('captcha')
+  getCaptcha() {
+    return this.authService.generateCaptcha();
+  }
+
+  @Public()
   @Post('google')
   loginWithGoogle(@Body() dto: GoogleLoginDto) {
     return this.authService.loginWithGoogle(dto);
