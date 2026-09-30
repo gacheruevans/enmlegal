@@ -27,6 +27,7 @@ import {
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import { ContentManagement } from "./ContentManagement";
+import { UserAvatar } from "../../../components/common/UserAvatar";
 
 type TabType = "health" | "logs" | "sessions" | "activity" | "users" | "content";
 
@@ -865,13 +866,11 @@ export const SuperAdminDashboard: React.FC = () => {
                   activeUsers.map((u) => (
                     <tr key={u.id} className="hover:bg-slate-50/70 transition">
                       <td className="px-6 py-4 flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-xs shrink-0 overflow-hidden">
-                          {u.imageUrl ? (
-                            <img src={u.imageUrl} alt="" className="w-full h-full object-cover" />
-                          ) : (
-                            u.name.charAt(0)
-                          )}
-                        </div>
+                        <UserAvatar
+                          src={u.imageUrl}
+                          name={u.name}
+                          size="md"
+                        />
                         <div>
                           <div className="font-bold text-slate-900">{u.name}</div>
                           <div className="text-xs text-slate-400">{u.email}</div>
@@ -1059,13 +1058,11 @@ export const SuperAdminDashboard: React.FC = () => {
                 {users.map((u) => (
                   <tr key={u.id} className="hover:bg-slate-50/70 transition">
                     <td className="px-6 py-4 flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-xs shrink-0 overflow-hidden">
-                        {u.imageUrl ? (
-                          <img src={u.imageUrl} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                          u.name.charAt(0)
-                        )}
-                      </div>
+                      <UserAvatar
+                        src={u.imageUrl}
+                        name={u.name}
+                        size="md"
+                      />
                       <div>
                         <div className="font-bold text-slate-900">{u.name}</div>
                         <div className="text-xs text-slate-400">{u.email}</div>

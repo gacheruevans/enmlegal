@@ -1,14 +1,24 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
 import { PublicResetPasswordDto } from './dto/reset-password.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import * as bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
 import { v4 as uuidv4 } from 'uuid';
 
 import * as crypto from 'crypto';
+
+export function normalizeAvatarUrl(url?: string | null): string | null {
+  if (!url || typeof url !== 'string' || !url.trim()) return null;
+  const trimmed = url.trim();
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:') || trimmed.startsWith('/')) {
+    return trimmed;
+  }
+  return `/${trimmed}`;
+}
 
 @Injectable()
 export class AuthService {
@@ -168,8 +178,9 @@ export class AuthService {
         id: user.id,
         name: user.name,
         email: user.email,
+        phone: user.phone,
         role: user.role,
-        imageUrl: user.imageUrl,
+        imageUrl: normalizeAvatarUrl(user.imageUrl),
       },
     };
   }
@@ -233,8 +244,9 @@ export class AuthService {
           id: user.id,
           name: user.name,
           email: user.email,
+          phone: user.phone,
           role: user.role,
-          imageUrl: user.imageUrl,
+          imageUrl: normalizeAvatarUrl(user.imageUrl),
         },
       };
     } catch (err: unknown) {
@@ -245,7 +257,7 @@ export class AuthService {
   }
 
   async getProfile(userId: string) {
-    return this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -257,7 +269,112 @@ export class AuthService {
         createdAt: true,
       },
     });
+
+    if (!user) return null;
+
+    return {
+      ...user,
+      imageUrl: normalizeAvatarUrl(user.imageUrl),
+    };
   }
+
+  /**
+   * Update Profile Details (Strictly excludes email)
+   * Any authenticated user can update their name, phone, imageUrl, and password.
+   * Email is immutable to protect system identity and security compliance.
+   */
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User account not found');
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('Account has been deactivated');
+    }
+
+    const dataToUpdate: {
+      name?: string;
+      phone?: string | null;
+      imageUrl?: string | null;
+      password?: string;
+    } = {};
+    const updatedFields: string[] = [];
+
+    if (dto.name !== undefined && dto.name.trim().length > 0) {
+      dataToUpdate.name = dto.name.trim();
+      updatedFields.push('name');
+    }
+
+    if (dto.phone !== undefined) {
+      dataToUpdate.phone = dto.phone.trim() || null;
+      updatedFields.push('phone');
+    }
+
+    if (dto.imageUrl !== undefined) {
+      dataToUpdate.imageUrl = normalizeAvatarUrl(dto.imageUrl);
+      updatedFields.push('profile photo');
+    }
+
+    if (dto.newPassword) {
+      if (!dto.currentPassword) {
+        throw new BadRequestException('Current password is required to change password');
+      }
+      const isCurrentValid = await bcrypt.compare(dto.currentPassword, user.password);
+      if (!isCurrentValid) {
+        throw new BadRequestException('Current password does not match');
+      }
+      if (dto.newPassword.length < 6) {
+        throw new BadRequestException('New password must be at least 6 characters long');
+      }
+      dataToUpdate.password = await bcrypt.hash(dto.newPassword, 12);
+      updatedFields.push('password');
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: dataToUpdate,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        imageUrl: true,
+        createdAt: true,
+      },
+    });
+
+    await this.prisma.activityLog
+      .create({
+        data: {
+          userId: user.id,
+          userEmail: user.email,
+          action: 'USER_PROFILE_UPDATED',
+          details: `User ${user.name} (${user.email}) updated profile details: ${
+            updatedFields.length > 0 ? updatedFields.join(', ') : 'no changes'
+          }`,
+        },
+      })
+      .catch(() => {});
+
+    return {
+      success: true,
+      message: 'Profile updated successfully',
+      user: {
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        role: updatedUser.role,
+        imageUrl: normalizeAvatarUrl(updatedUser.imageUrl),
+      },
+    };
+  }
+
 
   /**
    * Public password reset request:

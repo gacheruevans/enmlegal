@@ -31,7 +31,7 @@ async function main() {
       email: 'eva.nduta@enmlegal.com',
       name: 'Advocate Eva Nduta Munene',
       role: 'ADMIN',
-      imageUrl: 'profile.png',
+      imageUrl: '/profile.png',
       password: authorPassword,
     },
   });

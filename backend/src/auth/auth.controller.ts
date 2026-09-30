@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from './decorators/public.decorators';
 import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
 import { PublicResetPasswordDto } from './dto/reset-password.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Request } from 'express';
 
 @ApiTags('auth')
@@ -37,8 +38,16 @@ export class AuthController {
   }
 
   @Get('me')
-  getProfile(@Req() req: Request & { user: { sub: string } }) {
-    return this.authService.getProfile(req.user.sub);
+  getProfile(@Req() req: Request & { user: { sub?: string; id?: string } }) {
+    const userId = req.user?.sub || req.user?.id;
+    return this.authService.getProfile(userId as string);
+  }
+
+  @Patch('profile')
+  updateProfile(@Req() req: any, @Body() dto: UpdateProfileDto) {
+    const userId = req.user?.id || req.user?.sub;
+    return this.authService.updateProfile(userId, dto);
   }
 }
+
 

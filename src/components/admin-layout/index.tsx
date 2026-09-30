@@ -1,9 +1,11 @@
 import { useGetIdentity, useLogout } from "@refinedev/core";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router";
 import { isTokenExpired, getTimeUntilExpiration, handleSessionExpired } from "../../lib/auth";
 import { usePageSEO } from "../../hooks/usePageSEO";
-import { ShieldCheckIcon } from "@heroicons/react/24/outline";
+import { ShieldCheckIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { UserAvatar } from "../common/UserAvatar";
+import { ProfileModal } from "./ProfileModal";
 
 export const AdminLayout = () => {
   usePageSEO({
@@ -17,6 +19,34 @@ export const AdminLayout = () => {
   const token = localStorage.getItem("token");
   const { data: identity } = useGetIdentity<any>();
   const { mutate: logout } = useLogout();
+
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    if (identity) {
+      setCurrentUser((prev: any) => ({ ...prev, ...identity }));
+    }
+  }, [identity]);
+
+  useEffect(() => {
+    const handleUserUpdated = (e: any) => {
+      if (e.detail) {
+        setCurrentUser(e.detail);
+      }
+    };
+    window.addEventListener("auth:user-updated", handleUserUpdated as EventListener);
+    return () => {
+      window.removeEventListener("auth:user-updated", handleUserUpdated as EventListener);
+    };
+  }, []);
 
   useEffect(() => {
     // 1. Initial check: If token is missing or expired, redirect immediately
@@ -72,8 +102,8 @@ export const AdminLayout = () => {
   const isBlogActive = location.pathname.startsWith("/admin/blog-posts");
   const isCategoryActive = location.pathname.startsWith("/admin/categories");
   const isSuperAdminActive = location.pathname.startsWith("/admin/super-admin");
-  const isSuperAdmin = identity?.role === "SUPERADMIN";
-  const isAdmin = identity?.role === "ADMIN" || isSuperAdmin;
+  const isSuperAdmin = currentUser?.role === "SUPERADMIN" || identity?.role === "SUPERADMIN";
+  const isAdmin = currentUser?.role === "ADMIN" || identity?.role === "ADMIN" || isSuperAdmin;
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans text-gray-800">
@@ -123,25 +153,36 @@ export const AdminLayout = () => {
             )}
           </nav>
         </div>
-        <div className="p-6 border-t border-slate-800 flex items-center justify-between">
-          <div className="flex items-center space-x-3 overflow-hidden">
-            {identity?.imageUrl ? (
-              <img src={identity.imageUrl} alt="Avatar" className="w-9 h-9 rounded-full object-cover border border-slate-700" />
-            ) : (
-              <div className="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center font-bold text-sm text-slate-200">
-                {identity?.name?.charAt(0) || "A"}
-              </div>
-            )}
-            <div className="overflow-hidden">
-              <div className="text-sm font-semibold truncate text-slate-200">
-                {identity?.name || "Author"}
-              </div>
-              <div className="text-xs text-slate-400 truncate">{identity?.email}</div>
-            </div>
-          </div>
+
+        {/* User Pill / Profile Update Trigger */}
+        <div className="p-4 border-t border-slate-800 flex items-center justify-between gap-2 bg-slate-950/40">
           <button
+            type="button"
+            onClick={() => setIsProfileModalOpen(true)}
+            className="flex-1 flex items-center space-x-3 overflow-hidden text-left p-1.5 rounded-xl hover:bg-slate-800/80 transition group cursor-pointer"
+            title="Edit Profile Details"
+          >
+            <UserAvatar
+              src={currentUser?.imageUrl}
+              name={currentUser?.name || "Author"}
+              size="md"
+              className="ring-1 ring-slate-700 group-hover:ring-amber-500 transition shrink-0"
+            />
+            <div className="overflow-hidden flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <div className="text-sm font-semibold truncate text-slate-200 group-hover:text-amber-400 transition">
+                  {currentUser?.name || "Author"}
+                </div>
+                <PencilSquareIcon className="w-3.5 h-3.5 text-slate-500 group-hover:text-amber-400 shrink-0 opacity-0 group-hover:opacity-100 transition" />
+              </div>
+              <div className="text-xs text-slate-400 truncate">{currentUser?.email}</div>
+            </div>
+          </button>
+
+          <button
+            type="button"
             onClick={() => logout()}
-            className="text-xs text-red-400 hover:text-red-300 border border-slate-800 hover:border-red-900 bg-slate-900/50 hover:bg-slate-900 p-2 rounded transition-all cursor-pointer flex-shrink-0"
+            className="text-xs text-red-400 hover:text-red-300 border border-slate-800 hover:border-red-900 bg-slate-900/60 hover:bg-red-950/40 p-2 rounded-lg transition-all cursor-pointer shrink-0"
             title="Log Out"
           >
             Exit
@@ -155,6 +196,15 @@ export const AdminLayout = () => {
           <Outlet />
         </div>
       </main>
+
+      {/* Self-Service Profile Update Modal */}
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        currentUser={currentUser}
+        onProfileUpdated={(updated) => setCurrentUser(updated)}
+      />
     </div>
   );
 };
+
